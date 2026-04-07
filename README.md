@@ -11,10 +11,14 @@ Quadruped robot ("Optimus Primal") — on-robot control code and PyBullet simula
 
 ```
 cd robot
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 python gait_controller.py            # WASD trot gait via keyboard
 python gait_controller.py --measure  # 10-iteration crawl gait benchmark
 ```
+
+> Raspberry Pi OS (Bookworm+) blocks system-wide pip (PEP 668), so the venv is required. If `python3 -m venv` fails, run `sudo apt install python3-venv python3-full` first.
 
 `calibration.json` holds per-servo neutral angles for this specific robot.
 

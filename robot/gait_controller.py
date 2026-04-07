@@ -9,7 +9,7 @@ import json
 import sys
 import time
 import threading
-from lx16a import LX16A
+from pylx16a.lx16a import LX16A
 
 # ============================================================
 # CONFIG

@@ -20,6 +20,9 @@ python gait_controller.py --measure  # 10-iteration crawl gait benchmark
 
 ## Sim (MuJoCo)
 
+> Requires a display — runs on the desktop, not the headless Pi.
+
+
 ```
 cd sim
 pip install mujoco numpy

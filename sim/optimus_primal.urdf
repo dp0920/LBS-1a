@@ -1,0 +1,343 @@
+<?xml version="1.0"?>
+<robot name="optimus_primal">
+
+  <!--
+    Optimus Primal Quadruped URDF
+    ================================
+    Body frame dimensions (approximate from measurements):
+      Rear hip spacing (L-R):  160.255 mm = 0.160255 m
+      Front hip spacing (L-R): 131.673 mm = 0.131673 m
+      Front-to-rear hip spacing: 181.5 mm = 0.1815 m
+
+    Leg geometry:
+      Femur (upper_link): 78 mm = 0.078 m
+      Tibia (lower_link): 104 mm = 0.104 m
+
+    Standing pose angles (from servo diff values):
+      Hip:  ~35 deg from vertical
+      Knee: ~80 deg from hip
+
+    Leg naming convention (from robot's forward-facing perspective):
+      FL = front-left, FR = front-right
+      RL = rear-left,  RR = rear-right
+
+    Hip joint origins are relative to base_link center.
+    X = forward/back (positive = forward)
+    Y = left/right   (positive = left)
+    Z = up/down      (positive = up)
+
+    Femur visual origin offset: centered along its length (z = -0.039)
+    Tibia visual origin offset: centered along its length (z = -0.052)
+  -->
+
+  <!-- ==================== BASE LINK ==================== -->
+  <link name="base_link">
+    <inertial>
+      <mass value="0.6"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.006" iyy="0.008" izz="0.010"
+               ixy="0.0"   ixz="0.0"   iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/base.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Simplified box collision for the body -->
+        <box size="0.22 0.18 0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ==================== FRONT-LEFT LEG ==================== -->
+
+  <link name="upper_link_fl">
+    <inertial>
+      <mass value="0.06"/>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <inertia ixx="0.000012" iyy="0.000060" izz="0.000012"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/upper_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.012" length="0.078"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="lower_link_fl">
+    <inertial>
+      <mass value="0.04"/>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <inertia ixx="0.000010" iyy="0.000075" izz="0.000010"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/lower_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.010" length="0.104"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Front-left hip joint: body -> upper_link_fl -->
+  <joint name="hip_fl" type="revolute">
+    <parent link="base_link"/>
+    <child link="upper_link_fl"/>
+    <!-- X=+0.0908 (half of 181.5mm forward), Y=+0.0658 (half of 131.673mm left), Z=-0.015 -->
+    <origin xyz="0.0908 0.0658 -0.015" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+  <!-- Front-left knee joint: upper_link_fl -> lower_link_fl -->
+  <joint name="knee_fl" type="revolute">
+    <parent link="upper_link_fl"/>
+    <child link="lower_link_fl"/>
+    <origin xyz="0 0 -0.078" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+  <!-- ==================== FRONT-RIGHT LEG ==================== -->
+
+  <link name="upper_link_fr">
+    <inertial>
+      <mass value="0.06"/>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <inertia ixx="0.000012" iyy="0.000060" izz="0.000012"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/upper_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.012" length="0.078"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="lower_link_fr">
+    <inertial>
+      <mass value="0.04"/>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <inertia ixx="0.000010" iyy="0.000075" izz="0.000010"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/lower_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.010" length="0.104"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Front-right hip joint: body -> upper_link_fr -->
+  <joint name="hip_fr" type="revolute">
+    <parent link="base_link"/>
+    <child link="upper_link_fr"/>
+    <!-- Mirror Y of FL -->
+    <origin xyz="0.0908 -0.0658 -0.015" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+  <!-- Front-right knee joint: upper_link_fr -> lower_link_fr -->
+  <joint name="knee_fr" type="revolute">
+    <parent link="upper_link_fr"/>
+    <child link="lower_link_fr"/>
+    <origin xyz="0 0 -0.078" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+  <!-- ==================== REAR-LEFT LEG ==================== -->
+
+  <link name="upper_link_rl">
+    <inertial>
+      <mass value="0.06"/>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <inertia ixx="0.000012" iyy="0.000060" izz="0.000012"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/upper_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.012" length="0.078"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="lower_link_rl">
+    <inertial>
+      <mass value="0.04"/>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <inertia ixx="0.000010" iyy="0.000075" izz="0.000010"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/lower_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.010" length="0.104"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Rear-left hip joint: body -> upper_link_rl -->
+  <joint name="hip_rl" type="revolute">
+    <parent link="base_link"/>
+    <child link="upper_link_rl"/>
+    <!-- X=-0.0908 (rear), Y=+0.0801 (half of 160.255mm left) -->
+    <origin xyz="-0.0908 0.0801 -0.015" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+  <!-- Rear-left knee joint: upper_link_rl -> lower_link_rl -->
+  <joint name="knee_rl" type="revolute">
+    <parent link="upper_link_rl"/>
+    <child link="lower_link_rl"/>
+    <origin xyz="0 0 -0.078" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+  <!-- ==================== REAR-RIGHT LEG ==================== -->
+
+  <link name="upper_link_rr">
+    <inertial>
+      <mass value="0.06"/>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <inertia ixx="0.000012" iyy="0.000060" izz="0.000012"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/upper_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.039" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.012" length="0.078"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="lower_link_rr">
+    <inertial>
+      <mass value="0.04"/>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <inertia ixx="0.000010" iyy="0.000075" izz="0.000010"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/lower_link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="dark_gray">
+        <color rgba="0.2 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.052" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.010" length="0.104"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Rear-right hip joint: body -> upper_link_rr -->
+  <joint name="hip_rr" type="revolute">
+    <parent link="base_link"/>
+    <child link="upper_link_rr"/>
+    <!-- Mirror Y of RL -->
+    <origin xyz="-0.0908 -0.0801 -0.015" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+  <!-- Rear-right knee joint: upper_link_rr -> lower_link_rr -->
+  <joint name="knee_rr" type="revolute">
+    <parent link="upper_link_rr"/>
+    <child link="lower_link_rr"/>
+    <origin xyz="0 0 -0.078" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
+    <dynamics damping="0.01" friction="0.01"/>
+  </joint>
+
+</robot>

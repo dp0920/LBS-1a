@@ -1,0 +1,5 @@
+
+<mujoco>
+  <compiler balanceinertia="true" discardvisual="false"/>
+  <include file="optimus_primal.urdf"/>
+</mujoco>

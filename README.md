@@ -18,9 +18,11 @@ python gait_controller.py --measure  # 10-iteration crawl gait benchmark
 
 `calibration.json` holds per-servo neutral angles for this specific robot.
 
-## Sim
+## Sim (MuJoCo)
 
 ```
 cd sim
-python simulate_urdf.py
+pip install mujoco numpy
+python mujoco_sim.py    # passive viewer, no control
+python mujoco_trot.py   # trot gait demo with body position logging
 ```

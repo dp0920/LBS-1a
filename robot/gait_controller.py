@@ -172,6 +172,15 @@ def leg_abs(name, hip_off, knee_off, duration=MOVE_DURATION):
     move_servo(leg["hip"],  hip_target,  duration)
     move_servo(leg["knee"], knee_target, duration)
 
+def recenter_leg(name, stance_knee):
+    """Lift a forward leg, swing hip back to center, plant. No dragging."""
+    leg_abs(name, 10, stance_knee + 35)   # lift (knee straighter)
+    time.sleep(0.15)
+    leg_abs(name, 35, stance_knee + 35)   # swing hip back to center
+    time.sleep(0.15)
+    leg_abs(name, 35, stance_knee)        # plant
+    time.sleep(0.15)
+
 def crawl_stance():
     """Starting stance: front low, rear high."""
     leg_abs("FL", 35, -100)
@@ -224,7 +233,11 @@ def full_stride():
     leg_abs("FL", 10, -75)
     time.sleep(0.3)
 
-    # Reset stance
+    # Recenter the two legs still forward (FL front, RR rear) — lift, swing, plant
+    recenter_leg("FL", -100)
+    recenter_leg("RR",  -50)
+
+    # Reset to clean stance
     crawl_stance()
 
 def walk_and_measure(n=10):

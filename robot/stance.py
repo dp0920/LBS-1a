@@ -284,6 +284,79 @@ def walk(steps=10):
         full_stride()
     print("Walk complete")
 
+# ============================================================
+# CRAWL GAIT PHASE-BY-PHASE (for interactive tuning)
+# Mirrors gait_controller.full_stride. Edit any phase, then re-run
+# from the previous phase. Numbers below are the current defaults
+# from gait_controller.py — copy edits back when you like them.
+# ============================================================
+PHASE_PAUSE = 0.6
+
+def crawl_start():
+    """Front-low/rear-high starting stance (matches gait_controller.crawl_stance)."""
+    leg("FL", 35, -100)
+    leg("FR", 35, -100)
+    leg("RL", 35,  -50)
+    leg("RR", 35,  -50)
+    print("crawl_start")
+
+# === Side 1: RL + FR step ===
+def p1a():
+    """Lift FL+RR, drop FR to free RL diagonal."""
+    leg("FL", 45, -65)
+    leg("RR", 45, -65)
+    leg("FR", 25, -110)
+    print("p1a: lift FL+RR, drop FR")
+
+def p1b():
+    """Swing RL forward."""
+    leg("RL", 10, -50)
+    print("p1b: swing RL forward")
+
+def p1c():
+    """Plant FL + RR."""
+    leg("FL", 35, -100)
+    leg("RR", 35,  -70)
+    print("p1c: plant FL+RR")
+
+def p1d():
+    """Swing FR forward."""
+    leg("FR", 10, -75)
+    print("p1d: swing FR forward")
+
+# === Side 2: RR + FL step ===
+def p2a():
+    """Lift FR+RL, drop FL to free RR diagonal."""
+    leg("FR", 45, -65)
+    leg("RL", 45, -65)
+    leg("FL", 25, -110)
+    print("p2a: lift FR+RL, drop FL")
+
+def p2b():
+    """Swing RR forward."""
+    leg("RR", 10, -50)
+    print("p2b: swing RR forward")
+
+def p2c():
+    """Plant FR + RL."""
+    leg("FR", 35, -100)
+    leg("RL", 35,  -70)
+    print("p2c: plant FR+RL")
+
+def p2d():
+    """Swing FL forward."""
+    leg("FL", 10, -75)
+    print("p2d: swing FL forward")
+
+PHASES = [crawl_start, p1a, p1b, p1c, p1d, p2a, p2b, p2c, p2d]
+
+def run_stride(pause=PHASE_PAUSE):
+    """Run all phases in order with a pause between (no recenter)."""
+    for fn in PHASES:
+        fn()
+        time.sleep(pause)
+    print("stride done")
+
 def stance():
     apply_stance()
 

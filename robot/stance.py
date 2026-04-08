@@ -7,13 +7,13 @@ Test stability by lifting individual legs.
 
 import json
 import time
-from lx16a import LX16A
+from pylx16a.lx16a import LX16A
 
 # ============================================================
 # CONFIG
 # ============================================================
-SERIAL_PORT = "/dev/ttyUSB0"
 CALIBRATION_FILE = "calibration.json"
+PROBE_SERVO_ID = 1
 
 LEGS = {
     "FL": {"hip": 3, "knee": 7, "dir": -1},
@@ -25,7 +25,21 @@ LEGS = {
 # ============================================================
 # INIT
 # ============================================================
-LX16A.initialize(SERIAL_PORT)
+def find_servo_bus(probe_id=PROBE_SERVO_ID):
+    """Auto-detect which /dev/ttyUSB* has the LX-16A bus by probing a known servo."""
+    import serial.tools.list_ports
+    candidates = [p.device for p in serial.tools.list_ports.comports() if "USB" in p.device]
+    for dev in sorted(candidates):
+        try:
+            LX16A.initialize(dev, timeout=0.2)
+            LX16A(probe_id).get_physical_angle()
+            print(f"Found servo bus on {dev}")
+            return dev
+        except Exception:
+            continue
+    raise RuntimeError("No LX-16A bus found on any /dev/ttyUSB*")
+
+SERIAL_PORT = find_servo_bus()
 
 with open(CALIBRATION_FILE) as f:
     neutral = json.load(f)

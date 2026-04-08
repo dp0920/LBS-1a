@@ -165,7 +165,9 @@ LEGS_CRAWL = {
 
 # Per-side knee trim (deg). Positive = more bent (lower that side).
 # Robot leans left → straighten left knees (negative trim) and/or bend right (positive).
-KNEE_TRIM = {"FL": -10, "RL": -15, "FR": 0, "RR": 0}
+# Computed from leveled pose: FL=-70, FR=-75, RL=-65, RR=-80
+# vs crawl_stance baseline (front=-100, rear=-50). trim = baseline - target.
+KNEE_TRIM = {"FL": -30, "FR": -25, "RL": +15, "RR": +30}
 
 def leg_abs(name, hip_off, knee_off, duration=MOVE_DURATION):
     """Set one leg to absolute hip/knee offsets (stance.py convention)."""

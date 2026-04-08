@@ -137,41 +137,92 @@ def trot_cycle(direction=1):
     time.sleep(0.05)
 
 # ============================================================
-# CRAWL (WAVE) GAIT — one leg at a time
+# CRAWL (WAVE) GAIT — ported from stance.py:full_stride()
 # ============================================================
-CRAWL_ORDER = ["FR", "RR", "FL", "RL"]   # one full iteration
-CRAWL_STRIDE = 20      # deg of hip swing (tune)
-CRAWL_LIFT   = 15      # deg of knee lift during swing
-CRAWL_PHASE_MS = 250   # dwell per phase
+# stance.py uses *opposite* dir signs from the trot LEGS dict above
+# and absolute hip/knee offsets (not deltas from STANDING_*_OFFSET).
+# Keep this self-contained so the trot gait is unaffected.
+LEGS_CRAWL = {
+    "FL": {"hip": 3, "knee": 7, "dir": -1},
+    "FR": {"hip": 4, "knee": 8, "dir":  1},
+    "RL": {"hip": 1, "knee": 5, "dir": -1},
+    "RR": {"hip": 2, "knee": 6, "dir":  1},
+}
 
-def crawl_step(leg_name, direction=1):
-    """Lift + swing forward, plant, then push back through stance."""
-    stride = CRAWL_STRIDE * direction
-    # 1. lift + swing forward
-    set_leg(leg_name, stride / 2, CRAWL_LIFT)
-    time.sleep(CRAWL_PHASE_MS / 1000.0)
-    # 2. plant at forward position
-    set_leg(leg_name, stride / 2, 0)
-    time.sleep(0.05)
-    # 3. push back through stance (propulsion)
-    set_leg(leg_name, -stride / 2, 0)
-    time.sleep(CRAWL_PHASE_MS / 1000.0)
+def leg_abs(name, hip_off, knee_off, duration=MOVE_DURATION):
+    """Set one leg to absolute hip/knee offsets (stance.py convention)."""
+    leg = LEGS_CRAWL[name]
+    d = leg["dir"]
+    hip_target  = get_neutral(leg["hip"])  + (hip_off  * d * -1)
+    knee_target = get_neutral(leg["knee"]) + (knee_off * d)
+    move_servo(leg["hip"],  hip_target,  duration)
+    move_servo(leg["knee"], knee_target, duration)
 
-def crawl_cycle(direction=1):
-    """One full crawl iteration: each leg steps once in CRAWL_ORDER."""
-    for leg in CRAWL_ORDER:
-        crawl_step(leg, direction)
+def crawl_stance():
+    """Starting stance: front low, rear high."""
+    leg_abs("FL", 35, -100)
+    leg_abs("FR", 35, -100)
+    leg_abs("RL", 35,  -50)
+    leg_abs("RR", 35,  -50)
+    time.sleep(0.5)
+
+def full_stride():
+    """One full crawl stride: RL+FR step, then RR+FL step."""
+    crawl_stance()
+
+    # === Side 1: RL + FR step ===
+    # Raise FL + RR (lift 15), drop FR to free RL diagonal
+    leg_abs("FL", 45, -65)
+    leg_abs("RR", 45, -65)
+    leg_abs("FR", 25, -110)
+    time.sleep(0.3)
+
+    # Swing RL forward
+    leg_abs("RL", 10, -50)
+    time.sleep(0.3)
+
+    # Plant FL + RR
+    leg_abs("FL", 35, -100)
+    leg_abs("RR", 35,  -70)
+    time.sleep(0.3)
+
+    # Swing FR forward
+    leg_abs("FR", 10, -75)
+    time.sleep(0.3)
+
+    # === Side 2: RR + FL step ===
+    # Raise FR + RL (lift 15), drop FL to free RR diagonal
+    leg_abs("FR", 45, -65)
+    leg_abs("RL", 45, -65)
+    leg_abs("FL", 25, -110)
+    time.sleep(0.3)
+
+    # Swing RR forward
+    leg_abs("RR", 10, -50)
+    time.sleep(0.3)
+
+    # Plant FR + RL
+    leg_abs("FR", 35, -100)
+    leg_abs("RL", 35,  -70)
+    time.sleep(0.3)
+
+    # Swing FL forward
+    leg_abs("FL", 10, -75)
+    time.sleep(0.3)
+
+    # Reset stance
+    crawl_stance()
 
 def walk_and_measure(n=10):
-    """Run n crawl iterations, time them, prompt for measured distance."""
-    stand()
+    """Run n full strides, time them, prompt for measured distance."""
+    crawl_stance()
     input("Place tape at start, then press Enter to walk...")
     t0 = time.time()
     for i in range(n):
-        crawl_cycle(direction=1)
-        print(f"  iteration {i+1}/{n} done")
+        full_stride()
+        print(f"  stride {i+1}/{n} done")
     elapsed = time.time() - t0
-    print(f"\n=== {n} iterations in {elapsed:.2f} s ({elapsed/n:.2f} s/iter) ===")
+    print(f"\n=== {n} strides in {elapsed:.2f} s ({elapsed/n:.2f} s/stride) ===")
     try:
         distance_cm = float(input("Measured distance traveled (cm): "))
         speed = (distance_cm / 100.0) / elapsed

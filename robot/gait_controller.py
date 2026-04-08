@@ -189,65 +189,61 @@ def recenter_leg(name, stance_knee):
     time.sleep(0.35)
 
 def crawl_stance():
-    """Leveled starting stance — matches stance.py apply_stance baseline."""
-    leg_abs("FL", 35, -80)
-    leg_abs("FR", 35, -80)
-    leg_abs("RL", 35, -80)
-    leg_abs("RR", 35, -80)
+    """Front low, rear high — biases CoG backward so the body doesn't
+    tip onto a leg as it swings forward."""
+    leg_abs("FL", 35, -100)
+    leg_abs("FR", 35, -100)
+    leg_abs("RL", 35,  -50)
+    leg_abs("RR", 35,  -50)
     time.sleep(0.8)
 
 def full_stride():
-    """One full crawl stride: RL+FR step, then RR+FL step.
-
-    Phase numbers retuned for the flat -80 baseline. Front legs were
-    shifted by +20 (old baseline -100 → -80), rear legs by -30 (old -50 → -80),
-    preserving each leg's delta from its own stance.
-    """
+    """One full crawl stride: RL+FR step, then RR+FL step."""
     crawl_stance()
 
     # === Side 1: RL + FR step ===
-    # Raise FL + RR (lift 35 from stance), drop FR to free RL diagonal
-    leg_abs("FL", 45, -45)
-    leg_abs("RR", 45, -95)
-    leg_abs("FR", 25, -90)
+    # Raise FL + RR, drop FR to free RL diagonal
+    leg_abs("FL", 45, -65)
+    leg_abs("RR", 45, -65)
+    leg_abs("FR", 25, -110)
     time.sleep(0.6)
 
     # Swing RL forward
-    leg_abs("RL", 10, -80)
+    leg_abs("RL", 10, -50)
     time.sleep(0.6)
 
     # Plant FL + RR
-    leg_abs("FL", 35, -80)
-    leg_abs("RR", 35, -100)
+    leg_abs("FL", 35, -100)
+    leg_abs("RR", 35,  -70)
     time.sleep(0.6)
 
     # Swing FR forward
-    leg_abs("FR", 10, -55)
+    leg_abs("FR", 10, -75)
     time.sleep(0.6)
 
     # === Side 2: RR + FL step ===
     # Raise FR + RL, drop FL to free RR diagonal
-    leg_abs("FR", 45, -45)
-    leg_abs("RL", 45, -95)
-    leg_abs("FL", 25, -90)
+    leg_abs("FR", 45, -65)
+    leg_abs("RL", 45, -65)
+    leg_abs("FL", 25, -110)
     time.sleep(0.6)
 
     # Swing RR forward
-    leg_abs("RR", 10, -80)
+    leg_abs("RR", 10, -50)
     time.sleep(0.6)
 
     # Plant FR + RL
-    leg_abs("FR", 35, -80)
-    leg_abs("RL", 35, -100)
+    leg_abs("FR", 35, -100)
+    leg_abs("RL", 35,  -70)
     time.sleep(0.6)
 
     # Swing FL forward
-    leg_abs("FL", 10, -55)
+    leg_abs("FL", 10, -75)
     time.sleep(0.6)
 
     # Recenter the two legs still forward (FL front, RR rear) — lift, swing, plant
-    recenter_leg("FL", -80)
-    recenter_leg("RR", -80)
+    recenter_leg("FL", -100)
+    recenter_leg("RR",  -50)
 
     # Reset to clean stance
     crawl_stance()

@@ -300,55 +300,87 @@ def crawl_start():
     leg("RR", 35,  -50)
     print("crawl_start")
 
-# === Side 1: RL + FR step ===
-def p1a():
-    """Lift FL+RR, drop FR to free RL diagonal."""
-    leg("FL", 45, -65)
-    leg("RR", 45, -65)
-    leg("FR", 25, -110)
-    print("p1a: lift FL+RR, drop FR")
+# === True 4-leg crawl: FR → RL → FL → RR ===
+# Each leg has 3 sub-phases:
+#   shift_X — weight shift to unload X (load X's diagonal opposite)
+#   swing_X — lift X off ground and swing hip forward
+#   plant_X — lower X back into stance bend at the new forward position
+# Diagonals: FR↔RL, FL↔RR
+# Tune each sub-phase by overriding individual leg() calls in REPL.
 
-def p1b():
-    """Swing RL forward."""
+# ---- Move FR (diagonal opposite = RL) ----
+def shift_FR():
+    """Bias CoG toward RL diagonal so FR can lift."""
+    leg("RL", 35, -65)   # rear-left lower (more bent) — load it
+    leg("FL", 35, -110)  # front-left lower — load it
+    leg("RR", 35, -45)   # rear-right higher — unload
+    print("shift_FR")
+
+def swing_FR():
+    """Lift FR and swing forward (hip 35 -> 10)."""
+    leg("FR", 10, -70)   # knee straighter (foot up) + hip forward
+    print("swing_FR")
+
+def plant_FR():
+    """Plant FR at the new forward position."""
+    leg("FR", 10, -100)
+    print("plant_FR")
+
+# ---- Move RL (diagonal opposite = FR) ----
+def shift_RL():
+    """Bias CoG toward FR diagonal so RL can lift."""
+    leg("FR", 10, -110)  # FR (now forward) lower — load it
+    leg("RR", 35, -65)   # rear-right lower — load it
+    leg("FL", 35, -90)   # front-left slightly higher
+    print("shift_RL")
+
+def swing_RL():
+    leg("RL", 10, -30)
+    print("swing_RL")
+
+def plant_RL():
     leg("RL", 10, -50)
-    print("p1b: swing RL forward")
+    print("plant_RL")
 
-def p1c():
-    """Plant FL + RR."""
-    leg("FL", 35, -100)
-    leg("RR", 35,  -70)
-    print("p1c: plant FL+RR")
+# ---- Move FL (diagonal opposite = RR) ----
+def shift_FL():
+    """Bias CoG toward RR diagonal so FL can lift."""
+    leg("RR", 35, -65)
+    leg("FR", 10, -110)
+    leg("RL", 10, -65)
+    print("shift_FL")
 
-def p1d():
-    """Swing FR forward."""
-    leg("FR", 10, -75)
-    print("p1d: swing FR forward")
+def swing_FL():
+    leg("FL", 10, -70)
+    print("swing_FL")
 
-# === Side 2: RR + FL step ===
-def p2a():
-    """Lift FR+RL, drop FL to free RR diagonal."""
-    leg("FR", 45, -65)
-    leg("RL", 45, -65)
-    leg("FL", 25, -110)
-    print("p2a: lift FR+RL, drop FL")
+def plant_FL():
+    leg("FL", 10, -100)
+    print("plant_FL")
 
-def p2b():
-    """Swing RR forward."""
+# ---- Move RR (diagonal opposite = FL) ----
+def shift_RR():
+    """Bias CoG toward FL diagonal so RR can lift."""
+    leg("FL", 10, -110)
+    leg("RL", 10, -65)
+    leg("FR", 10, -90)
+    print("shift_RR")
+
+def swing_RR():
+    leg("RR", 10, -30)
+    print("swing_RR")
+
+def plant_RR():
     leg("RR", 10, -50)
-    print("p2b: swing RR forward")
+    print("plant_RR")
 
-def p2c():
-    """Plant FR + RL."""
-    leg("FR", 35, -100)
-    leg("RL", 35,  -70)
-    print("p2c: plant FR+RL")
-
-def p2d():
-    """Swing FL forward."""
-    leg("FL", 10, -75)
-    print("p2d: swing FL forward")
-
-PHASES = [crawl_start, p1a, p1b, p1c, p1d, p2a, p2b, p2c, p2d]
+PHASES = [
+    crawl_start,
+    shift_FR, swing_FR, plant_FR,
+    shift_RL, swing_RL, plant_RL,
+    shift_FL, swing_FL, plant_FL,
+    shift_RR, swing_RR, plant_RR,
+]
 
 def run_stride(pause=PHASE_PAUSE):
     """Run all phases in order with a pause between (no recenter)."""

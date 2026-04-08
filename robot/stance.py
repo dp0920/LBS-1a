@@ -302,9 +302,9 @@ def crawl_start():
 
 # === Side 1: RL + FR step ===
 def p1a():
-    """Lift FL+RR (gentle), drop FR to free RL diagonal."""
-    leg("FL", 45, -80)
-    leg("RR", 45, -80)
+    """Lift FL+RR via knee only (no hip swing), drop FR to free RL diagonal."""
+    leg("FL", 35, -65)
+    leg("RR", 35, -65)
     leg("FR", 25, -110)
     print("p1a: lift FL+RR, drop FR")
 
@@ -326,9 +326,9 @@ def p1d():
 
 # === Side 2: RR + FL step ===
 def p2a():
-    """Lift FR+RL (gentle), drop FL to free RR diagonal."""
-    leg("FR", 45, -80)
-    leg("RL", 45, -80)
+    """Lift FR+RL via knee only (no hip swing), drop FL to free RR diagonal."""
+    leg("FR", 35, -65)
+    leg("RL", 35, -65)
     leg("FL", 25, -110)
     print("p2a: lift FR+RL, drop FL")
 

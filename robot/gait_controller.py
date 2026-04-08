@@ -163,12 +163,17 @@ LEGS_CRAWL = {
     "RR": {"hip": 2, "knee": 6, "dir":  1},
 }
 
+# Per-side knee trim (deg). Positive = more bent (lower that side).
+# Robot leans left → straighten left knees (negative trim) and/or bend right (positive).
+KNEE_TRIM = {"FL": -5, "RL": -5, "FR": +5, "RR": +5}
+
 def leg_abs(name, hip_off, knee_off, duration=MOVE_DURATION):
     """Set one leg to absolute hip/knee offsets (stance.py convention)."""
     leg = LEGS_CRAWL[name]
     d = leg["dir"]
+    knee_off_trimmed = knee_off - KNEE_TRIM[name]   # more negative = more bent
     hip_target  = get_neutral(leg["hip"])  + (hip_off  * d * -1)
-    knee_target = get_neutral(leg["knee"]) + (knee_off * d)
+    knee_target = get_neutral(leg["knee"]) + (knee_off_trimmed * d)
     move_servo(leg["hip"],  hip_target,  duration)
     move_servo(leg["knee"], knee_target, duration)
 

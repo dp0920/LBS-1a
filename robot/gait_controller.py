@@ -14,7 +14,7 @@ from pylx16a.lx16a import LX16A
 # ============================================================
 # CONFIG
 # ============================================================
-SERIAL_PORT = "/dev/ttyUSB1"
+SERIAL_PORT = "/dev/ttyUSB0"
 CALIBRATION_FILE = "calibration.json"
 
 # Leg definitions: (hip_id, knee_id, direction_multiplier)

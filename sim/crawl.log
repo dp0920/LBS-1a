@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "mujoco_crawl.py", line 12, in <module>
+    import mujoco
+ModuleNotFoundError: No module named 'mujoco'

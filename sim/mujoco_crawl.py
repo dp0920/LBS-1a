@@ -12,7 +12,21 @@ import numpy as np
 import mujoco
 import mujoco.viewer
 
-model = mujoco.MjModel.from_xml_path("optimus_primal.urdf")
+spec = mujoco.MjSpec.from_file("optimus_primal.urdf")
+# Skybox + checker floor
+spec.add_texture(name="skybox", type=mujoco.mjtTexture.mjTEXTURE_SKYBOX,
+                 builtin=mujoco.mjtBuiltin.mjBUILTIN_GRADIENT,
+                 rgb1=[0.4, 0.6, 0.9], rgb2=[0.1, 0.15, 0.25],
+                 width=512, height=512)
+spec.add_texture(name="grid", type=mujoco.mjtTexture.mjTEXTURE_2D,
+                 builtin=mujoco.mjtBuiltin.mjBUILTIN_CHECKER,
+                 rgb1=[0.25, 0.26, 0.27], rgb2=[0.32, 0.33, 0.34],
+                 width=512, height=512)
+spec.add_material(name="grid", textures=["", "grid"], texrepeat=[10, 10], reflectance=0.1)
+spec.worldbody.add_light(pos=[0, 0, 3], dir=[0, 0, -1], diffuse=[0.9, 0.9, 0.9])
+spec.worldbody.add_geom(name="floor", type=mujoco.mjtGeom.mjGEOM_PLANE,
+                        size=[5, 5, 0.1], material="grid")
+model = spec.compile()
 data = mujoco.MjData(model)
 
 JOINTS = ["hip_fl","knee_fl","hip_fr","knee_fr","hip_rl","knee_rl","hip_rr","knee_rr"]

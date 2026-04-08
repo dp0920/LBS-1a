@@ -53,6 +53,10 @@ for leg in LEGS.values():
 hip_offset = 35
 knee_offset = -80
 
+# Per-leg knee trim — keep in sync with gait_controller.py
+# Positive = more bent (lower); negative = straighter (higher)
+KNEE_TRIM = {"FL": -30, "FR": -25, "RL": +15, "RR": +30}
+
 def get_neutral(motor_id):
     return neutral[str(motor_id)]
 
@@ -61,14 +65,15 @@ def move_servo(motor_id, angle, duration=500):
     servos[motor_id].move(angle, time=duration)
 
 def apply_stance(duration=500):
-    """Apply current hip/knee offsets to all 4 legs."""
+    """Apply current hip/knee offsets to all 4 legs (with per-leg knee trim)."""
     for name, leg in LEGS.items():
         d = leg["dir"]
+        knee_off_trimmed = knee_offset - KNEE_TRIM[name]
         hip_target = get_neutral(leg["hip"]) + (hip_offset * d * -1)
-        knee_target = get_neutral(leg["knee"]) + (knee_offset * d)
+        knee_target = get_neutral(leg["knee"]) + (knee_off_trimmed * d)
         move_servo(leg["hip"], hip_target, duration)
         move_servo(leg["knee"], knee_target, duration)
-    print(f"  Stance applied: hip={hip_offset}°, knee={knee_offset}°")
+    print(f"  Stance applied: hip={hip_offset}°, knee={knee_offset}° (+ per-leg trim)")
 
 def lift_leg(leg_name, lift_amount=30):
     """Lift one leg by bending the knee, keep other 3 planted."""
@@ -104,7 +109,7 @@ def plant_leg(leg_name):
     move_servo(leg["knee"], knee_target, 400)
     print(f"  Planted {leg_name}")
 
-def sit():
+def stand():
     """Return all servos to neutral."""
     for motor_id in servos:
         move_servo(motor_id, get_neutral(motor_id), 500)

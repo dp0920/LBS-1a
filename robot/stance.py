@@ -55,7 +55,7 @@ knee_offset = -80
 
 # Per-leg knee trim — keep in sync with gait_controller.py
 # Positive = more bent (lower); negative = straighter (higher)
-KNEE_TRIM = {"FL": 0, "FR": 0, "RL": 0, "RR": 0}  # re-tune at front-low pose
+KNEE_TRIM = {"FL": -20, "FR": -20, "RL": 0, "RR": 0}
 
 def get_neutral(motor_id):
     return neutral[str(motor_id)]

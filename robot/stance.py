@@ -293,11 +293,11 @@ def walk(steps=10):
 PHASE_PAUSE = 0.6
 
 def crawl_start():
-    """Front-low/rear-high starting stance (matches gait_controller.crawl_stance)."""
-    leg("FL", 35, -100)
-    leg("FR", 35, -100)
-    leg("RL", 35,  -50)
-    leg("RR", 35,  -50)
+    """Leveled front-low/rear-high stance (raw — leg() bypasses KNEE_TRIM)."""
+    leg("FL", 35, -80)
+    leg("FR", 35, -80)
+    leg("RL", 35, -50)
+    leg("RR", 35, -50)
     print("crawl_start")
 
 # === True 4-leg crawl: FR → RL → FL → RR ===
@@ -311,67 +311,69 @@ def crawl_start():
 # ---- Move FR (diagonal opposite = RL) ----
 def shift_FR():
     """Bias CoG toward RL diagonal so FR can lift."""
-    leg("RL", 35, -65)   # rear-left lower (more bent) — load it
-    leg("FL", 35, -110)  # front-left lower — load it
-    leg("RR", 35, -45)   # rear-right higher — unload
+    leg("RL", 35, -65)   # rear-left more bent = body lower at that corner = load
+    leg("FL", 35, -95)   # front-left more bent = load
+    leg("RR", 35, -40)   # rear-right less bent = unload
     print("shift_FR")
 
 def swing_FR():
-    """Lift FR and swing forward (hip 35 -> 10)."""
-    leg("FR", 10, -70)   # knee straighter (foot up) + hip forward
+    """Lift FR (knee MORE bent → foot up) + hip forward."""
+    leg("FR", 10, -110)
     print("swing_FR")
 
 def plant_FR():
-    """Plant FR at the new forward position."""
-    leg("FR", 10, -100)
+    """Plant FR (knee LESS bent → foot drops to ground at new position)."""
+    leg("FR", 10, -65)
     print("plant_FR")
 
 # ---- Move RL (diagonal opposite = FR) ----
 def shift_RL():
     """Bias CoG toward FR diagonal so RL can lift."""
-    leg("FR", 10, -110)  # FR (now forward) lower — load it
-    leg("RR", 35, -65)   # rear-right lower — load it
-    leg("FL", 35, -90)   # front-left slightly higher
+    leg("FR", 10, -80)   # FR (now forward) more bent — load
+    leg("RR", 35, -65)   # rear-right more bent — load
+    leg("FL", 35, -65)   # front-left less bent — unload
     print("shift_RL")
 
 def swing_RL():
-    leg("RL", 10, -30)
+    """Lift RL via more bend + hip forward."""
+    leg("RL", 10, -75)
     print("swing_RL")
 
 def plant_RL():
-    leg("RL", 10, -50)
+    """Plant RL — knee less bent, foot drops."""
+    leg("RL", 10, -35)
     print("plant_RL")
 
 # ---- Move FL (diagonal opposite = RR) ----
 def shift_FL():
     """Bias CoG toward RR diagonal so FL can lift."""
     leg("RR", 35, -65)
-    leg("FR", 10, -110)
-    leg("RL", 10, -65)
+    leg("FR", 10, -95)
+    leg("RL", 10, -35)
     print("shift_FL")
 
 def swing_FL():
-    leg("FL", 10, -70)
+    leg("FL", 10, -110)
     print("swing_FL")
 
 def plant_FL():
-    leg("FL", 10, -100)
+    leg("FL", 10, -65)
     print("plant_FL")
 
 # ---- Move RR (diagonal opposite = FL) ----
 def shift_RR():
     """Bias CoG toward FL diagonal so RR can lift."""
-    leg("FL", 10, -110)
-    leg("RL", 10, -65)
-    leg("FR", 10, -90)
+    leg("FL", 10, -95)
+    leg("RL", 10, -50)
+    leg("FR", 10, -65)
     print("shift_RR")
 
 def swing_RR():
-    leg("RR", 10, -30)
+    leg("RR", 10, -75)
     print("swing_RR")
 
 def plant_RR():
-    leg("RR", 10, -50)
+    leg("RR", 10, -35)
     print("plant_RR")
 
 PHASES = [

@@ -21,14 +21,30 @@
       FL = front-left, FR = front-right
       RL = rear-left,  RR = rear-right
 
-    Hip joint origins are relative to base_link center.
-    X = forward/back (positive = forward)
-    Y = left/right   (positive = left)
-    Z = up/down      (positive = up)
-
-    Femur visual origin offset: centered along its length (z = -0.039)
-    Tibia visual origin offset: centered along its length (z = -0.052)
+    TPU sock friction values (TPU on hard floor):
+      Sliding friction: 1.0  (typical range 0.8-1.2)
+      Torsional:        0.01
+      Rolling:          0.002
+      condim=4 enables full friction cone
   -->
+
+  <mujoco>
+    <compiler balanceinertia="true" discardvisual="false"/>
+    <default>
+      <!-- Default for all structural geoms (PETG-CF frame, ABS links) -->
+      <joint damping="0.05" armature="0.01"/>
+      <geom friction="0.6 0.01 0.001" condim="3" contype="1" conaffinity="1"/>
+    </default>
+    <default class="foot">
+      <!-- TPU sock contact: grippy, soft contact, full friction cone -->
+      <geom friction="1.0 0.01 0.002"
+            condim="4"
+            contype="1"
+            conaffinity="1"
+            solimp="0.9 0.95 0.001"
+            solref="0.02 1"/>
+    </default>
+  </mujoco>
 
   <!-- ==================== BASE LINK ==================== -->
   <link name="base_link">
@@ -50,7 +66,6 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <!-- Simplified box collision for the body -->
         <box size="0.22 0.18 0.05"/>
       </geometry>
     </collision>
@@ -106,25 +121,47 @@
     </collision>
   </link>
 
-  <!-- Front-left hip joint: body -> upper_link_fl -->
+  <!-- FL foot — TPU sock sphere -->
+  <link name="foot_fl">
+    <inertial>
+      <mass value="0.005"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" iyy="0.000001" izz="0.000001"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+      <material name="tpu_blue"><color rgba="0.2 0.4 0.8 1.0"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+    </collision>
+  </link>
+
   <joint name="hip_fl" type="revolute">
     <parent link="base_link"/>
     <child link="upper_link_fl"/>
-    <!-- X=+0.0908 (half of 181.5mm forward), Y=+0.0658 (half of 131.673mm left), Z=-0.015 -->
     <origin xyz="0.0908 0.0658 -0.015" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
   </joint>
 
-  <!-- Front-left knee joint: upper_link_fl -> lower_link_fl -->
   <joint name="knee_fl" type="revolute">
     <parent link="upper_link_fl"/>
     <child link="lower_link_fl"/>
     <origin xyz="0 0 -0.078" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
+  </joint>
+
+  <joint name="foot_joint_fl" type="fixed">
+    <parent link="lower_link_fl"/>
+    <child link="foot_fl"/>
+    <origin xyz="0 0 -0.104" rpy="0 0 0"/>
   </joint>
 
   <!-- ==================== FRONT-RIGHT LEG ==================== -->
@@ -177,25 +214,46 @@
     </collision>
   </link>
 
-  <!-- Front-right hip joint: body -> upper_link_fr -->
+  <link name="foot_fr">
+    <inertial>
+      <mass value="0.005"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" iyy="0.000001" izz="0.000001"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+      <material name="tpu_blue"><color rgba="0.2 0.4 0.8 1.0"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+    </collision>
+  </link>
+
   <joint name="hip_fr" type="revolute">
     <parent link="base_link"/>
     <child link="upper_link_fr"/>
-    <!-- Mirror Y of FL -->
     <origin xyz="0.0908 -0.0658 -0.015" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
   </joint>
 
-  <!-- Front-right knee joint: upper_link_fr -> lower_link_fr -->
   <joint name="knee_fr" type="revolute">
     <parent link="upper_link_fr"/>
     <child link="lower_link_fr"/>
     <origin xyz="0 0 -0.078" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
+  </joint>
+
+  <joint name="foot_joint_fr" type="fixed">
+    <parent link="lower_link_fr"/>
+    <child link="foot_fr"/>
+    <origin xyz="0 0 -0.104" rpy="0 0 0"/>
   </joint>
 
   <!-- ==================== REAR-LEFT LEG ==================== -->
@@ -248,25 +306,46 @@
     </collision>
   </link>
 
-  <!-- Rear-left hip joint: body -> upper_link_rl -->
+  <link name="foot_rl">
+    <inertial>
+      <mass value="0.005"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" iyy="0.000001" izz="0.000001"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+      <material name="tpu_blue"><color rgba="0.2 0.4 0.8 1.0"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+    </collision>
+  </link>
+
   <joint name="hip_rl" type="revolute">
     <parent link="base_link"/>
     <child link="upper_link_rl"/>
-    <!-- X=-0.0908 (rear), Y=+0.0801 (half of 160.255mm left) -->
     <origin xyz="-0.0908 0.0801 -0.015" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
   </joint>
 
-  <!-- Rear-left knee joint: upper_link_rl -> lower_link_rl -->
   <joint name="knee_rl" type="revolute">
     <parent link="upper_link_rl"/>
     <child link="lower_link_rl"/>
     <origin xyz="0 0 -0.078" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
+  </joint>
+
+  <joint name="foot_joint_rl" type="fixed">
+    <parent link="lower_link_rl"/>
+    <child link="foot_rl"/>
+    <origin xyz="0 0 -0.104" rpy="0 0 0"/>
   </joint>
 
   <!-- ==================== REAR-RIGHT LEG ==================== -->
@@ -319,25 +398,46 @@
     </collision>
   </link>
 
-  <!-- Rear-right hip joint: body -> upper_link_rr -->
+  <link name="foot_rr">
+    <inertial>
+      <mass value="0.005"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" iyy="0.000001" izz="0.000001"
+               ixy="0.0"      ixz="0.0"      iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+      <material name="tpu_blue"><color rgba="0.2 0.4 0.8 1.0"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><sphere radius="0.012"/></geometry>
+    </collision>
+  </link>
+
   <joint name="hip_rr" type="revolute">
     <parent link="base_link"/>
     <child link="upper_link_rr"/>
-    <!-- Mirror Y of RL -->
     <origin xyz="-0.0908 -0.0801 -0.015" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
   </joint>
 
-  <!-- Rear-right knee joint: upper_link_rr -> lower_link_rr -->
   <joint name="knee_rr" type="revolute">
     <parent link="upper_link_rr"/>
     <child link="lower_link_rr"/>
     <origin xyz="0 0 -0.078" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.0" effort="2.5" velocity="5.0"/>
-    <dynamics damping="0.01" friction="0.01"/>
+    <dynamics damping="0.05" friction="0.01"/>
+  </joint>
+
+  <joint name="foot_joint_rr" type="fixed">
+    <parent link="lower_link_rr"/>
+    <child link="foot_rr"/>
+    <origin xyz="0 0 -0.104" rpy="0 0 0"/>
   </joint>
 
 </robot>

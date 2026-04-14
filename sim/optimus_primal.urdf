@@ -29,7 +29,7 @@
   -->
 
   <mujoco>
-    <compiler balanceinertia="true" discardvisual="false"/>
+    <compiler balanceinertia="true" discardvisual="true"/>
     <default>
       <!-- Default for all structural geoms (PETG-CF frame, ABS links) -->
       <joint damping="0.05" armature="0.01"/>

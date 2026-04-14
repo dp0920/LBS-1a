@@ -14,6 +14,7 @@ Usage:
 import argparse
 import json
 import sys
+import os
 import time
 import numpy as np
 import mujoco
@@ -43,7 +44,10 @@ LIFT_KNEE = -np.radians(130)
 
 
 def build_model():
-    spec = mujoco.MjSpec.from_file("optimus_primal.urdf")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    urdf_path = os.path.join(script_dir, "optimus_primal.urdf")
+    spec = mujoco.MjSpec.from_file(urdf_path)
+    spec.meshdir = os.path.join(script_dir, "meshes")
     spec.add_texture(name="skybox", type=mujoco.mjtTexture.mjTEXTURE_SKYBOX,
                      builtin=mujoco.mjtBuiltin.mjBUILTIN_GRADIENT,
                      rgb1=[0.4, 0.6, 0.9], rgb2=[0.1, 0.15, 0.25],
@@ -61,6 +65,12 @@ def build_model():
                             friction=[1.0, 0.05, 0.001])
     base = spec.body("base_link")
     base.add_freejoint()
+    # Add position servos for each joint (kp=2.5 matches URDF effort limit)
+    for jname in JOINTS:
+        act = spec.add_actuator(name=f"act_{jname}")
+        act.target = jname
+        act.trntype = mujoco.mjtTrn.mjTRN_JOINT
+        act.set_to_position(kp=2.5, kv=0.05)
     return spec.compile()
 
 
@@ -70,6 +80,16 @@ def get_qadr(model):
         jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, j)
         qadr[j] = model.jnt_qposadr[jid]
     return qadr
+
+
+def get_ctrl_idx(model):
+    """Map joint names to actuator ctrl indices."""
+    ctrl = {}
+    for j in JOINTS:
+        aid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR,
+                                f"act_{j}")
+        ctrl[j] = aid
+    return ctrl
 
 
 def make_3leg_pose(lift_leg, params=None):
@@ -106,15 +126,23 @@ def rollout(model, lift_leg, params=None, hold_time=5.0, viewer=None,
         data = mujoco.MjData(model)
     mujoco.mj_resetData(model, data)
     qadr = get_qadr(model)
+    ctrl_idx = get_ctrl_idx(model)
 
-    def apply_pose(pose):
+    def set_ctrl(pose):
+        """Drive actuators to target pose (position servos)."""
+        for name, angle in pose.items():
+            data.ctrl[ctrl_idx[name]] = angle
+
+    def set_qpos(pose):
+        """Direct qpos set — only for initial placement before sim starts."""
         for name, angle in pose.items():
             data.qpos[qadr[name]] = angle
 
     # Init: spawn already crouched at correct height (no drop/transition)
-    apply_pose(STAND)
+    set_qpos(STAND)
     data.qpos[2] = 0.16   # ~leg height in crouched pose
     data.qpos[3] = 1.0
+    set_ctrl(STAND)        # actuators target standing pose
     mujoco.mj_forward(model, data)
 
     dt = model.opt.timestep
@@ -128,12 +156,11 @@ def rollout(model, lift_leg, params=None, hold_time=5.0, viewer=None,
             if sim_elapsed > wall_elapsed:
                 time.sleep(sim_elapsed - wall_elapsed)
 
-    # Phase 1: hold standing (2s settle) — zero body velocity to prevent sliding
+    # Phase 1: hold standing (2s settle)
     if viewer: print(">>> PHASE 1: settling (2s)...")
     phase_wall = time.time() if viewer else 0
     for i in range(int(2.0 / dt)):
-        apply_pose(STAND)
-        data.qvel[0:6] = 0  # zero base linear + angular velocity
+        set_ctrl(STAND)
         mujoco.mj_step(model, data)
         pace(i, phase_wall, 0)
     if viewer:
@@ -147,7 +174,7 @@ def rollout(model, lift_leg, params=None, hold_time=5.0, viewer=None,
     for i in range(lift_steps):
         t = i / lift_steps
         pose = lerp_pose(STAND, target_pose, t)
-        apply_pose(pose)
+        set_ctrl(pose)
         mujoco.mj_step(model, data)
         pace(i, phase_wall, 0)
 
@@ -165,7 +192,7 @@ def rollout(model, lift_leg, params=None, hold_time=5.0, viewer=None,
     phase_wall = time.time() if viewer else 0
 
     for i in range(int(hold_time / dt)):
-        apply_pose(target_pose)
+        set_ctrl(target_pose)
         mujoco.mj_step(model, data)
         pace(i, phase_wall, 0)
 

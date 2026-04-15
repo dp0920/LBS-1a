@@ -248,6 +248,86 @@ def full_stride():
     # Reset to clean stance
     crawl_stance()
 
+# ============================================================
+# JSON GAIT PLAYBACK (from mujoco_gait.py optimization)
+# ============================================================
+# best_gait.json layout (from mujoco_gait.py):
+#   params[0..103] = 13 phases × 8 joint angles (degrees)
+#     per-phase order: FL_hip, FL_knee, FR_hip, FR_knee,
+#                      RL_hip, RL_knee, RR_hip, RR_knee
+#   params[104]    = phase_time (seconds per phase)
+#
+# Angles are in stance.py convention — same as leg_abs() takes.
+
+PHASE_ORDER = [
+    "start",
+    "shift_FR", "swing_FR", "plant_FR",
+    "shift_RL", "swing_RL", "plant_RL",
+    "shift_FL", "swing_FL", "plant_FL",
+    "shift_RR", "swing_RR", "plant_RR",
+]
+
+def decode_gait_json(path):
+    """Load best_gait.json → (list of 13 phase dicts, phase_time seconds)."""
+    with open(path) as f:
+        d = json.load(f)
+    params = d["params"]
+    if len(params) != len(PHASE_ORDER) * 8 + 1:
+        raise ValueError(
+            f"Expected {len(PHASE_ORDER)*8 + 1} params, got {len(params)}")
+    phases = []
+    idx = 0
+    for name in PHASE_ORDER:
+        phases.append({
+            "name": name,
+            "FL": (params[idx],   params[idx+1]),
+            "FR": (params[idx+2], params[idx+3]),
+            "RL": (params[idx+4], params[idx+5]),
+            "RR": (params[idx+6], params[idx+7]),
+        })
+        idx += 8
+    phase_time = float(params[idx])
+    return phases, phase_time, d.get("reward")
+
+def apply_phase(phase, duration_ms):
+    """Drive all 4 legs to this phase's pose."""
+    for name in ("FL", "FR", "RL", "RR"):
+        hip_off, knee_off = phase[name]
+        leg_abs(name, hip_off, knee_off, duration=duration_ms)
+
+def run_json_gait(path="best_gait.json", cycles=5, speed_scale=1.0):
+    """Play a mujoco-optimized gait on the robot."""
+    phases, phase_time, reward = decode_gait_json(path)
+    phase_time *= speed_scale
+    duration_ms = int(phase_time * 1000)
+    rew_str = f"{reward:.2f}" if reward is not None else "n/a"
+    print(f"Loaded {path}: reward={rew_str}, "
+          f"phase_time={phase_time:.3f}s, duration={duration_ms}ms")
+
+    # Start pose (phase 0) — slow, deliberate move so robot doesn't topple
+    print("Moving to start pose...")
+    apply_phase(phases[0], duration_ms=800)
+    time.sleep(1.0)
+
+    stride_phases = phases[1:]  # 12 swing/shift/plant phases per stride
+    input("Place tape at start, then press Enter to walk...")
+    t0 = time.time()
+    for i in range(cycles):
+        for p in stride_phases:
+            apply_phase(p, duration_ms=duration_ms)
+            time.sleep(phase_time)
+        print(f"  stride {i+1}/{cycles} done")
+    elapsed = time.time() - t0
+    print(f"\n=== {cycles} strides in {elapsed:.2f} s "
+          f"({elapsed/cycles:.2f} s/stride) ===")
+    try:
+        distance_cm = float(input("Measured distance traveled (cm): "))
+        speed = (distance_cm / 100.0) / elapsed
+        print(f"Distance: {distance_cm} cm | Speed: {speed:.3f} m/s")
+    except ValueError:
+        print("(no distance entered, skipping speed calc)")
+    sit()
+
 def walk_and_measure(n=10):
     """Run n full strides, time them, prompt for measured distance."""
     crawl_stance()
@@ -377,6 +457,26 @@ if __name__ == "__main__":
             if arg.startswith("--n="):
                 n = int(arg.split("=", 1)[1])
         walk_and_measure(n=n)
+        sys.exit(0)
+
+    if "--gait" in sys.argv:
+        # Play a mujoco-optimized gait from JSON.
+        #   python gait_controller.py --gait best_gait.json [--n=5] [--slow]
+        gait_path = "best_gait.json"
+        cycles = 5
+        speed_scale = 1.0
+        i = sys.argv.index("--gait")
+        if i + 1 < len(sys.argv) and not sys.argv[i + 1].startswith("--"):
+            gait_path = sys.argv[i + 1]
+        for arg in sys.argv:
+            if arg.startswith("--n="):
+                cycles = int(arg.split("=", 1)[1])
+            elif arg == "--slow":
+                speed_scale = 2.0
+            elif arg.startswith("--scale="):
+                speed_scale = float(arg.split("=", 1)[1])
+        crawl_stance()  # settle into base pose before running the learned gait
+        run_json_gait(gait_path, cycles=cycles, speed_scale=speed_scale)
         sys.exit(0)
 
     print("Starting up...")

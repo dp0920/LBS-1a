@@ -1,0 +1,250 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{Optimus Primal --- Gait Optimization}
+\subtitle{From Hand-Tuned Crawl to Learned Locomotion}
+\author{Darnell Parris}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 1: Problem
+% ------------------------------------------------------------------
+\begin{frame}{Problem}
+\begin{itemize}
+    \item \textbf{Slow iteration loop} --- each hand-tuned gait takes minutes to test on hardware; no way to explore the full parameter space
+    \item \textbf{Stride length hit a stability ceiling} --- longer strides toppled the robot; couldn't find the right weight-shift timing by hand
+    \item \textbf{Discrete hand-scripted phases don't generalize} --- moving to simulation lets the robot optimize against \emph{intrinsic} goals (keep the frame parallel to the ground) rather than fixed motor sequences
+\end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 2: Digital Twin
+% ------------------------------------------------------------------
+\begin{frame}{Digital Twin --- URDF to MuJoCo}
+\begin{itemize}
+    \item Built from the same \texttt{optimus\_primal.urdf} the real robot uses --- same link geometry, joint limits, effort caps
+    \item 8 actuated joints (4 hips + 4 knees) driven by \textbf{position servos} ($k_p{=}2.5$, $k_v{=}0.05$) matching the LX-16A's torque characteristics
+    \item Free joint on \texttt{base\_link} --- physics decides what happens; no kinematic cheating
+    \item Floor: flat plane with friction $\mu{=}1.0$ (rubber/TPU-sock approximation)
+    \item \textbf{Caveat:} CAD wasn't modeled at the origin, so STL meshes render detached. Collision geometry is correct; visual hidden via \texttt{discardvisual}. Cosmetic only --- physics unaffected.
+\end{itemize}
+% \includegraphics[width=0.4\textwidth]{sim_screenshot.png} % add screenshot
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 3: Search Space
+% ------------------------------------------------------------------
+\begin{frame}{Search Space --- 105 Parameters}
+\begin{itemize}
+    \item Gait \textbf{structure is fixed}: 13 phases in a crawl cycle\\
+          \texttt{start} $\to$ \texttt{\{shift, swing, plant\}} $\times$ \texttt{\{FR, RL, FL, RR\}}\\
+          Optimizer tunes the \textbf{angles at each phase}, not the sequencing
+    \item \textbf{104 joint-angle params:} 13 phases $\times$ 4 legs $\times$ 2 joints (hip + knee), in degrees
+    \item \textbf{+1 phase-time param:} seconds between phases --- controls gait cadence
+\end{itemize}
+
+\vspace{0.3em}
+\begin{tabular}{lll}
+    \toprule
+    Parameter & Lower Bound & Upper Bound \\
+    \midrule
+    Hip angle       & $5^\circ$   & $55^\circ$ \\
+    Knee angle      & $-100^\circ$ & $-25^\circ$ \\
+    Phase time      & 0.15\,s     & 1.2\,s \\
+    \bottomrule
+\end{tabular}
+
+\vspace{0.3em}
+\begin{itemize}
+    \item \textbf{Seeded from the hand-tuned gait} --- generation~1 already walks
+    \item \textbf{Sim-to-real is a parameter copy} --- same degree convention as the robot's motor controller; winning JSON loads directly onto hardware
+\end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 4: Algorithm --- CMA-ES
+% ------------------------------------------------------------------
+\begin{frame}{Algorithm --- CMA-ES}
+\textbf{Covariance Matrix Adaptation Evolution Strategy}\\[0.3em]
+Gradient-free, population-based optimizer --- the standard for robot gait tuning.
+
+\vspace{0.5em}
+\textbf{Each generation:}
+\begin{enumerate}
+    \item Sample 48 candidate gaits from a multivariate Gaussian $\mathcal{N}(\mathbf{m},\,\sigma^2 \mathbf{C})$
+    \item Evaluate every candidate in MuJoCo --- in parallel across CPU cores
+    \item Rank by reward, keep the top half
+    \item Update the distribution:
+    \begin{itemize}
+        \item \textbf{Mean} $\mathbf{m}$ moves toward the winning region
+        \item \textbf{Covariance} $\mathbf{C}$ stretches along directions that produced good solutions
+        \item \textbf{Step size} $\sigma$ grows or shrinks based on progress
+    \end{itemize}
+\end{enumerate}
+
+\vspace{0.5em}
+\textbf{Engineering:} popsize\,=\,48, $\sigma_0$\,=\,5.0, auto-restart on 15-gen stall,\\
+parallel evaluation ($\sim$7$\times$ speedup on 8-core Mac), checkpoint every generation.
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 5: Reward Function
+% ------------------------------------------------------------------
+\begin{frame}{Reward Function}
+\textbf{Shaped iteratively through failure.}
+
+\vspace{0.3em}
+\small
+\begin{tabular}{llr}
+    \toprule
+    Component & Purpose & Weight \\
+    \midrule
+    Forward distance        & Primary goal          & $+100$/m \\
+    Phases completed        & Survival bonus        & $+0.5$/phase \\
+    Mean body height        & Don't collapse        & $+5$ \\
+    Backward distance       & Wrong direction       & $-200$/m \\
+    Mean pitch$^2$          & Stay level (F/B)      & $-30$ \\
+    Mean roll$^2$           & Stay level (L/R)      & $-40$ \\
+    Peak pitch/roll$^2$     & No big momentary tilts & $-8$ each \\
+    \textbf{Mean nose-down}$^2$ & \textbf{Don't flop forward} & $\mathbf{-200}$ \\
+    \textbf{Peak nose-down}$^2$ & \textbf{Not even once}      & $\mathbf{-60}$ \\
+    Mean pitch-rate$^2$     & No floppy motions     & $-2$ \\
+    \bottomrule
+\end{tabular}
+\normalsize
+
+\vspace{0.3em}
+\textbf{Hard terminations:} body height $<8$\,cm, any tilt $>30^\circ$, nose-down $>27^\circ$.
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 5b: Reward Iteration Story
+% ------------------------------------------------------------------
+\begin{frame}{Reward Function --- Iteration Story}
+\textbf{Each version was shaped by watching what the optimizer exploited.}
+
+\vspace{0.5em}
+\begin{description}
+    \item[v1 --- Distance only] Robot learned to collapse onto its shins and scoot forward.\\
+        Technically moved. Not a gait.
+    \item[v2 --- Symmetric tilt penalty] Tightened fall threshold from $45^\circ$ to $30^\circ$.\\
+        Better balance, but still toppled forward during swing phases.
+    \item[v3 --- Directional nose-down + pitch-rate] Targets the specific forward-flop failure mode without penalizing backward lean (useful for weight shifting).
+\end{description}
+
+\vspace{0.5em}
+\emph{The reward function is as much the product of learning as the gait itself.}
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 6: Results --- Seed Comparison
+% ------------------------------------------------------------------
+\begin{frame}{Results --- Does the Starting Point Matter?}
+Three CMA-ES runs, same reward function, different seeds:
+
+\vspace{0.3em}
+\begin{description}
+    \item[Hand-tuned gait] Seeded from the manually-tuned \texttt{stance.py} crawl
+    \item[Random] Uniform random within bounds
+    \item[Neutral standing] Every phase pinned to the standing pose (no motion)
+\end{description}
+
+\vspace{0.5em}
+% \includegraphics[width=0.7\textwidth]{convergence_comparison.png}
+
+\vspace{0.3em}
+\textbf{Takeaway:} Seeding from a human-tuned gait gives a massive head start --- generation~1 is already walking, so the optimizer spends its budget \emph{refining} instead of \emph{discovering}.
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 6b: Results --- Algorithm Comparison
+% ------------------------------------------------------------------
+\begin{frame}{Results --- Algorithm Comparison}
+Same reward function, same seed, different optimization algorithms:
+
+\vspace{0.3em}
+\begin{description}
+    \item[CMA-ES] Population-based, learns covariance structure of the search space
+    \item[Differential Evolution] Population-based, mutates by combining existing solutions
+    \item[Random Search] Uniform sampling baseline --- ``does optimization even help?''
+\end{description}
+
+\vspace{0.5em}
+% \includegraphics[width=0.7\textwidth]{convergence_algo_comparison.png}
+
+\vspace{0.3em}
+% Add key finding here once data is available
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 7: Limitation
+% ------------------------------------------------------------------
+\begin{frame}{Limitation --- Open-Loop Control}
+\textbf{CMA-ES found the best choreography. But it's still a choreography.}
+
+\vspace{0.5em}
+\begin{itemize}
+    \item Output is a \textbf{fixed lookup table}: 13 phases, 8 angles each, played back identically every stride
+    \item No sensors, no feedback, no ability to react
+    \item Works in sim (perfect flat floor) but struggles on real hardware
+\end{itemize}
+
+\vspace{0.5em}
+\begin{tabular}{lll}
+    \toprule
+    & CMA-ES (current) & What we need \\
+    \midrule
+    Output              & 105 fixed numbers       & A function that reacts \\
+    Sensors at runtime  & None --- blind playback  & IMU, joint positions \\
+    Adapts to disturbance & No                     & Yes \\
+    What it learned     & ``The best script''      & ``How to walk'' \\
+    \bottomrule
+\end{tabular}
+\end{frame}
+
+% ------------------------------------------------------------------
+% Slide 8: Next --- RL
+% ------------------------------------------------------------------
+\begin{frame}{Next --- Reinforcement Learning}
+\textbf{Close the loop: from choreography to skill.}
+
+\vspace{0.5em}
+RL trains a neural network (a ``policy'') that takes sensor readings \emph{every timestep} and outputs motor commands:
+
+\vspace{0.3em}
+\centering
+\texttt{observe} $\to$ \texttt{decide} $\to$ \texttt{act} $\to$ \texttt{observe} $\to$ \texttt{decide} $\to$ \texttt{act} $\to$ \ldots
+
+\vspace{0.5em}
+\raggedright
+\textbf{What we reuse:}
+\begin{itemize}
+    \item The MuJoCo digital twin --- same sim
+    \item The reward function --- same objectives, already well-shaped
+    \item The CMA-ES gait --- baseline to beat, can seed the initial policy
+\end{itemize}
+
+\textbf{What's new:}
+\begin{itemize}
+    \item Observation space: IMU (pitch, roll, $\dot{\theta}$) + 8 joint positions + 8 joint velocities
+    \item Algorithm: PPO (Proximal Policy Optimization)
+    \item Output: a neural network, not a JSON of fixed angles
+\end{itemize}
+
+\vspace{0.3em}
+\emph{CMA-ES found the best choreography for a perfect floor.\\
+RL will learn to actually walk --- adjusting every step based on what the robot feels.}
+\end{frame}
+
+\end{document}

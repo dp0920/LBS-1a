@@ -24,7 +24,7 @@ GENS="${GENS:-150}"
 POPSIZE="${POPSIZE:-48}"
 RESULTS_DIR="${RESULTS_DIR:-$SIMDIR/results/manual}"
 
-OUTDIR="$RESULTS_DIR/${ALGO}_${INIT}_${GENS}"
+OUTDIR="$RESULTS_DIR/${ALGO}_${INIT}/${GENS}"
 mkdir -p "$OUTDIR"
 
 # Run training from a temp working directory so output files don't collide

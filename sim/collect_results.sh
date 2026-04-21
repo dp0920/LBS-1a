@@ -27,15 +27,19 @@ for RUN in $RUNS; do
     printf "%-35s %10s %8s %10s\n" "Config" "Reward" "Gen" "Restarts"
     printf "%-35s %10s %8s %10s\n" "------" "------" "---" "--------"
 
-    for dir in "$RUN"/*/; do
-        [ -d "$dir" ] || continue
-        for json in "$dir"best_gait*.json; do
-            [ -f "$json" ] || continue
-            name=$(basename "$dir")
-            reward=$(python3 -c "import json; d=json.load(open('$json')); print(f\"{d['reward']:+.2f}\")")
-            gen=$(python3 -c "import json; d=json.load(open('$json')); print(d['gen'])")
-            restart=$(python3 -c "import json; d=json.load(open('$json')); print(d.get('restart', 0))")
-            printf "%-35s %10s %8s %10s\n" "$name" "$reward" "$gen" "$restart"
+    for config_dir in "$RUN"/*/; do
+        [ -d "$config_dir" ] || continue
+        config_name=$(basename "$config_dir")
+        for gens_dir in "$config_dir"/*/; do
+            [ -d "$gens_dir" ] || continue
+            gens=$(basename "$gens_dir")
+            for json in "$gens_dir"best_gait*.json; do
+                [ -f "$json" ] || continue
+                reward=$(python3 -c "import json; d=json.load(open('$json')); print(f\"{d['reward']:+.2f}\")")
+                gen=$(python3 -c "import json; d=json.load(open('$json')); print(d['gen'])")
+                restart=$(python3 -c "import json; d=json.load(open('$json')); print(d.get('restart', 0))")
+                printf "%-35s %10s %8s %10s\n" "${config_name}/${gens}" "$reward" "$gen" "$restart"
+            done
         done
     done
     echo ""

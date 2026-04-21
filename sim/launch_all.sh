@@ -7,7 +7,7 @@
 #   bash launch_all.sh 50 200 1000 2500 # multiple epoch counts (9 jobs each)
 #
 # Each invocation creates a timestamped run directory:
-#   results/<timestamp>/<algo>_<init>_<gens>/
+#   results/<timestamp>/<algo>_<init>/<gens>/
 #   logs/<timestamp>/
 
 set -e

@@ -24,26 +24,37 @@ def load_log(path):
 
 
 def find_logs(results_dir="results"):
-    """Find all log files and parse their algo/seed from directory name.
-    Supports both flat (results/<algo>_<init>/) and timestamped
-    (results/<timestamp>/<algo>_<init>_<gens>/) layouts."""
+    """Find all log files and parse their algo/seed/gens from directory structure.
+    Supports layouts:
+      - results/<timestamp>/<algo>_<init>/<gens>/tune_gait*.jsonl  (new)
+      - results/<timestamp>/<algo>_<init>_<gens>/tune_gait*.jsonl  (legacy)
+      - results/<algo>_<init>/tune_gait*.jsonl                     (flat)
+    """
     logs = {}
-    # Search both depths
     patterns = [
-        f"{results_dir}/*/tune_gait*.jsonl",
-        f"{results_dir}/*/*/tune_gait*.jsonl",
+        f"{results_dir}/*/*/*/tune_gait*.jsonl",   # new: timestamp/config/gens/
+        f"{results_dir}/*/*/tune_gait*.jsonl",      # legacy: timestamp/config_gens/
+        f"{results_dir}/*/tune_gait*.jsonl",        # flat: config/
     ]
     for pattern in patterns:
         for jsonl in sorted(glob.glob(pattern)):
-            dirname = os.path.basename(os.path.dirname(jsonl))
-            # dirname is like "cma_gait_200" or "cma_gait"
-            parts = dirname.split("_")
-            if len(parts) >= 2:
+            parent = os.path.basename(os.path.dirname(jsonl))
+            grandparent = os.path.basename(
+                os.path.dirname(os.path.dirname(jsonl)))
+
+            # New layout: grandparent=algo_init, parent=gens (numeric)
+            if parent.isdigit() and "_" in grandparent:
+                parts = grandparent.split("_")
+                algo, init, gens = parts[0], parts[1], parent
+            # Legacy layout: parent=algo_init_gens
+            elif "_" in parent:
+                parts = parent.split("_")
                 algo = parts[0]
-                init = parts[1]
+                init = parts[1] if len(parts) >= 2 else "unknown"
                 gens = parts[2] if len(parts) > 2 else ""
             else:
-                algo, init, gens = dirname, "unknown", ""
+                algo, init, gens = parent, "unknown", ""
+
             label = f"{algo}_{init}"
             if gens:
                 label += f"_{gens}"

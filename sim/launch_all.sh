@@ -6,12 +6,14 @@
 #   bash launch_all.sh 1000             # 1000 generations
 #   bash launch_all.sh 50 200 1000 2500 # multiple epoch counts (9 jobs each)
 #
-# Results land in ~/robotics/LBS-1a/sim/results/<algo>_<init>_<gens>/
-# Logs land in ~/robotics/LBS-1a/sim/slurm_logs/
+# Each invocation creates a timestamped run directory:
+#   results/<timestamp>/<algo>_<init>_<gens>/
+#   logs/<timestamp>/
 
 set -e
 
 SIMDIR="/cluster/home/dparri03/robotics/LBS-1a/sim"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 if [ $# -eq 0 ]; then
     echo "Usage: bash launch_all.sh <generations> [<generations> ...]"
@@ -19,7 +21,14 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p "$SIMDIR/slurm_logs" "$SIMDIR/results"
+RESULTS_DIR="$SIMDIR/results/$TIMESTAMP"
+LOG_DIR="$SIMDIR/logs/$TIMESTAMP"
+mkdir -p "$RESULTS_DIR" "$LOG_DIR"
+
+echo "=== Run: $TIMESTAMP ==="
+echo "  Results: $RESULTS_DIR"
+echo "  Logs:    $LOG_DIR"
+echo ""
 
 ALGOS="cma random de"
 INITS="gait stand random"
@@ -33,9 +42,9 @@ for GENS in "$@"; do
             echo "  submitting $JOBNAME ..."
             sbatch \
                 --job-name="$JOBNAME" \
-                --output="$SIMDIR/slurm_logs/${JOBNAME}_%j.out" \
-                --error="$SIMDIR/slurm_logs/${JOBNAME}_%j.err" \
-                --export=ALL,ALGO="$ALGO",INIT="$INIT",GENS="$GENS" \
+                --output="$LOG_DIR/${JOBNAME}_%j.out" \
+                --error="$LOG_DIR/${JOBNAME}_%j.err" \
+                --export=ALL,ALGO="$ALGO",INIT="$INIT",GENS="$GENS",RESULTS_DIR="$RESULTS_DIR" \
                 "$SIMDIR/train_job.sbatch"
             total=$((total + 1))
         done
@@ -45,5 +54,15 @@ done
 
 echo "=== Submitted $total jobs ==="
 echo "Monitor with: squeue -u \$USER"
-echo "Results in: $SIMDIR/results/<algo>_<init>_<gens>/"
-echo "Logs in:    $SIMDIR/slurm_logs/"
+echo "Results in: $RESULTS_DIR"
+echo "Logs in:    $LOG_DIR"
+
+# Save a manifest for later reference
+cat > "$RESULTS_DIR/manifest.txt" <<MANIFEST
+Run: $TIMESTAMP
+Generations: $@
+Algorithms: $ALGOS
+Seeds: $INITS
+Jobs: $total
+MANIFEST
+echo "Manifest saved to $RESULTS_DIR/manifest.txt"

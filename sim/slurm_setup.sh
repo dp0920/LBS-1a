@@ -3,11 +3,9 @@
 # Usage: bash slurm_setup.sh
 set -e
 
-SIMDIR="/cluster/home/dparri03/robotics/LBS-1a/sim"
+VENV_DIR="/cluster/home/dparri03/robotics/LBS-1a/venv"
 
 module load python/3.10.4
-
-VENV_DIR="$SIMDIR/venv_cluster"
 
 if [ -d "$VENV_DIR" ]; then
     echo "venv already exists at $VENV_DIR"
@@ -19,9 +17,9 @@ fi
 source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
 pip install mujoco==3.1.6 --only-binary=:all:
-pip install cma scipy numpy
+pip install cma scipy numpy matplotlib
 echo ""
 echo "=== Installed packages ==="
-pip list | grep -iE "mujoco|cma|scipy|numpy"
+pip list | grep -iE "mujoco|cma|scipy|numpy|matplotlib"
 echo ""
 echo "Done. Activate with: source $VENV_DIR/bin/activate"

@@ -39,7 +39,7 @@ echo "  outdir=$OUTDIR"
 echo "  started=$(date)"
 echo ""
 
-python mujoco_gait.py \
+python3 mujoco_gait.py \
     --tune \
     --algo "$ALGO" \
     --init "$INIT" \

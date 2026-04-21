@@ -11,7 +11,7 @@ if [ -d "$VENV_DIR" ]; then
     echo "venv already exists at $VENV_DIR"
 else
     echo "Creating venv at $VENV_DIR ..."
-    python -m venv "$VENV_DIR"
+    python3 -m venv "$VENV_DIR"
 fi
 
 source "$VENV_DIR/bin/activate"

@@ -3,9 +3,11 @@
 # Usage: bash slurm_setup.sh
 set -e
 
+SIMDIR="/cluster/home/dparri03/robotics/LBS-1a/sim"
+
 module load python/3.10.4
 
-VENV_DIR="$HOME/LBS-1a/sim/venv_cluster"
+VENV_DIR="$SIMDIR/venv_cluster"
 
 if [ -d "$VENV_DIR" ]; then
     echo "venv already exists at $VENV_DIR"

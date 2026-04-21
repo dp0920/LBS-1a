@@ -6,11 +6,12 @@
 #   bash launch_all.sh 1000             # 1000 generations
 #   bash launch_all.sh 50 200 1000 2500 # multiple epoch counts (9 jobs each)
 #
-# This submits 9 jobs per epoch count to the batch partition.
-# Results land in results/<algo>_<init>/.
-# Logs land in slurm_logs/.
+# Results land in ~/robotics/LBS-1a/sim/results/<algo>_<init>_<gens>/
+# Logs land in ~/robotics/LBS-1a/sim/slurm_logs/
 
 set -e
+
+SIMDIR="/cluster/home/dparri03/robotics/LBS-1a/sim"
 
 if [ $# -eq 0 ]; then
     echo "Usage: bash launch_all.sh <generations> [<generations> ...]"
@@ -18,8 +19,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-cd "$(dirname "$0")"
-mkdir -p slurm_logs results
+mkdir -p "$SIMDIR/slurm_logs" "$SIMDIR/results"
 
 ALGOS="cma random de"
 INITS="gait stand random"
@@ -33,8 +33,10 @@ for GENS in "$@"; do
             echo "  submitting $JOBNAME ..."
             sbatch \
                 --job-name="$JOBNAME" \
+                --output="$SIMDIR/slurm_logs/${JOBNAME}_%j.out" \
+                --error="$SIMDIR/slurm_logs/${JOBNAME}_%j.err" \
                 --export=ALL,ALGO="$ALGO",INIT="$INIT",GENS="$GENS" \
-                train_job.sbatch
+                "$SIMDIR/train_job.sbatch"
             total=$((total + 1))
         done
     done
@@ -43,4 +45,5 @@ done
 
 echo "=== Submitted $total jobs ==="
 echo "Monitor with: squeue -u \$USER"
-echo "Results will be in results/<algo>_<init>/"
+echo "Results in: $SIMDIR/results/<algo>_<init>_<gens>/"
+echo "Logs in:    $SIMDIR/slurm_logs/"

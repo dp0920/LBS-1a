@@ -16,7 +16,8 @@ fi
 
 source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
-pip install mujoco cma scipy numpy
+pip install mujoco==3.1.6 --only-binary=:all:
+pip install cma scipy numpy
 echo ""
 echo "=== Installed packages ==="
 pip list | grep -iE "mujoco|cma|scipy|numpy"

@@ -1,0 +1,7 @@
+=== Training config ===
+  algo=cma  init=gait  gens=50  popsize=48
+  cpus=16  node=p1cmp044.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260421_074513/cma_gait_50
+  workdir=/tmp/tmp.WDJfVqNzD8
+  started=Tue Apr 21 07:52:15 EDT 2026
+

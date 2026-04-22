@@ -1,0 +1,2672 @@
+=== Training config ===
+  algo=cma  init=gait  gens=2500  popsize=48
+  cpus=16  node=d1cmp032.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_2500
+  workdir=/tmp/tmp.Q90rZnKnya
+  started=Wed Apr 22 06:11:55 EDT 2026
+
+Initial seed: gait
+Tuning gait (105 params: 104 angles + 1 timing, 5 cycles/eval)
+  workers: 15
+gen   1  best=+21.9478  mean=-20.7050  pop_best=+21.9478  dist=+0.0543m phases=60/60 z=0.167 nose_down=7.0°/16.8° roll=4.6°/18.3° d_pitch_max=2.0
+gen   2  best=+21.9478  mean=-19.8237  pop_best=+20.3869
+gen   3  best=+21.9478  mean=-13.2978  pop_best=+17.0546
+gen   4  best=+28.6288  mean=+0.1370  pop_best=+28.6288  dist=+0.1614m phases=60/60 z=0.164 nose_down=10.4°/18.1° roll=9.3°/22.2° d_pitch_max=1.0
+gen   5  best=+40.0555  mean=+1.8768  pop_best=+40.0555  dist=+0.2714m phases=60/60 z=0.167 nose_down=11.0°/16.7° roll=8.1°/23.9° d_pitch_max=1.1
+gen   6  best=+45.1791  mean=+9.5754  pop_best=+45.1791  dist=+0.3317m phases=60/60 z=0.168 nose_down=11.1°/17.9° roll=8.2°/20.7° d_pitch_max=1.2
+gen   7  best=+57.6438  mean=+21.5850  pop_best=+57.6438  dist=+0.4815m phases=60/60 z=0.165 nose_down=11.9°/19.0° roll=8.7°/24.5° d_pitch_max=1.1
+gen   8  best=+57.6438  mean=+26.4263  pop_best=+49.1480
+gen   9  best=+61.0392  mean=+29.3575  pop_best=+61.0392  dist=+0.4796m phases=60/60 z=0.169 nose_down=10.8°/15.6° roll=10.2°/23.8° d_pitch_max=1.2
+gen  10  best=+73.2676  mean=+37.0929  pop_best=+73.2676  dist=+0.5830m phases=60/60 z=0.171 nose_down=9.7°/15.1° roll=9.1°/20.6° d_pitch_max=1.5
+gen  11  best=+88.0907  mean=+42.5568  pop_best=+88.0907  dist=+0.7575m phases=60/60 z=0.167 nose_down=10.3°/16.1° roll=10.1°/29.2° d_pitch_max=1.2
+gen  12  best=+88.0907  mean=+45.2657  pop_best=+84.5318
+gen  13  best=+92.8522  mean=+36.1389  pop_best=+92.8522  dist=+0.7899m phases=60/60 z=0.171 nose_down=8.7°/16.9° roll=6.2°/25.0° d_pitch_max=2.1
+gen  14  best=+92.8522  mean=+39.7143  pop_best=+88.6664
+gen  15  best=+109.4579  mean=+42.2634  pop_best=+109.4579  dist=+0.9694m phases=60/60 z=0.168 nose_down=9.7°/18.8° roll=9.6°/23.5° d_pitch_max=1.1
+gen  16  best=+109.4579  mean=+44.2536  pop_best=+94.6353
+gen  17  best=+111.6739  mean=+58.1936  pop_best=+111.6739  dist=+0.9425m phases=60/60 z=0.169 nose_down=9.5°/14.2° roll=8.2°/18.2° d_pitch_max=1.0
+gen  18  best=+112.7890  mean=+58.7229  pop_best=+112.7890  dist=+0.9478m phases=60/60 z=0.170 nose_down=8.5°/15.0° roll=7.7°/19.3° d_pitch_max=1.1
+gen  19  best=+112.7890  mean=+54.3075  pop_best=+111.2521
+gen  20  best=+137.4357  mean=+66.7294  pop_best=+137.4357  dist=+1.2184m phases=60/60 z=0.170 nose_down=8.9°/17.8° roll=7.0°/20.9° d_pitch_max=1.1
+gen  21  best=+137.4357  mean=+57.3103  pop_best=+116.9564
+gen  22  best=+138.2171  mean=+75.7586  pop_best=+138.2171  dist=+1.2234m phases=60/60 z=0.169 nose_down=9.0°/14.9° roll=10.1°/20.4° d_pitch_max=1.5
+gen  23  best=+168.2695  mean=+71.2264  pop_best=+168.2695  dist=+1.5392m phases=60/60 z=0.168 nose_down=9.0°/15.2° roll=9.5°/23.2° d_pitch_max=2.1
+gen  24  best=+168.2695  mean=+60.5674  pop_best=+150.8803
+gen  25  best=+168.2695  mean=+61.7757  pop_best=+137.8748
+gen  26  best=+168.2695  mean=+62.1236  pop_best=+145.8512
+gen  27  best=+168.2695  mean=+67.9961  pop_best=+141.2310
+gen  28  best=+168.2695  mean=+57.5206  pop_best=+161.4405
+gen  29  best=+168.2695  mean=+65.1012  pop_best=+157.4561
+gen  30  best=+168.2695  mean=+73.5100  pop_best=+159.9026
+gen  31  best=+168.2695  mean=+63.3721  pop_best=+163.2100
+gen  32  best=+168.2695  mean=+83.3833  pop_best=+163.0878
+gen  33  best=+168.2695  mean=+51.5336  pop_best=+147.8730
+gen  34  best=+168.2695  mean=+69.8600  pop_best=+154.1331
+gen  35  best=+168.2695  mean=+76.7630  pop_best=+150.0972
+gen  36  best=+168.2695  mean=+78.9601  pop_best=+152.4779
+gen  37  best=+168.2695  mean=+61.0778  pop_best=+165.3072
+gen  38  best=+184.4425  mean=+76.0873  pop_best=+184.4425  dist=+1.7279m phases=60/60 z=0.165 nose_down=9.3°/17.7° roll=11.2°/28.8° d_pitch_max=1.8
+gen  39  best=+184.4425  mean=+80.1959  pop_best=+171.2728
+gen  40  best=+184.4425  mean=+80.8050  pop_best=+167.3812
+gen  41  best=+184.4425  mean=+68.7998  pop_best=+166.1182
+gen  42  best=+184.4425  mean=+87.2981  pop_best=+166.3217
+gen  43  best=+184.4425  mean=+97.9192  pop_best=+183.9461
+gen  44  best=+184.4425  mean=+107.9648  pop_best=+183.4780
+gen  45  best=+184.4425  mean=+102.1248  pop_best=+183.9776
+gen  46  best=+192.5666  mean=+96.3737  pop_best=+192.5666  dist=+1.7924m phases=60/60 z=0.166 nose_down=7.3°/17.9° roll=9.0°/27.6° d_pitch_max=2.0
+gen  47  best=+192.5666  mean=+73.6826  pop_best=+165.4592
+gen  48  best=+192.5666  mean=+71.5780  pop_best=+180.3564
+gen  49  best=+192.5666  mean=+99.1569  pop_best=+185.4964
+gen  50  best=+192.5666  mean=+84.1803  pop_best=+183.9380
+gen  51  best=+192.5666  mean=+83.9128  pop_best=+184.6412
+gen  52  best=+192.5666  mean=+90.1854  pop_best=+177.7567
+gen  53  best=+192.5666  mean=+84.4399  pop_best=+182.0985
+gen  54  best=+208.3245  mean=+110.4107  pop_best=+208.3245  dist=+1.9533m phases=60/60 z=0.161 nose_down=8.8°/17.6° roll=8.8°/22.9° d_pitch_max=1.9
+gen  55  best=+208.3245  mean=+101.4477  pop_best=+200.6520
+gen  56  best=+208.3245  mean=+113.0226  pop_best=+190.0622
+gen  57  best=+213.8718  mean=+117.7995  pop_best=+213.8718  dist=+2.0575m phases=60/60 z=0.172 nose_down=7.4°/21.8° roll=10.9°/27.3° d_pitch_max=2.7
+gen  58  best=+213.8718  mean=+120.0758  pop_best=+208.3662
+gen  59  best=+236.2287  mean=+99.3404  pop_best=+236.2287  dist=+2.2296m phases=60/60 z=0.169 nose_down=7.7°/17.5° roll=8.8°/21.0° d_pitch_max=2.3
+gen  60  best=+236.2287  mean=+111.5626  pop_best=+202.9969
+gen  61  best=+236.2287  mean=+99.1807  pop_best=+207.1079
+gen  62  best=+243.3961  mean=+124.0345  pop_best=+243.3961  dist=+2.3552m phases=60/60 z=0.170 nose_down=6.7°/16.1° roll=11.4°/28.7° d_pitch_max=3.9
+gen  63  best=+243.3961  mean=+100.1108  pop_best=+216.0997
+gen  64  best=+243.3961  mean=+109.2200  pop_best=+224.1397
+gen  65  best=+243.3961  mean=+116.0558  pop_best=+225.2670
+gen  66  best=+252.2569  mean=+131.2612  pop_best=+252.2569  dist=+2.3897m phases=60/60 z=0.167 nose_down=7.2°/16.4° roll=10.9°/21.2° d_pitch_max=2.7
+gen  67  best=+252.2569  mean=+104.2955  pop_best=+233.6622
+gen  68  best=+252.2569  mean=+94.4181  pop_best=+227.6297
+gen  69  best=+269.5892  mean=+87.7347  pop_best=+269.5892  dist=+2.5435m phases=60/60 z=0.170 nose_down=7.5°/15.1° roll=9.4°/24.8° d_pitch_max=2.1
+gen  70  best=+269.5892  mean=+108.6253  pop_best=+231.6443
+gen  71  best=+269.5892  mean=+118.1607  pop_best=+236.1312
+gen  72  best=+269.5892  mean=+121.3368  pop_best=+227.2725
+gen  73  best=+269.5892  mean=+142.3838  pop_best=+242.1329
+gen  74  best=+274.3312  mean=+113.8226  pop_best=+274.3312  dist=+2.6258m phases=60/60 z=0.168 nose_down=7.2°/17.0° roll=8.7°/23.4° d_pitch_max=3.0
+gen  75  best=+274.3312  mean=+96.1165  pop_best=+228.3778
+gen  76  best=+274.3312  mean=+119.7002  pop_best=+255.4026
+gen  77  best=+274.3312  mean=+134.7946  pop_best=+251.7719
+gen  78  best=+274.3312  mean=+130.2221  pop_best=+264.5580
+gen  79  best=+276.2955  mean=+153.1358  pop_best=+276.2955  dist=+2.6471m phases=60/60 z=0.165 nose_down=7.1°/18.8° roll=10.6°/25.6° d_pitch_max=2.7
+gen  80  best=+278.5472  mean=+89.5264  pop_best=+278.5472  dist=+2.6433m phases=60/60 z=0.167 nose_down=6.9°/16.6° roll=9.1°/25.5° d_pitch_max=2.6
+gen  81  best=+278.5472  mean=+179.4545  pop_best=+271.6440
+gen  82  best=+282.6250  mean=+152.4666  pop_best=+282.6250  dist=+2.6657m phases=60/60 z=0.168 nose_down=7.5°/16.6° roll=8.3°/25.0° d_pitch_max=1.6
+gen  83  best=+304.7616  mean=+133.1308  pop_best=+304.7616  dist=+2.9450m phases=60/60 z=0.168 nose_down=6.6°/17.6° roll=9.6°/26.9° d_pitch_max=3.4
+gen  84  best=+304.7616  mean=+138.1170  pop_best=+278.3863
+gen  85  best=+310.2203  mean=+155.0541  pop_best=+310.2203  dist=+2.9225m phases=60/60 z=0.169 nose_down=6.8°/15.0° roll=8.3°/26.1° d_pitch_max=1.6
+gen  86  best=+310.2203  mean=+151.5033  pop_best=+281.2703
+gen  87  best=+310.2203  mean=+126.2498  pop_best=+294.1493
+gen  88  best=+321.1996  mean=+140.4302  pop_best=+321.1996  dist=+3.0269m phases=60/60 z=0.164 nose_down=7.2°/13.1° roll=9.2°/20.6° d_pitch_max=1.9
+gen  89  best=+330.4560  mean=+139.0584  pop_best=+330.4560  dist=+3.1265m phases=60/60 z=0.167 nose_down=6.6°/13.7° roll=7.8°/29.8° d_pitch_max=1.8
+gen  90  best=+330.4560  mean=+154.9322  pop_best=+308.7318
+gen  91  best=+330.4560  mean=+102.6656  pop_best=+325.4794
+gen  92  best=+330.4560  mean=+187.0882  pop_best=+324.5940
+gen  93  best=+342.2173  mean=+159.6762  pop_best=+342.2173  dist=+3.2501m phases=60/60 z=0.169 nose_down=8.1°/14.2° roll=6.2°/23.2° d_pitch_max=1.8
+gen  94  best=+342.2173  mean=+198.3759  pop_best=+332.8748
+gen  95  best=+387.8791  mean=+207.1346  pop_best=+387.8791  dist=+3.6846m phases=60/60 z=0.171 nose_down=6.0°/14.1° roll=6.5°/23.7° d_pitch_max=1.7
+gen  96  best=+387.8791  mean=+169.4645  pop_best=+353.9451
+gen  97  best=+387.8791  mean=+178.2901  pop_best=+378.0537
+gen  98  best=+387.8791  mean=+171.2705  pop_best=+368.2980
+gen  99  best=+387.8791  mean=+169.6605  pop_best=+372.3273
+gen 100  best=+387.8791  mean=+231.1541  pop_best=+364.6746
+gen 101  best=+387.8791  mean=+191.2272  pop_best=+373.4665
+gen 102  best=+387.8791  mean=+142.7354  pop_best=+371.4795
+gen 103  best=+387.8791  mean=+165.5382  pop_best=+371.2454
+gen 104  best=+402.5526  mean=+160.1806  pop_best=+402.5526  dist=+3.8654m phases=60/60 z=0.164 nose_down=6.1°/17.2° roll=8.4°/26.9° d_pitch_max=1.8
+gen 105  best=+402.5526  mean=+141.9663  pop_best=+367.1935
+gen 106  best=+402.5526  mean=+164.3546  pop_best=+358.3312
+gen 107  best=+402.5526  mean=+203.8279  pop_best=+393.5152
+gen 108  best=+402.5526  mean=+178.7780  pop_best=+373.8511
+gen 109  best=+402.5526  mean=+141.2100  pop_best=+354.4814
+gen 110  best=+402.5526  mean=+177.8688  pop_best=+392.3190
+gen 111  best=+402.5526  mean=+107.9762  pop_best=+387.3432
+gen 112  best=+402.5526  mean=+164.1874  pop_best=+378.9709
+gen 113  best=+402.5526  mean=+141.7557  pop_best=+393.1284
+gen 114  best=+402.5526  mean=+179.8384  pop_best=+400.8917
+gen 115  best=+402.5526  mean=+192.8802  pop_best=+389.1483
+gen 116  best=+423.1445  mean=+214.4285  pop_best=+423.1445  dist=+4.0665m phases=60/60 z=0.164 nose_down=6.6°/16.4° roll=8.5°/24.4° d_pitch_max=1.8
+gen 117  best=+437.7775  mean=+164.8466  pop_best=+437.7775  dist=+4.1927m phases=60/60 z=0.170 nose_down=6.9°/13.4° roll=5.5°/20.3° d_pitch_max=2.2
+gen 118  best=+437.7775  mean=+217.3717  pop_best=+436.5170
+gen 119  best=+437.7775  mean=+277.3243  pop_best=+427.4963
+gen 120  best=+437.7775  mean=+227.8745  pop_best=+424.8361
+gen 121  best=+440.3980  mean=+286.3783  pop_best=+440.3980  dist=+4.2483m phases=60/60 z=0.165 nose_down=6.9°/16.7° roll=7.6°/22.6° d_pitch_max=2.1
+gen 122  best=+452.4906  mean=+255.5345  pop_best=+452.4906  dist=+4.3579m phases=60/60 z=0.170 nose_down=6.6°/16.6° roll=8.1°/22.5° d_pitch_max=1.8
+gen 123  best=+452.4906  mean=+193.3634  pop_best=+426.3094
+gen 124  best=+452.4906  mean=+212.1821  pop_best=+445.1599
+gen 125  best=+452.4906  mean=+242.0650  pop_best=+451.0362
+gen 126  best=+456.9671  mean=+241.0995  pop_best=+456.9671  dist=+4.3793m phases=60/60 z=0.165 nose_down=6.0°/14.3° roll=8.0°/22.5° d_pitch_max=1.7
+gen 127  best=+463.8636  mean=+209.9127  pop_best=+463.8636  dist=+4.4528m phases=60/60 z=0.169 nose_down=5.1°/14.4° roll=7.7°/26.7° d_pitch_max=2.0
+gen 128  best=+474.7712  mean=+221.0847  pop_best=+474.7712  dist=+4.5605m phases=60/60 z=0.170 nose_down=5.8°/12.9° roll=8.4°/24.4° d_pitch_max=2.1
+gen 129  best=+474.7712  mean=+245.4181  pop_best=+453.2360
+gen 130  best=+474.7712  mean=+240.3842  pop_best=+456.9330
+gen 131  best=+478.8691  mean=+226.6494  pop_best=+478.8691  dist=+4.6028m phases=60/60 z=0.166 nose_down=6.2°/13.5° roll=7.4°/25.9° d_pitch_max=2.0
+gen 132  best=+487.9067  mean=+177.6681  pop_best=+487.9067  dist=+4.6987m phases=60/60 z=0.167 nose_down=6.1°/14.3° roll=7.2°/24.1° d_pitch_max=2.2
+gen 133  best=+487.9067  mean=+247.3290  pop_best=+484.8937
+gen 134  best=+506.7928  mean=+258.8320  pop_best=+506.7928  dist=+4.9115m phases=60/60 z=0.169 nose_down=5.5°/14.6° roll=8.4°/24.6° d_pitch_max=2.9
+gen 135  best=+506.7928  mean=+254.9512  pop_best=+498.3270
+gen 136  best=+506.7928  mean=+266.9109  pop_best=+497.3817
+gen 137  best=+506.7928  mean=+274.4635  pop_best=+498.1887
+gen 138  best=+506.7928  mean=+229.3695  pop_best=+490.6014
+gen 139  best=+506.7928  mean=+284.0539  pop_best=+477.0043
+gen 140  best=+506.7928  mean=+205.5659  pop_best=+491.6084
+gen 141  best=+506.7928  mean=+177.3921  pop_best=+484.0285
+gen 142  best=+506.7928  mean=+238.2880  pop_best=+489.9426
+gen 143  best=+506.7928  mean=+272.3292  pop_best=+493.5747
+gen 144  best=+516.9439  mean=+276.2492  pop_best=+516.9439  dist=+4.9727m phases=60/60 z=0.166 nose_down=5.2°/13.8° roll=7.2°/24.0° d_pitch_max=1.9
+gen 145  best=+516.9439  mean=+314.6165  pop_best=+508.4841
+gen 146  best=+529.5398  mean=+247.9849  pop_best=+529.5398  dist=+5.1067m phases=60/60 z=0.166 nose_down=5.1°/13.4° roll=9.1°/27.1° d_pitch_max=2.0
+gen 147  best=+529.5398  mean=+275.9612  pop_best=+508.0422
+gen 148  best=+529.5398  mean=+315.0432  pop_best=+508.0684
+gen 149  best=+529.5398  mean=+188.0184  pop_best=+513.6815
+gen 150  best=+529.5398  mean=+232.5676  pop_best=+516.6151
+gen 151  best=+547.8718  mean=+207.0905  pop_best=+547.8718  dist=+5.3203m phases=60/60 z=0.173 nose_down=4.4°/16.7° roll=7.5°/26.4° d_pitch_max=2.7
+gen 152  best=+547.8718  mean=+329.5035  pop_best=+534.2158
+gen 153  best=+547.8718  mean=+286.0838  pop_best=+539.8453
+gen 154  best=+547.8718  mean=+298.2214  pop_best=+518.6738
+gen 155  best=+550.3909  mean=+274.4207  pop_best=+550.3909  dist=+5.3432m phases=60/60 z=0.171 nose_down=4.2°/16.2° roll=7.6°/21.6° d_pitch_max=3.0
+gen 156  best=+550.3909  mean=+373.3583  pop_best=+542.0566
+gen 157  best=+561.0352  mean=+360.9358  pop_best=+561.0352  dist=+5.4373m phases=60/60 z=0.164 nose_down=4.4°/15.0° roll=8.8°/24.9° d_pitch_max=2.6
+gen 158  best=+561.0352  mean=+347.7852  pop_best=+557.8771
+gen 159  best=+566.6882  mean=+387.7010  pop_best=+566.6882  dist=+5.5080m phases=60/60 z=0.162 nose_down=4.6°/15.7° roll=9.6°/28.3° d_pitch_max=2.6
+gen 160  best=+566.6882  mean=+315.8835  pop_best=+563.6537
+gen 161  best=+574.5796  mean=+385.2534  pop_best=+574.5796  dist=+5.5599m phases=60/60 z=0.161 nose_down=5.0°/12.8° roll=10.4°/27.6° d_pitch_max=2.1
+gen 162  best=+581.9029  mean=+353.2319  pop_best=+581.9029  dist=+5.6579m phases=60/60 z=0.166 nose_down=4.6°/15.5° roll=8.6°/23.0° d_pitch_max=3.0
+gen 163  best=+581.9029  mean=+266.3843  pop_best=+579.9132
+gen 164  best=+581.9029  mean=+293.7624  pop_best=+570.0892
+gen 165  best=+582.5336  mean=+316.5789  pop_best=+582.5336  dist=+5.6397m phases=60/60 z=0.164 nose_down=4.7°/12.5° roll=10.3°/25.5° d_pitch_max=2.5
+gen 166  best=+582.5336  mean=+356.9275  pop_best=+575.0924
+gen 167  best=+582.5336  mean=+324.8345  pop_best=+571.0503
+gen 168  best=+582.5336  mean=+374.9039  pop_best=+568.9033
+gen 169  best=+582.5336  mean=+284.0684  pop_best=+580.2883
+gen 170  best=+589.0012  mean=+288.7571  pop_best=+589.0012  dist=+5.7344m phases=60/60 z=0.163 nose_down=4.8°/15.5° roll=10.8°/29.1° d_pitch_max=2.7
+gen 171  best=+602.4431  mean=+253.1748  pop_best=+602.4431  dist=+5.8504m phases=60/60 z=0.167 nose_down=4.4°/14.8° roll=8.4°/24.0° d_pitch_max=2.6
+gen 172  best=+604.3633  mean=+171.2029  pop_best=+604.3633  dist=+5.8864m phases=60/60 z=0.166 nose_down=3.9°/16.0° roll=10.6°/28.8° d_pitch_max=2.7
+gen 173  best=+604.3633  mean=+165.8759  pop_best=+595.6331
+gen 174  best=+604.3633  mean=+236.6652  pop_best=+593.1001
+gen 175  best=+604.3633  mean=+174.0129  pop_best=+577.0742
+gen 176  best=+604.3633  mean=+286.8027  pop_best=+577.4599
+gen 177  best=+604.3633  mean=+268.0957  pop_best=+590.9661
+gen 178  best=+604.3633  mean=+234.3086  pop_best=+586.4956
+gen 179  best=+604.3633  mean=+355.1993  pop_best=+590.0373
+gen 180  best=+604.3633  mean=+324.0694  pop_best=+595.7036
+gen 181  best=+623.5087  mean=+295.6155  pop_best=+623.5087  dist=+6.0553m phases=60/60 z=0.160 nose_down=4.5°/14.2° roll=9.7°/25.4° d_pitch_max=2.3
+gen 182  best=+623.5087  mean=+332.9541  pop_best=+618.9111
+gen 183  best=+623.5087  mean=+266.8768  pop_best=+609.8991
+gen 184  best=+624.2651  mean=+278.7723  pop_best=+624.2651  dist=+6.0877m phases=60/60 z=0.160 nose_down=3.9°/15.9° roll=9.7°/27.2° d_pitch_max=2.9
+gen 185  best=+624.2651  mean=+321.1313  pop_best=+621.4173
+gen 186  best=+624.2651  mean=+290.9837  pop_best=+622.7537
+gen 187  best=+624.2651  mean=+304.5625  pop_best=+613.6043
+gen 188  best=+624.2651  mean=+348.8385  pop_best=+617.0911
+gen 189  best=+624.2651  mean=+313.3839  pop_best=+618.9704
+gen 190  best=+624.2651  mean=+397.5751  pop_best=+617.3145
+gen 191  best=+644.6960  mean=+401.1290  pop_best=+644.6960  dist=+6.2981m phases=60/60 z=0.162 nose_down=4.8°/15.5° roll=9.4°/26.5° d_pitch_max=3.0
+gen 192  best=+644.6960  mean=+358.2545  pop_best=+627.1997
+gen 193  best=+644.6960  mean=+412.5486  pop_best=+637.2660
+gen 194  best=+644.6960  mean=+390.4233  pop_best=+635.0278
+gen 195  best=+644.6960  mean=+383.5715  pop_best=+633.5176
+gen 196  best=+644.6960  mean=+373.5876  pop_best=+633.9321
+gen 197  best=+645.2138  mean=+374.7335  pop_best=+645.2138  dist=+6.2988m phases=60/60 z=0.164 nose_down=4.1°/15.8° roll=10.4°/28.0° d_pitch_max=2.8
+gen 198  best=+645.2138  mean=+337.0593  pop_best=+634.5185
+gen 199  best=+645.2138  mean=+357.5723  pop_best=+643.2100
+gen 200  best=+685.3594  mean=+507.9163  pop_best=+685.3594  dist=+6.7231m phases=60/60 z=0.162 nose_down=4.5°/15.5° roll=10.8°/29.0° d_pitch_max=3.3
+gen 201  best=+685.3594  mean=+410.6352  pop_best=+655.7148
+gen 202  best=+685.3594  mean=+382.4913  pop_best=+657.8440
+gen 203  best=+685.3594  mean=+405.2721  pop_best=+657.1289
+gen 204  best=+685.3594  mean=+432.2608  pop_best=+672.5264
+gen 205  best=+685.3594  mean=+362.5684  pop_best=+659.1863
+gen 206  best=+685.3594  mean=+418.0048  pop_best=+653.8030
+gen 207  best=+685.3594  mean=+403.1899  pop_best=+672.5930
+gen 208  best=+685.3594  mean=+330.4785  pop_best=+660.6187
+gen 209  best=+685.3594  mean=+379.4637  pop_best=+671.2995
+gen 210  best=+685.3594  mean=+387.6700  pop_best=+660.4559
+gen 211  best=+685.3594  mean=+389.7109  pop_best=+677.6369
+gen 212  best=+685.3594  mean=+443.7687  pop_best=+669.1492
+gen 213  best=+688.8117  mean=+385.5332  pop_best=+688.8117  dist=+6.7194m phases=60/60 z=0.156 nose_down=4.4°/14.6° roll=11.1°/24.6° d_pitch_max=2.5
+gen 214  best=+688.8117  mean=+367.9945  pop_best=+666.3175
+gen 215  best=+688.8117  mean=+352.8321  pop_best=+672.7026
+gen 216  best=+688.8117  mean=+384.1670  pop_best=+673.5871
+gen 217  best=+691.0244  mean=+467.6334  pop_best=+691.0244  dist=+6.7650m phases=60/60 z=0.160 nose_down=4.8°/14.9° roll=11.2°/26.9° d_pitch_max=3.1
+gen 218  best=+691.0244  mean=+350.9081  pop_best=+674.4887
+gen 219  best=+691.0244  mean=+499.3811  pop_best=+688.5911
+gen 220  best=+692.5209  mean=+452.1504  pop_best=+692.5209  dist=+6.7645m phases=60/60 z=0.155 nose_down=4.7°/15.0° roll=10.6°/26.2° d_pitch_max=2.5
+gen 221  best=+703.3248  mean=+441.1495  pop_best=+703.3248  dist=+6.9160m phases=60/60 z=0.160 nose_down=4.9°/18.0° roll=10.2°/25.4° d_pitch_max=3.4
+gen 222  best=+709.1005  mean=+433.3474  pop_best=+709.1005  dist=+6.9561m phases=60/60 z=0.159 nose_down=4.4°/16.8° roll=10.6°/24.0° d_pitch_max=3.2
+gen 223  best=+709.1005  mean=+473.5402  pop_best=+696.0892
+gen 224  best=+709.1005  mean=+505.3160  pop_best=+702.5538
+gen 225  best=+709.1005  mean=+412.3215  pop_best=+700.4770
+gen 226  best=+709.1005  mean=+502.3324  pop_best=+703.1882
+gen 227  best=+709.1005  mean=+456.2688  pop_best=+708.4165
+gen 228  best=+709.1005  mean=+430.5444  pop_best=+700.2470
+gen 229  best=+709.1005  mean=+488.8425  pop_best=+703.0362
+gen 230  best=+710.1177  mean=+451.3331  pop_best=+710.1177  dist=+6.9911m phases=60/60 z=0.159 nose_down=4.5°/18.8° roll=9.0°/24.3° d_pitch_max=3.6
+gen 231  best=+710.1177  mean=+366.1179  pop_best=+703.9996
+gen 232  best=+710.1177  mean=+483.9336  pop_best=+705.8142
+gen 233  best=+710.1177  mean=+515.0851  pop_best=+703.7252
+gen 234  best=+726.0991  mean=+492.6786  pop_best=+726.0991  dist=+7.1332m phases=60/60 z=0.162 nose_down=4.2°/17.3° roll=10.6°/26.5° d_pitch_max=3.3
+gen 235  best=+726.0991  mean=+396.6509  pop_best=+711.5132
+gen 236  best=+726.0991  mean=+384.4055  pop_best=+703.8444
+gen 237  best=+726.0991  mean=+412.6400  pop_best=+706.5747
+gen 238  best=+726.0991  mean=+553.4860  pop_best=+717.1642
+gen 239  best=+726.0991  mean=+497.3193  pop_best=+719.2000
+gen 240  best=+726.0991  mean=+494.4686  pop_best=+723.2429
+gen 241  best=+726.0991  mean=+458.9421  pop_best=+715.9888
+gen 242  best=+726.0991  mean=+456.8768  pop_best=+717.6460
+gen 243  best=+726.0991  mean=+487.8710  pop_best=+719.5524
+gen 244  best=+726.0991  mean=+351.4945  pop_best=+725.5023
+gen 245  best=+726.0991  mean=+438.3604  pop_best=+722.0632
+gen 246  best=+726.0991  mean=+454.6728  pop_best=+717.7879
+gen 247  best=+727.1458  mean=+370.5067  pop_best=+727.1458  dist=+7.1175m phases=60/60 z=0.163 nose_down=3.9°/15.5° roll=11.2°/27.3° d_pitch_max=2.7
+gen 248  best=+727.1458  mean=+352.9560  pop_best=+722.6916
+gen 249  best=+727.1458  mean=+412.7163  pop_best=+714.4223
+gen 250  best=+727.1458  mean=+381.3378  pop_best=+717.4703
+gen 251  best=+727.7632  mean=+517.8890  pop_best=+727.7632  dist=+7.1143m phases=60/60 z=0.162 nose_down=3.6°/14.0° roll=11.2°/27.8° d_pitch_max=2.8
+gen 252  best=+730.6560  mean=+425.2654  pop_best=+730.6560  dist=+7.1946m phases=60/60 z=0.160 nose_down=4.2°/18.0° roll=10.2°/24.5° d_pitch_max=3.6
+gen 253  best=+730.6560  mean=+493.4319  pop_best=+726.1230
+gen 254  best=+739.6538  mean=+487.5144  pop_best=+739.6538  dist=+7.2533m phases=60/60 z=0.158 nose_down=4.7°/16.1° roll=10.3°/28.0° d_pitch_max=2.7
+gen 255  best=+739.6538  mean=+544.7604  pop_best=+733.4580
+gen 256  best=+739.6538  mean=+490.1083  pop_best=+739.1506
+gen 257  best=+739.6538  mean=+521.8031  pop_best=+733.1452
+gen 258  best=+741.9288  mean=+496.6248  pop_best=+741.9288  dist=+7.2925m phases=60/60 z=0.163 nose_down=4.1°/15.0° roll=10.9°/27.0° d_pitch_max=3.6
+gen 259  best=+741.9288  mean=+513.1892  pop_best=+740.3150
+gen 260  best=+741.9288  mean=+490.6773  pop_best=+738.1962
+gen 261  best=+741.9288  mean=+434.9211  pop_best=+737.3334
+gen 262  best=+741.9288  mean=+480.0278  pop_best=+729.7174
+gen 263  best=+741.9288  mean=+504.2131  pop_best=+731.9813
+gen 264  best=+741.9288  mean=+553.1453  pop_best=+736.5655
+gen 265  best=+741.9288  mean=+613.6521  pop_best=+730.8739
+gen 266  best=+741.9288  mean=+610.9189  pop_best=+741.4093
+gen 267  best=+749.1560  mean=+507.7427  pop_best=+749.1560  dist=+7.3429m phases=60/60 z=0.159 nose_down=4.1°/15.9° roll=10.9°/26.9° d_pitch_max=2.8
+gen 268  best=+749.1560  mean=+465.9401  pop_best=+734.3550
+gen 269  best=+749.1560  mean=+523.3223  pop_best=+746.6902
+gen 270  best=+749.1560  mean=+609.5221  pop_best=+741.6045
+gen 271  best=+749.1560  mean=+537.3789  pop_best=+744.6192
+gen 272  best=+749.1560  mean=+531.2886  pop_best=+745.4655
+gen 273  best=+749.1560  mean=+472.9008  pop_best=+747.1330
+gen 274  best=+749.2411  mean=+505.6600  pop_best=+749.2411  dist=+7.3350m phases=60/60 z=0.161 nose_down=3.9°/14.3° roll=11.6°/26.0° d_pitch_max=2.9
+gen 275  best=+752.9586  mean=+563.4313  pop_best=+752.9586  dist=+7.3832m phases=60/60 z=0.161 nose_down=3.8°/15.6° roll=11.9°/26.7° d_pitch_max=2.9
+gen 276  best=+752.9586  mean=+466.7717  pop_best=+748.1741
+gen 277  best=+752.9586  mean=+532.0483  pop_best=+748.7453
+gen 278  best=+766.2844  mean=+582.4670  pop_best=+766.2844  dist=+7.5049m phases=60/60 z=0.162 nose_down=3.8°/14.2° roll=11.6°/28.0° d_pitch_max=2.8
+gen 279  best=+766.2844  mean=+606.1767  pop_best=+752.1665
+gen 280  best=+766.2844  mean=+603.3078  pop_best=+752.3692
+gen 281  best=+766.2844  mean=+542.9421  pop_best=+757.2947
+gen 282  best=+766.2844  mean=+615.4487  pop_best=+762.3058
+gen 283  best=+766.2844  mean=+587.4643  pop_best=+763.6833
+gen 284  best=+766.2844  mean=+611.3265  pop_best=+758.3821
+gen 285  best=+766.2844  mean=+586.7150  pop_best=+756.0782
+gen 286  best=+766.2844  mean=+594.5124  pop_best=+759.2299
+gen 287  best=+766.2844  mean=+560.1655  pop_best=+759.6625
+gen 288  best=+766.2844  mean=+657.0303  pop_best=+761.8095
+gen 289  best=+766.8590  mean=+607.2744  pop_best=+766.8590  dist=+7.5282m phases=60/60 z=0.161 nose_down=4.3°/15.5° roll=11.0°/27.1° d_pitch_max=3.1
+gen 290  best=+766.8590  mean=+661.4794  pop_best=+764.9581
+gen 291  best=+766.8590  mean=+707.6379  pop_best=+766.7992
+gen 292  best=+771.4030  mean=+671.9709  pop_best=+771.4030  dist=+7.5753m phases=60/60 z=0.160 nose_down=4.2°/15.3° roll=11.4°/26.5° d_pitch_max=3.2
+gen 293  best=+771.4030  mean=+668.8912  pop_best=+764.9157
+gen 294  best=+774.2291  mean=+644.6136  pop_best=+774.2291  dist=+7.6497m phases=60/60 z=0.161 nose_down=4.6°/17.8° roll=10.4°/27.6° d_pitch_max=3.9
+gen 295  best=+774.2291  mean=+661.5462  pop_best=+769.5315
+gen 296  best=+774.2291  mean=+652.7257  pop_best=+769.9366
+gen 297  best=+774.2291  mean=+617.3349  pop_best=+773.2090
+gen 298  best=+778.3723  mean=+670.2409  pop_best=+778.3723  dist=+7.6432m phases=60/60 z=0.160 nose_down=4.2°/14.9° roll=11.6°/26.9° d_pitch_max=3.2
+gen 299  best=+778.3723  mean=+715.4488  pop_best=+774.6280
+gen 300  best=+778.3723  mean=+681.3402  pop_best=+778.0124
+gen 301  best=+778.3723  mean=+615.5629  pop_best=+777.4343
+gen 302  best=+779.9246  mean=+639.5397  pop_best=+779.9246  dist=+7.6612m phases=60/60 z=0.161 nose_down=4.2°/15.1° roll=11.4°/28.3° d_pitch_max=3.1
+gen 303  best=+783.7368  mean=+744.1227  pop_best=+783.7368  dist=+7.6910m phases=60/60 z=0.159 nose_down=4.3°/15.0° roll=11.3°/27.8° d_pitch_max=2.9
+gen 304  best=+783.7368  mean=+700.2742  pop_best=+781.5289
+gen 305  best=+783.7368  mean=+756.0016  pop_best=+778.0969
+gen 306  best=+786.4593  mean=+662.6175  pop_best=+786.4593  dist=+7.7180m phases=60/60 z=0.159 nose_down=4.2°/14.8° roll=10.9°/27.7° d_pitch_max=3.0
+gen 307  best=+786.4593  mean=+685.4197  pop_best=+785.2480
+gen 308  best=+786.4593  mean=+640.8968  pop_best=+781.2264
+gen 309  best=+786.4593  mean=+719.4794  pop_best=+780.9774
+gen 310  best=+786.4593  mean=+686.1943  pop_best=+779.7490
+gen 311  best=+786.4593  mean=+703.8593  pop_best=+784.5956
+gen 312  best=+786.4593  mean=+704.2119  pop_best=+784.7272
+gen 313  best=+786.4593  mean=+657.3080  pop_best=+782.8281
+gen 314  best=+787.9711  mean=+712.6904  pop_best=+787.9711  dist=+7.7346m phases=60/60 z=0.160 nose_down=4.1°/15.0° roll=11.3°/26.7° d_pitch_max=3.1
+gen 315  best=+787.9711  mean=+731.7928  pop_best=+786.5713
+gen 316  best=+787.9711  mean=+745.2681  pop_best=+786.4035
+gen 317  best=+787.9711  mean=+754.5372  pop_best=+785.4171
+gen 318  best=+789.9095  mean=+770.8295  pop_best=+789.9095  dist=+7.7601m phases=60/60 z=0.159 nose_down=4.5°/15.3° roll=10.6°/27.3° d_pitch_max=3.1
+gen 319  best=+789.9095  mean=+749.2403  pop_best=+787.4909
+gen 320  best=+790.0019  mean=+756.8535  pop_best=+790.0019  dist=+7.7645m phases=60/60 z=0.160 nose_down=4.4°/16.0° roll=10.8°/26.8° d_pitch_max=3.1
+gen 321  best=+790.0019  mean=+754.7914  pop_best=+788.4920
+gen 322  best=+792.1226  mean=+759.6414  pop_best=+792.1226  dist=+7.7762m phases=60/60 z=0.160 nose_down=4.3°/14.4° roll=10.9°/28.3° d_pitch_max=3.1
+gen 323  best=+793.0411  mean=+753.2196  pop_best=+793.0411  dist=+7.7893m phases=60/60 z=0.159 nose_down=4.4°/15.4° roll=11.0°/28.2° d_pitch_max=3.0
+gen 324  best=+793.1872  mean=+777.5738  pop_best=+793.1872  dist=+7.7912m phases=60/60 z=0.161 nose_down=4.3°/15.2° roll=11.0°/27.5° d_pitch_max=3.1
+gen 325  best=+793.1872  mean=+777.9355  pop_best=+792.2566
+gen 326  best=+798.1064  mean=+780.8464  pop_best=+798.1064  dist=+7.8542m phases=60/60 z=0.160 nose_down=4.2°/14.8° roll=11.0°/27.6° d_pitch_max=3.6
+gen 327  best=+798.1064  mean=+773.5461  pop_best=+794.1035
+gen 328  best=+798.1064  mean=+718.9981  pop_best=+793.2799
+gen 329  best=+798.1064  mean=+765.1535  pop_best=+795.6448
+gen 330  best=+798.1064  mean=+783.9471  pop_best=+797.7347
+gen 331  best=+798.1064  mean=+728.2491  pop_best=+797.8808
+gen 332  best=+798.1064  mean=+751.6989  pop_best=+796.9653
+gen 333  best=+798.1064  mean=+710.2839  pop_best=+796.6169
+gen 334  best=+798.2464  mean=+769.1942  pop_best=+798.2464  dist=+7.8357m phases=60/60 z=0.159 nose_down=4.2°/14.9° roll=11.0°/29.1° d_pitch_max=2.9
+gen 335  best=+798.2464  mean=+774.8987  pop_best=+797.0677
+gen 336  best=+801.5774  mean=+788.2345  pop_best=+801.5774  dist=+7.8884m phases=60/60 z=0.160 nose_down=4.4°/15.9° roll=10.3°/28.3° d_pitch_max=3.3
+gen 337  best=+801.5774  mean=+757.4578  pop_best=+800.3450
+gen 338  best=+801.5774  mean=+743.0591  pop_best=+799.5619
+gen 339  best=+801.5774  mean=+759.2367  pop_best=+800.1436
+gen 340  best=+801.5774  mean=+781.7693  pop_best=+801.0886
+gen 341  best=+801.5774  mean=+753.9057  pop_best=+800.2919
+gen 342  best=+801.5774  mean=+772.2244  pop_best=+799.6183
+gen 343  best=+801.5774  mean=+789.5450  pop_best=+798.7752
+gen 344  best=+801.5774  mean=+772.3925  pop_best=+801.2576
+gen 345  best=+801.5774  mean=+772.4200  pop_best=+800.8948
+gen 346  best=+802.2144  mean=+790.1563  pop_best=+802.2144  dist=+7.8824m phases=60/60 z=0.160 nose_down=4.2°/15.1° roll=10.6°/28.6° d_pitch_max=3.1
+gen 347  best=+802.2144  mean=+770.4306  pop_best=+800.9462
+gen 348  best=+802.4294  mean=+791.4520  pop_best=+802.4294  dist=+7.8862m phases=60/60 z=0.159 nose_down=4.3°/15.7° roll=10.7°/29.3° d_pitch_max=3.0
+gen 349  best=+802.4294  mean=+759.8093  pop_best=+801.1203
+gen 350  best=+802.4294  mean=+791.1803  pop_best=+799.5453
+gen 351  best=+802.5879  mean=+740.5947  pop_best=+802.5879  dist=+7.8858m phases=60/60 z=0.160 nose_down=4.1°/14.8° roll=10.9°/28.5° d_pitch_max=3.2
+gen 352  best=+802.8875  mean=+773.2876  pop_best=+802.8875  dist=+7.8812m phases=60/60 z=0.160 nose_down=4.0°/14.1° roll=10.6°/29.2° d_pitch_max=3.1
+gen 353  best=+802.8875  mean=+790.7645  pop_best=+801.0179
+gen 354  best=+802.8875  mean=+791.5927  pop_best=+802.0936
+gen 355  best=+803.1450  mean=+776.2317  pop_best=+803.1450  dist=+7.8840m phases=60/60 z=0.158 nose_down=4.0°/15.0° roll=11.3°/28.5° d_pitch_max=2.9
+gen 356  best=+805.6745  mean=+794.0038  pop_best=+805.6745  dist=+7.9093m phases=60/60 z=0.160 nose_down=4.2°/14.3° roll=11.0°/28.1° d_pitch_max=3.1
+gen 357  best=+805.6745  mean=+794.2152  pop_best=+803.7723
+gen 358  best=+805.6745  mean=+794.3784  pop_best=+804.1338
+gen 359  best=+805.6745  mean=+795.1324  pop_best=+805.0780
+gen 360  best=+805.6745  mean=+795.4578  pop_best=+805.4321
+gen 361  best=+805.8747  mean=+795.7430  pop_best=+805.8747  dist=+7.9203m phases=60/60 z=0.161 nose_down=4.2°/14.9° roll=10.5°/29.0° d_pitch_max=3.2
+gen 362  best=+806.8846  mean=+795.0761  pop_best=+806.8846  dist=+7.9225m phases=60/60 z=0.159 nose_down=4.2°/14.6° roll=10.8°/28.7° d_pitch_max=3.0
+gen 363  best=+808.7504  mean=+796.6494  pop_best=+808.7504  dist=+7.9443m phases=60/60 z=0.159 nose_down=4.2°/15.1° roll=10.8°/28.3° d_pitch_max=3.0
+gen 364  best=+808.7504  mean=+798.3110  pop_best=+806.8647
+gen 365  best=+808.7504  mean=+796.1441  pop_best=+805.5557
+gen 366  best=+808.9384  mean=+797.8135  pop_best=+808.9384  dist=+7.9468m phases=60/60 z=0.161 nose_down=4.2°/14.7° roll=10.7°/28.3° d_pitch_max=3.1
+gen 367  best=+808.9384  mean=+798.5033  pop_best=+806.2270
+gen 368  best=+809.0917  mean=+798.4013  pop_best=+809.0917  dist=+7.9551m phases=60/60 z=0.160 nose_down=4.3°/15.2° roll=10.5°/28.4° d_pitch_max=3.2
+gen 369  best=+809.0917  mean=+798.3316  pop_best=+808.1025
+gen 370  best=+809.0917  mean=+798.2065  pop_best=+807.3906
+gen 371  best=+809.0917  mean=+799.1408  pop_best=+807.8907
+gen 372  best=+809.0917  mean=+795.9115  pop_best=+807.1847
+gen 373  best=+809.9011  mean=+798.3384  pop_best=+809.9011  dist=+7.9646m phases=60/60 z=0.160 nose_down=4.2°/14.9° roll=10.5°/27.8° d_pitch_max=3.4
+gen 374  best=+809.9011  mean=+800.2467  pop_best=+808.3061
+gen 375  best=+809.9011  mean=+799.8841  pop_best=+809.3714
+gen 376  best=+809.9011  mean=+798.2533  pop_best=+808.6299
+gen 377  best=+809.9011  mean=+797.7465  pop_best=+807.2154
+gen 378  best=+810.1060  mean=+796.6686  pop_best=+810.1060  dist=+7.9633m phases=60/60 z=0.160 nose_down=4.0°/14.9° roll=10.8°/28.8° d_pitch_max=3.2
+gen 379  best=+810.1060  mean=+801.9412  pop_best=+809.6917
+gen 380  best=+810.1060  mean=+799.8262  pop_best=+808.4338
+gen 381  best=+810.3121  mean=+800.0527  pop_best=+810.3121  dist=+7.9626m phases=60/60 z=0.159 nose_down=4.0°/15.3° roll=11.2°/28.8° d_pitch_max=3.1
+gen 382  best=+811.8345  mean=+801.5315  pop_best=+811.8345  dist=+7.9790m phases=60/60 z=0.159 nose_down=4.0°/15.6° roll=11.1°/28.3° d_pitch_max=3.1
+gen 383  best=+812.1919  mean=+802.5575  pop_best=+812.1919  dist=+7.9782m phases=60/60 z=0.159 nose_down=4.1°/14.9° roll=10.9°/28.1° d_pitch_max=3.1
+gen 384  best=+812.1919  mean=+803.7497  pop_best=+811.3602
+gen 385  best=+812.1919  mean=+802.7802  pop_best=+810.7138
+gen 386  best=+812.1919  mean=+803.4040  pop_best=+810.2242
+gen 387  best=+812.2965  mean=+805.4460  pop_best=+812.2965  dist=+7.9871m phases=60/60 z=0.159 nose_down=4.1°/15.6° roll=10.7°/28.0° d_pitch_max=3.2
+gen 388  best=+812.2965  mean=+805.6495  pop_best=+812.0206
+gen 389  best=+812.6306  mean=+804.8365  pop_best=+812.6306  dist=+7.9798m phases=60/60 z=0.159 nose_down=4.0°/14.0° roll=10.9°/28.4° d_pitch_max=3.2
+gen 390  best=+812.6306  mean=+805.1930  pop_best=+812.5020
+gen 391  best=+812.6306  mean=+802.1498  pop_best=+810.4502
+gen 392  best=+812.6306  mean=+805.1352  pop_best=+812.4244
+gen 393  best=+812.6306  mean=+804.1237  pop_best=+809.5491
+gen 394  best=+812.6306  mean=+803.2407  pop_best=+812.5124
+gen 395  best=+812.6306  mean=+803.7747  pop_best=+811.9395
+gen 396  best=+812.6306  mean=+805.9091  pop_best=+811.9643
+gen 397  best=+812.9826  mean=+804.8720  pop_best=+812.9826  dist=+8.0004m phases=60/60 z=0.160 nose_down=4.0°/15.7° roll=11.1°/28.5° d_pitch_max=3.3
+gen 398  best=+813.8050  mean=+806.4014  pop_best=+813.8050  dist=+7.9923m phases=60/60 z=0.159 nose_down=4.1°/14.9° roll=11.0°/28.3° d_pitch_max=3.0
+gen 399  best=+813.8050  mean=+804.2823  pop_best=+811.6354
+gen 400  best=+813.8050  mean=+806.3738  pop_best=+813.2481
+gen 401  best=+813.8050  mean=+804.3761  pop_best=+811.2409
+gen 402  best=+813.8050  mean=+806.0102  pop_best=+812.9510
+gen 403  best=+813.8253  mean=+807.2816  pop_best=+813.8253  dist=+8.0080m phases=60/60 z=0.160 nose_down=3.9°/15.3° roll=10.9°/28.3° d_pitch_max=3.4
+gen 404  best=+813.8253  mean=+806.9279  pop_best=+813.6830
+gen 405  best=+813.8253  mean=+805.0747  pop_best=+813.6123
+gen 406  best=+813.8253  mean=+805.3868  pop_best=+813.2938
+gen 407  best=+814.7032  mean=+807.4096  pop_best=+814.7032  dist=+8.0060m phases=60/60 z=0.160 nose_down=3.9°/14.0° roll=11.2°/28.3° d_pitch_max=3.4
+gen 408  best=+814.7032  mean=+806.2163  pop_best=+814.5156
+gen 409  best=+814.7032  mean=+805.3937  pop_best=+814.2032
+gen 410  best=+815.1527  mean=+806.3012  pop_best=+815.1527  dist=+8.0055m phases=60/60 z=0.159 nose_down=4.0°/14.0° roll=11.1°/28.7° d_pitch_max=3.1
+gen 411  best=+815.1527  mean=+805.5488  pop_best=+814.1730
+gen 412  best=+815.1527  mean=+808.3523  pop_best=+814.8561
+gen 413  best=+815.4071  mean=+809.0554  pop_best=+815.4071  dist=+8.0191m phases=60/60 z=0.160 nose_down=4.0°/14.8° roll=11.1°/28.0° d_pitch_max=3.4
+gen 414  best=+815.4071  mean=+807.5815  pop_best=+814.0149
+gen 415  best=+815.5707  mean=+810.0892  pop_best=+815.5707  dist=+8.0142m phases=60/60 z=0.160 nose_down=3.9°/14.9° roll=11.1°/28.0° d_pitch_max=3.2
+gen 416  best=+816.3661  mean=+808.6609  pop_best=+816.3661  dist=+8.0174m phases=60/60 z=0.159 nose_down=3.9°/14.3° roll=11.4°/29.0° d_pitch_max=3.1
+gen 417  best=+818.3615  mean=+810.6434  pop_best=+818.3615  dist=+8.0350m phases=60/60 z=0.159 nose_down=3.9°/14.2° roll=11.1°/28.4° d_pitch_max=3.1
+gen 418  best=+818.6482  mean=+808.9376  pop_best=+818.6482  dist=+8.0421m phases=60/60 z=0.159 nose_down=4.0°/14.6° roll=11.0°/27.9° d_pitch_max=3.1
+gen 419  best=+818.6482  mean=+809.4787  pop_best=+817.5770
+gen 420  best=+818.6482  mean=+811.0480  pop_best=+816.8116
+gen 421  best=+818.6482  mean=+811.0950  pop_best=+817.2124
+gen 422  best=+818.6482  mean=+810.8815  pop_best=+817.4864
+gen 423  best=+818.6482  mean=+812.5033  pop_best=+818.2611
+gen 424  best=+819.1265  mean=+811.7584  pop_best=+819.1265  dist=+8.0445m phases=60/60 z=0.159 nose_down=4.0°/14.2° roll=11.2°/28.8° d_pitch_max=3.1
+gen 425  best=+819.1265  mean=+813.0547  pop_best=+818.3002
+gen 426  best=+819.1265  mean=+810.9463  pop_best=+817.6699
+gen 427  best=+819.1265  mean=+812.1498  pop_best=+818.6741
+gen 428  best=+819.1265  mean=+812.5501  pop_best=+817.7590
+gen 429  best=+819.1265  mean=+812.5779  pop_best=+818.7400
+gen 430  best=+819.1265  mean=+812.6165  pop_best=+818.5049
+gen 431  best=+819.1994  mean=+810.5016  pop_best=+819.1994  dist=+8.0502m phases=60/60 z=0.159 nose_down=4.0°/13.9° roll=11.0°/29.1° d_pitch_max=3.3
+gen 432  best=+819.1994  mean=+795.7387  pop_best=+818.8136
+gen 433  best=+819.1994  mean=+812.7238  pop_best=+818.3354
+gen 434  best=+819.1994  mean=+795.9429  pop_best=+818.1509
+gen 435  best=+819.1994  mean=+810.1523  pop_best=+817.4487
+gen 436  best=+820.6651  mean=+812.1294  pop_best=+820.6651  dist=+8.0614m phases=60/60 z=0.160 nose_down=4.0°/14.1° roll=11.3°/28.7° d_pitch_max=3.2
+gen 437  best=+820.6651  mean=+811.4420  pop_best=+819.6624
+gen 438  best=+820.6651  mean=+812.1188  pop_best=+819.9046
+gen 439  best=+820.6651  mean=+812.6674  pop_best=+818.3101
+gen 440  best=+820.6651  mean=+812.4630  pop_best=+818.8622
+gen 441  best=+820.6651  mean=+811.7514  pop_best=+818.3538
+gen 442  best=+820.6651  mean=+810.8046  pop_best=+819.8583
+gen 443  best=+820.6651  mean=+813.9043  pop_best=+820.2260
+gen 444  best=+820.6651  mean=+813.0218  pop_best=+818.2405
+gen 445  best=+820.6651  mean=+813.1522  pop_best=+819.8716
+gen 446  best=+820.6651  mean=+810.7599  pop_best=+819.0964
+gen 447  best=+820.6651  mean=+810.3162  pop_best=+818.5179
+gen 448  best=+820.6651  mean=+812.6680  pop_best=+819.5424
+gen 449  best=+820.6651  mean=+814.8948  pop_best=+820.3871
+gen 450  best=+820.6651  mean=+814.2799  pop_best=+820.1642
+gen 451  best=+820.6651  mean=+814.4895  pop_best=+819.6815
+>>> RESTART 1 — stalled for 15 gens, sigma=6.5
+gen 452  best=+820.6651  mean=-13.3549  pop_best=+648.8412
+gen 453  best=+820.6651  mean=+64.1817  pop_best=+639.9014
+gen 454  best=+820.6651  mean=+19.1443  pop_best=+668.0606
+gen 455  best=+820.6651  mean=+49.0478  pop_best=+637.7169
+gen 456  best=+820.6651  mean=+51.5437  pop_best=+631.3990
+gen 457  best=+820.6651  mean=+51.3688  pop_best=+586.9557
+gen 458  best=+820.6651  mean=+152.1337  pop_best=+642.8195
+gen 459  best=+820.6651  mean=+135.7533  pop_best=+641.8973
+gen 460  best=+820.6651  mean=+126.0108  pop_best=+635.4073
+gen 461  best=+820.6651  mean=+175.7873  pop_best=+627.7123
+gen 462  best=+820.6651  mean=+155.4718  pop_best=+676.3681
+gen 463  best=+820.6651  mean=+168.2999  pop_best=+656.0625
+gen 464  best=+820.6651  mean=+168.5684  pop_best=+644.2158
+gen 465  best=+820.6651  mean=+176.3753  pop_best=+653.2325
+gen 466  best=+820.6651  mean=+226.2432  pop_best=+659.9426
+>>> RESTART 2 — stalled for 15 gens, sigma=8.0
+gen 467  best=+820.6651  mean=-68.8641  pop_best=+439.7872
+gen 468  best=+820.6651  mean=+2.6073  pop_best=+506.8597
+gen 469  best=+820.6651  mean=+38.9149  pop_best=+554.8826
+gen 470  best=+820.6651  mean=+20.9204  pop_best=+609.1967
+gen 471  best=+820.6651  mean=+30.2081  pop_best=+532.8048
+gen 472  best=+820.6651  mean=+43.2405  pop_best=+550.7232
+gen 473  best=+820.6651  mean=+24.4177  pop_best=+545.1323
+gen 474  best=+820.6651  mean=+3.7235  pop_best=+481.8111
+gen 475  best=+820.6651  mean=-58.5761  pop_best=+531.3966
+gen 476  best=+820.6651  mean=+26.8130  pop_best=+559.4941
+gen 477  best=+820.6651  mean=-0.6929  pop_best=+593.3571
+gen 478  best=+820.6651  mean=+11.3416  pop_best=+509.5022
+gen 479  best=+820.6651  mean=+33.6915  pop_best=+569.6417
+gen 480  best=+820.6651  mean=+24.6586  pop_best=+569.3254
+gen 481  best=+820.6651  mean=+70.8954  pop_best=+575.8266
+>>> RESTART 3 — stalled for 15 gens, sigma=9.5
+gen 482  best=+820.6651  mean=-52.7778  pop_best=+205.3042
+gen 483  best=+820.6651  mean=-44.4779  pop_best=+211.7989
+gen 484  best=+820.6651  mean=-37.9804  pop_best=+451.1143
+gen 485  best=+820.6651  mean=+1.8274  pop_best=+552.8548
+gen 486  best=+820.6651  mean=+18.6505  pop_best=+494.1832
+gen 487  best=+820.6651  mean=+10.1628  pop_best=+593.5607
+gen 488  best=+820.6651  mean=+18.3821  pop_best=+562.8248
+gen 489  best=+820.6651  mean=+7.9335  pop_best=+573.5541
+gen 490  best=+820.6651  mean=+35.5965  pop_best=+527.2915
+gen 491  best=+820.6651  mean=+12.4684  pop_best=+533.0550
+gen 492  best=+820.6651  mean=+26.9394  pop_best=+527.4933
+gen 493  best=+820.6651  mean=+29.1611  pop_best=+478.8760
+gen 494  best=+820.6651  mean=+54.6256  pop_best=+524.8760
+gen 495  best=+820.6651  mean=+48.6214  pop_best=+549.0189
+gen 496  best=+820.6651  mean=+63.5059  pop_best=+502.9104
+>>> RESTART 4 — stalled for 15 gens, sigma=11.0
+gen 497  best=+820.6651  mean=-82.6305  pop_best=+177.7734
+gen 498  best=+820.6651  mean=-81.7869  pop_best=+504.5225
+gen 499  best=+820.6651  mean=-33.8622  pop_best=+533.8525
+gen 500  best=+820.6651  mean=-24.7582  pop_best=+493.9896
+gen 501  best=+820.6651  mean=-47.2734  pop_best=+305.5419
+gen 502  best=+820.6651  mean=-50.4215  pop_best=+72.0702
+gen 503  best=+820.6651  mean=-60.6492  pop_best=+209.8670
+gen 504  best=+820.6651  mean=-32.3940  pop_best=+494.3993
+gen 505  best=+820.6651  mean=+25.4179  pop_best=+507.9820
+gen 506  best=+820.6651  mean=-21.4878  pop_best=+475.2424
+gen 507  best=+820.6651  mean=-1.6341  pop_best=+470.6230
+gen 508  best=+820.6651  mean=-42.5247  pop_best=+446.9206
+gen 509  best=+820.6651  mean=-31.1536  pop_best=+455.2747
+gen 510  best=+820.6651  mean=+17.6451  pop_best=+431.2418
+gen 511  best=+820.6651  mean=+4.2899  pop_best=+407.2229
+>>> RESTART 5 — stalled for 15 gens, sigma=12.5
+gen 512  best=+820.6651  mean=-129.8522  pop_best=+54.7209
+gen 513  best=+820.6651  mean=-154.5445  pop_best=+23.2465
+gen 514  best=+820.6651  mean=-95.0788  pop_best=+64.9883
+gen 515  best=+820.6651  mean=-77.8780  pop_best=+480.6484
+gen 516  best=+820.6651  mean=-35.3515  pop_best=+91.6717
+gen 517  best=+820.6651  mean=-41.7527  pop_best=+497.8458
+gen 518  best=+820.6651  mean=-25.5677  pop_best=+458.0763
+gen 519  best=+820.6651  mean=-33.7669  pop_best=+398.7862
+gen 520  best=+820.6651  mean=-30.4418  pop_best=+426.0441
+gen 521  best=+820.6651  mean=-42.2118  pop_best=+397.5234
+gen 522  best=+820.6651  mean=-77.1950  pop_best=+339.4756
+gen 523  best=+820.6651  mean=-74.2151  pop_best=+370.6259
+gen 524  best=+820.6651  mean=-73.0277  pop_best=+426.3564
+gen 525  best=+820.6651  mean=-42.7448  pop_best=+411.4808
+gen 526  best=+820.6651  mean=-32.4160  pop_best=+156.6918
+>>> RESTART 6 — stalled for 15 gens, sigma=14.0
+gen 527  best=+820.6651  mean=-88.5445  pop_best=+317.6907
+gen 528  best=+820.6651  mean=-96.9072  pop_best=+305.8870
+gen 529  best=+820.6651  mean=-65.7138  pop_best=+49.6808
+gen 530  best=+820.6651  mean=-90.7223  pop_best=+148.3901
+gen 531  best=+820.6651  mean=-32.3657  pop_best=+404.9469
+gen 532  best=+820.6651  mean=-54.0908  pop_best=+493.9009
+gen 533  best=+820.6651  mean=-57.8602  pop_best=+317.6297
+gen 534  best=+820.6651  mean=-46.8450  pop_best=+386.1358
+gen 535  best=+820.6651  mean=-60.1901  pop_best=+439.3586
+gen 536  best=+820.6651  mean=-31.8077  pop_best=+420.1748
+gen 537  best=+820.6651  mean=-84.5876  pop_best=+306.9481
+gen 538  best=+820.6651  mean=-38.6298  pop_best=+359.8207
+gen 539  best=+820.6651  mean=-24.5830  pop_best=+393.0873
+gen 540  best=+820.6651  mean=-26.4609  pop_best=+409.4311
+gen 541  best=+820.6651  mean=-36.2757  pop_best=+341.6500
+>>> RESTART 7 — stalled for 15 gens, sigma=15.5
+gen 542  best=+820.6651  mean=-118.8517  pop_best=+131.7414
+gen 543  best=+820.6651  mean=-83.1196  pop_best=+70.0583
+gen 544  best=+820.6651  mean=-48.9265  pop_best=+409.3711
+gen 545  best=+820.6651  mean=-76.0481  pop_best=+250.1124
+gen 546  best=+820.6651  mean=-56.4017  pop_best=+203.6596
+gen 547  best=+820.6651  mean=-58.3705  pop_best=+312.5007
+gen 548  best=+820.6651  mean=-88.9766  pop_best=+330.6388
+gen 549  best=+820.6651  mean=-56.8499  pop_best=+118.4770
+gen 550  best=+820.6651  mean=-58.6478  pop_best=+324.3145
+gen 551  best=+820.6651  mean=-36.4838  pop_best=+265.4760
+gen 552  best=+820.6651  mean=-5.5252  pop_best=+338.2235
+gen 553  best=+820.6651  mean=-24.5857  pop_best=+260.8628
+gen 554  best=+820.6651  mean=-20.8212  pop_best=+336.7746
+gen 555  best=+820.6651  mean=+2.6917  pop_best=+296.8929
+gen 556  best=+820.6651  mean=-25.4881  pop_best=+297.5252
+>>> RESTART 8 — stalled for 15 gens, sigma=17.0
+gen 557  best=+820.6651  mean=-109.5791  pop_best=+154.1176
+gen 558  best=+820.6651  mean=-118.0335  pop_best=+252.0328
+gen 559  best=+820.6651  mean=-66.7380  pop_best=+255.5666
+gen 560  best=+820.6651  mean=-120.0333  pop_best=+27.6429
+gen 561  best=+820.6651  mean=-91.9645  pop_best=+268.8193
+gen 562  best=+820.6651  mean=-64.4531  pop_best=+171.9983
+gen 563  best=+820.6651  mean=-84.2656  pop_best=+238.5204
+gen 564  best=+820.6651  mean=-32.4060  pop_best=+358.4139
+gen 565  best=+820.6651  mean=-53.5147  pop_best=+77.7502
+gen 566  best=+820.6651  mean=-43.0303  pop_best=+43.4634
+gen 567  best=+820.6651  mean=-48.0212  pop_best=+119.7742
+gen 568  best=+820.6651  mean=-44.6668  pop_best=+223.3989
+gen 569  best=+820.6651  mean=-34.0669  pop_best=+280.4965
+gen 570  best=+820.6651  mean=-54.0177  pop_best=+181.7631
+gen 571  best=+820.6651  mean=-16.0019  pop_best=+366.9032
+>>> RESTART 9 — stalled for 15 gens, sigma=18.5
+gen 572  best=+820.6651  mean=-108.2250  pop_best=+245.7707
+gen 573  best=+820.6651  mean=-107.4038  pop_best=+35.7812
+gen 574  best=+820.6651  mean=-118.9900  pop_best=+294.4129
+gen 575  best=+820.6651  mean=-71.2308  pop_best=+180.6162
+gen 576  best=+820.6651  mean=-79.9409  pop_best=+181.4841
+gen 577  best=+820.6651  mean=-95.4412  pop_best=+295.9601
+gen 578  best=+820.6651  mean=-98.2045  pop_best=+132.4071
+gen 579  best=+820.6651  mean=-76.5714  pop_best=+280.1447
+gen 580  best=+820.6651  mean=-79.1937  pop_best=+195.1306
+gen 581  best=+820.6651  mean=-51.0090  pop_best=+240.4636
+gen 582  best=+820.6651  mean=-11.9604  pop_best=+295.2141
+gen 583  best=+820.6651  mean=-24.0922  pop_best=+220.5239
+gen 584  best=+820.6651  mean=-22.4582  pop_best=+287.4109
+gen 585  best=+820.6651  mean=-18.2724  pop_best=+304.1303
+gen 586  best=+820.6651  mean=-4.8040  pop_best=+299.3759
+>>> RESTART 10 — stalled for 15 gens, sigma=20.0
+gen 587  best=+820.6651  mean=-89.3023  pop_best=+76.2694
+gen 588  best=+820.6651  mean=-94.0652  pop_best=+49.1965
+gen 589  best=+820.6651  mean=-75.1363  pop_best=+176.7474
+gen 590  best=+820.6651  mean=-85.9912  pop_best=+38.1752
+gen 591  best=+820.6651  mean=-82.7518  pop_best=+51.3959
+gen 592  best=+820.6651  mean=-67.8014  pop_best=+265.2921
+gen 593  best=+820.6651  mean=-48.6757  pop_best=+299.1468
+gen 594  best=+820.6651  mean=-41.1131  pop_best=+216.9606
+gen 595  best=+820.6651  mean=-43.9002  pop_best=+228.2050
+gen 596  best=+820.6651  mean=-36.5644  pop_best=+266.9980
+gen 597  best=+820.6651  mean=-28.3362  pop_best=+203.5777
+gen 598  best=+820.6651  mean=-17.2558  pop_best=+176.0249
+gen 599  best=+820.6651  mean=-34.6636  pop_best=+252.2973
+gen 600  best=+820.6651  mean=-11.6846  pop_best=+190.2152
+gen 601  best=+820.6651  mean=-19.3701  pop_best=+227.6010
+>>> RESTART 11 — stalled for 15 gens, sigma=21.5
+gen 602  best=+820.6651  mean=-92.6896  pop_best=+68.9532
+gen 603  best=+820.6651  mean=-82.8998  pop_best=+222.8070
+gen 604  best=+820.6651  mean=-56.6528  pop_best=+313.6253
+gen 605  best=+820.6651  mean=-85.6456  pop_best=+324.2732
+gen 606  best=+820.6651  mean=-59.4744  pop_best=+188.2483
+gen 607  best=+820.6651  mean=-65.3877  pop_best=+138.0362
+gen 608  best=+820.6651  mean=-33.3091  pop_best=+260.6418
+gen 609  best=+820.6651  mean=-31.9855  pop_best=+251.2386
+gen 610  best=+820.6651  mean=-11.4572  pop_best=+342.2972
+gen 611  best=+820.6651  mean=-18.8778  pop_best=+269.9038
+gen 612  best=+820.6651  mean=-3.4139  pop_best=+217.7298
+gen 613  best=+820.6651  mean=-13.1100  pop_best=+288.6317
+gen 614  best=+820.6651  mean=-34.4146  pop_best=+178.5005
+gen 615  best=+820.6651  mean=-18.3428  pop_best=+251.7494
+gen 616  best=+820.6651  mean=-17.5422  pop_best=+263.7202
+>>> RESTART 12 — stalled for 15 gens, sigma=23.0
+gen 617  best=+820.6651  mean=-79.3077  pop_best=+242.0913
+gen 618  best=+820.6651  mean=-62.2781  pop_best=+161.9067
+gen 619  best=+820.6651  mean=-103.0992  pop_best=+204.3796
+gen 620  best=+820.6651  mean=-91.5635  pop_best=+258.6194
+gen 621  best=+820.6651  mean=-97.1128  pop_best=+49.8685
+gen 622  best=+820.6651  mean=-48.8882  pop_best=+172.5061
+gen 623  best=+820.6651  mean=-46.8464  pop_best=+172.1430
+gen 624  best=+820.6651  mean=-64.1970  pop_best=+246.1502
+gen 625  best=+820.6651  mean=-48.8261  pop_best=+230.6722
+gen 626  best=+820.6651  mean=-41.2681  pop_best=+263.1464
+gen 627  best=+820.6651  mean=-25.9159  pop_best=+196.0995
+gen 628  best=+820.6651  mean=-25.4317  pop_best=+227.4192
+gen 629  best=+820.6651  mean=-18.7250  pop_best=+177.7859
+gen 630  best=+820.6651  mean=-0.5973  pop_best=+285.9521
+gen 631  best=+820.6651  mean=-24.3595  pop_best=+221.4037
+>>> RESTART 13 — stalled for 15 gens, sigma=24.5
+gen 632  best=+820.6651  mean=-108.4695  pop_best=+33.4862
+gen 633  best=+820.6651  mean=-49.3204  pop_best=+332.2056
+gen 634  best=+820.6651  mean=-68.9110  pop_best=+118.4679
+gen 635  best=+820.6651  mean=-71.5809  pop_best=+218.4652
+gen 636  best=+820.6651  mean=-75.6403  pop_best=+251.1490
+gen 637  best=+820.6651  mean=-58.7880  pop_best=+247.1569
+gen 638  best=+820.6651  mean=-65.1254  pop_best=+275.7739
+gen 639  best=+820.6651  mean=-35.6060  pop_best=+180.3836
+gen 640  best=+820.6651  mean=-42.3549  pop_best=+165.8345
+gen 641  best=+820.6651  mean=-63.9385  pop_best=+146.3225
+gen 642  best=+820.6651  mean=-41.3740  pop_best=+326.0794
+gen 643  best=+820.6651  mean=-54.5891  pop_best=+146.5988
+gen 644  best=+820.6651  mean=-17.8639  pop_best=+197.8099
+gen 645  best=+820.6651  mean=-25.6735  pop_best=+172.7001
+gen 646  best=+820.6651  mean=-46.7400  pop_best=+170.3469
+>>> RESTART 14 — stalled for 15 gens, sigma=26.0
+gen 647  best=+820.6651  mean=-76.3853  pop_best=+178.8275
+gen 648  best=+820.6651  mean=-94.0849  pop_best=+148.0888
+gen 649  best=+820.6651  mean=-102.1851  pop_best=+283.7869
+gen 650  best=+820.6651  mean=-99.6865  pop_best=+166.0151
+gen 651  best=+820.6651  mean=-75.6095  pop_best=+157.9672
+gen 652  best=+820.6651  mean=-40.4539  pop_best=+210.8378
+gen 653  best=+820.6651  mean=-65.8621  pop_best=+150.5819
+gen 654  best=+820.6651  mean=-44.6470  pop_best=+141.6362
+gen 655  best=+820.6651  mean=-63.4574  pop_best=+159.1320
+gen 656  best=+820.6651  mean=-78.1269  pop_best=+196.6654
+gen 657  best=+820.6651  mean=-45.9145  pop_best=+206.5092
+gen 658  best=+820.6651  mean=-57.0762  pop_best=+192.0766
+gen 659  best=+820.6651  mean=-53.5385  pop_best=+165.4776
+gen 660  best=+820.6651  mean=-56.2656  pop_best=+189.1368
+gen 661  best=+820.6651  mean=-37.8207  pop_best=+188.4668
+>>> RESTART 15 — stalled for 15 gens, sigma=27.5
+gen 662  best=+820.6651  mean=-105.4021  pop_best=+60.1148
+gen 663  best=+820.6651  mean=-92.8516  pop_best=+185.5976
+gen 664  best=+820.6651  mean=-58.4145  pop_best=+293.2742
+gen 665  best=+820.6651  mean=-43.8568  pop_best=+213.6210
+gen 666  best=+820.6651  mean=-55.1706  pop_best=+255.8983
+gen 667  best=+820.6651  mean=-48.3494  pop_best=+238.6286
+gen 668  best=+820.6651  mean=-29.4712  pop_best=+170.1694
+gen 669  best=+820.6651  mean=-35.4205  pop_best=+189.8217
+gen 670  best=+820.6651  mean=-39.5324  pop_best=+168.0335
+gen 671  best=+820.6651  mean=-41.0966  pop_best=+173.1932
+gen 672  best=+820.6651  mean=-25.5114  pop_best=+243.7552
+gen 673  best=+820.6651  mean=-36.3982  pop_best=+158.6931
+gen 674  best=+820.6651  mean=-14.6883  pop_best=+195.4713
+gen 675  best=+820.6651  mean=-25.9641  pop_best=+213.8520
+gen 676  best=+820.6651  mean=-30.7780  pop_best=+330.6463
+>>> RESTART 16 — stalled for 15 gens, sigma=29.0
+gen 677  best=+820.6651  mean=-72.7424  pop_best=+158.4039
+gen 678  best=+820.6651  mean=-81.9075  pop_best=+204.7202
+gen 679  best=+820.6651  mean=-81.1240  pop_best=+245.8288
+gen 680  best=+820.6651  mean=-80.3285  pop_best=+211.0735
+gen 681  best=+820.6651  mean=-67.1660  pop_best=+209.2082
+gen 682  best=+820.6651  mean=-60.6594  pop_best=+253.3134
+gen 683  best=+820.6651  mean=-86.1129  pop_best=+247.0565
+gen 684  best=+820.6651  mean=-83.8132  pop_best=+230.2016
+gen 685  best=+820.6651  mean=-76.1950  pop_best=+209.9548
+gen 686  best=+820.6651  mean=-49.6411  pop_best=+178.0756
+gen 687  best=+820.6651  mean=-47.9680  pop_best=+205.7871
+gen 688  best=+820.6651  mean=-27.3012  pop_best=+236.0301
+gen 689  best=+820.6651  mean=-20.3286  pop_best=+234.1672
+gen 690  best=+820.6651  mean=-24.0205  pop_best=+172.6066
+gen 691  best=+820.6651  mean=-18.9907  pop_best=+174.2806
+>>> RESTART 17 — stalled for 15 gens, sigma=30.5
+gen 692  best=+820.6651  mean=-82.0693  pop_best=+27.2444
+gen 693  best=+820.6651  mean=-83.2488  pop_best=+41.0377
+gen 694  best=+820.6651  mean=-64.7024  pop_best=+190.0930
+gen 695  best=+820.6651  mean=-46.7716  pop_best=+250.5553
+gen 696  best=+820.6651  mean=-33.5548  pop_best=+280.6947
+gen 697  best=+820.6651  mean=-59.9362  pop_best=+165.0373
+gen 698  best=+820.6651  mean=-48.5289  pop_best=+186.9852
+gen 699  best=+820.6651  mean=-25.9453  pop_best=+340.3748
+gen 700  best=+820.6651  mean=-28.1514  pop_best=+240.4896
+gen 701  best=+820.6651  mean=-22.1618  pop_best=+254.5883
+gen 702  best=+820.6651  mean=-14.3144  pop_best=+219.7715
+gen 703  best=+820.6651  mean=-20.2172  pop_best=+268.1451
+gen 704  best=+820.6651  mean=-17.7087  pop_best=+205.8342
+gen 705  best=+820.6651  mean=-6.9762  pop_best=+207.6889
+gen 706  best=+820.6651  mean=-0.1412  pop_best=+249.0369
+>>> RESTART 18 — stalled for 15 gens, sigma=32.0
+gen 707  best=+820.6651  mean=-52.7604  pop_best=+124.6224
+gen 708  best=+820.6651  mean=-82.8526  pop_best=+34.4690
+gen 709  best=+820.6651  mean=-62.3162  pop_best=+176.5470
+gen 710  best=+820.6651  mean=-57.3436  pop_best=+242.1325
+gen 711  best=+820.6651  mean=-65.1689  pop_best=+248.9785
+gen 712  best=+820.6651  mean=-52.6996  pop_best=+250.8607
+gen 713  best=+820.6651  mean=-65.5403  pop_best=+164.9250
+gen 714  best=+820.6651  mean=-35.6278  pop_best=+249.3667
+gen 715  best=+820.6651  mean=-54.8647  pop_best=+299.4269
+gen 716  best=+820.6651  mean=-41.9678  pop_best=+184.0666
+gen 717  best=+820.6651  mean=-36.4076  pop_best=+196.5376
+gen 718  best=+820.6651  mean=-33.9061  pop_best=+259.8766
+gen 719  best=+820.6651  mean=-40.3640  pop_best=+232.9332
+gen 720  best=+820.6651  mean=-50.9279  pop_best=+224.1587
+gen 721  best=+820.6651  mean=-23.9362  pop_best=+227.0541
+>>> RESTART 19 — stalled for 15 gens, sigma=33.5
+gen 722  best=+820.6651  mean=-61.3693  pop_best=+38.5592
+gen 723  best=+820.6651  mean=-78.4737  pop_best=+159.1852
+gen 724  best=+820.6651  mean=-65.4606  pop_best=+150.6958
+gen 725  best=+820.6651  mean=-58.3729  pop_best=+244.2285
+gen 726  best=+820.6651  mean=-56.5909  pop_best=+213.3653
+gen 727  best=+820.6651  mean=-69.6758  pop_best=+133.1715
+gen 728  best=+820.6651  mean=-59.3397  pop_best=+259.2164
+gen 729  best=+820.6651  mean=-40.2837  pop_best=+230.4058
+gen 730  best=+820.6651  mean=-49.4192  pop_best=+242.8687
+gen 731  best=+820.6651  mean=-38.0228  pop_best=+271.0284
+gen 732  best=+820.6651  mean=-33.6000  pop_best=+161.8327
+gen 733  best=+820.6651  mean=-12.4850  pop_best=+170.1939
+gen 734  best=+820.6651  mean=-18.2345  pop_best=+302.4189
+gen 735  best=+820.6651  mean=-40.0784  pop_best=+174.7126
+gen 736  best=+820.6651  mean=-18.6202  pop_best=+193.6693
+>>> RESTART 20 — stalled for 15 gens, sigma=35.0
+gen 737  best=+820.6651  mean=-68.4296  pop_best=+230.0993
+gen 738  best=+820.6651  mean=-82.4959  pop_best=+228.3238
+gen 739  best=+820.6651  mean=-82.9535  pop_best=+136.3350
+gen 740  best=+820.6651  mean=-93.0029  pop_best=+250.6968
+gen 741  best=+820.6651  mean=-68.2158  pop_best=+263.3245
+gen 742  best=+820.6651  mean=-83.6753  pop_best=+291.8059
+gen 743  best=+820.6651  mean=-62.1365  pop_best=+378.5962
+gen 744  best=+820.6651  mean=-81.0431  pop_best=+231.3970
+gen 745  best=+820.6651  mean=-74.1966  pop_best=+292.7417
+gen 746  best=+820.6651  mean=-49.7581  pop_best=+235.7420
+gen 747  best=+820.6651  mean=-36.9825  pop_best=+253.3295
+gen 748  best=+820.6651  mean=-32.4459  pop_best=+302.7622
+gen 749  best=+820.6651  mean=-25.5851  pop_best=+287.5660
+gen 750  best=+820.6651  mean=-26.4709  pop_best=+165.7950
+gen 751  best=+820.6651  mean=-20.5659  pop_best=+226.5741
+>>> RESTART 21 — stalled for 15 gens, sigma=36.5
+gen 752  best=+820.6651  mean=-72.3053  pop_best=+180.2511
+gen 753  best=+820.6651  mean=-60.1160  pop_best=+200.7252
+gen 754  best=+820.6651  mean=-40.9598  pop_best=+267.1166
+gen 755  best=+820.6651  mean=-63.9669  pop_best=+140.1719
+gen 756  best=+820.6651  mean=-49.9742  pop_best=+336.7494
+gen 757  best=+820.6651  mean=-48.2839  pop_best=+173.7386
+gen 758  best=+820.6651  mean=-39.5924  pop_best=+225.5839
+gen 759  best=+820.6651  mean=-39.9399  pop_best=+276.6430
+gen 760  best=+820.6651  mean=-37.0779  pop_best=+246.3246
+gen 761  best=+820.6651  mean=-25.3174  pop_best=+220.8030
+gen 762  best=+820.6651  mean=-17.1304  pop_best=+247.2140
+gen 763  best=+820.6651  mean=-12.6735  pop_best=+230.1833
+gen 764  best=+820.6651  mean=-8.2550  pop_best=+242.7838
+gen 765  best=+820.6651  mean=-25.2206  pop_best=+214.3352
+gen 766  best=+820.6651  mean=-7.8568  pop_best=+251.3706
+>>> RESTART 22 — stalled for 15 gens, sigma=38.0
+gen 767  best=+820.6651  mean=-73.8952  pop_best=+179.3912
+gen 768  best=+820.6651  mean=-67.9852  pop_best=+156.4857
+gen 769  best=+820.6651  mean=-70.1648  pop_best=+171.3342
+gen 770  best=+820.6651  mean=-68.6979  pop_best=+46.1909
+gen 771  best=+820.6651  mean=-49.1667  pop_best=+277.1688
+gen 772  best=+820.6651  mean=-56.2103  pop_best=+213.2139
+gen 773  best=+820.6651  mean=-49.1032  pop_best=+213.6495
+gen 774  best=+820.6651  mean=-60.0770  pop_best=+270.8376
+gen 775  best=+820.6651  mean=-28.9559  pop_best=+249.1250
+gen 776  best=+820.6651  mean=-42.7879  pop_best=+307.1479
+gen 777  best=+820.6651  mean=-39.6717  pop_best=+192.7745
+gen 778  best=+820.6651  mean=-31.4445  pop_best=+319.3460
+gen 779  best=+820.6651  mean=-43.3871  pop_best=+295.4818
+gen 780  best=+820.6651  mean=-19.3773  pop_best=+255.9666
+gen 781  best=+820.6651  mean=-33.5084  pop_best=+216.3060
+>>> RESTART 23 — stalled for 15 gens, sigma=39.5
+gen 782  best=+820.6651  mean=-71.1017  pop_best=+133.2516
+gen 783  best=+820.6651  mean=-66.5868  pop_best=+209.5392
+gen 784  best=+820.6651  mean=-60.1724  pop_best=+262.1831
+gen 785  best=+820.6651  mean=-56.2837  pop_best=+193.3270
+gen 786  best=+820.6651  mean=-49.7671  pop_best=+222.4459
+gen 787  best=+820.6651  mean=-39.2627  pop_best=+262.0574
+gen 788  best=+820.6651  mean=-33.0036  pop_best=+254.7160
+gen 789  best=+820.6651  mean=-36.0362  pop_best=+235.1959
+gen 790  best=+820.6651  mean=-28.8131  pop_best=+257.7411
+gen 791  best=+820.6651  mean=-28.0094  pop_best=+240.3300
+gen 792  best=+820.6651  mean=-36.6908  pop_best=+186.4438
+gen 793  best=+820.6651  mean=-25.5030  pop_best=+246.4985
+gen 794  best=+820.6651  mean=-42.6538  pop_best=+187.1547
+gen 795  best=+820.6651  mean=-22.2890  pop_best=+199.6790
+gen 796  best=+820.6651  mean=-16.4881  pop_best=+333.5561
+>>> RESTART 24 — stalled for 15 gens, sigma=41.0
+gen 797  best=+820.6651  mean=-59.3183  pop_best=+187.9559
+gen 798  best=+820.6651  mean=-73.0597  pop_best=+154.1096
+gen 799  best=+820.6651  mean=-69.8958  pop_best=+319.7456
+gen 800  best=+820.6651  mean=-62.8866  pop_best=+254.4602
+gen 801  best=+820.6651  mean=-57.7743  pop_best=+327.6236
+gen 802  best=+820.6651  mean=-54.6387  pop_best=+193.8912
+gen 803  best=+820.6651  mean=-46.5842  pop_best=+323.6293
+gen 804  best=+820.6651  mean=-41.2298  pop_best=+259.1217
+gen 805  best=+820.6651  mean=-31.8117  pop_best=+250.3115
+gen 806  best=+820.6651  mean=-33.2032  pop_best=+269.2994
+gen 807  best=+820.6651  mean=-26.1483  pop_best=+317.8244
+gen 808  best=+820.6651  mean=-36.2462  pop_best=+279.4110
+gen 809  best=+820.6651  mean=-18.2327  pop_best=+281.4361
+gen 810  best=+820.6651  mean=-18.4309  pop_best=+236.6325
+gen 811  best=+820.6651  mean=-32.2752  pop_best=+240.0608
+>>> RESTART 25 — stalled for 15 gens, sigma=42.5
+gen 812  best=+820.6651  mean=-71.3477  pop_best=+170.5062
+gen 813  best=+820.6651  mean=-78.4507  pop_best=+244.3078
+gen 814  best=+820.6651  mean=-79.4171  pop_best=+252.9515
+gen 815  best=+820.6651  mean=-78.9249  pop_best=+258.2083
+gen 816  best=+820.6651  mean=-77.3951  pop_best=+185.8298
+gen 817  best=+820.6651  mean=-71.6759  pop_best=+152.9536
+gen 818  best=+820.6651  mean=-47.2261  pop_best=+256.9883
+gen 819  best=+820.6651  mean=-68.8561  pop_best=+159.1941
+gen 820  best=+820.6651  mean=-46.3305  pop_best=+84.1607
+gen 821  best=+820.6651  mean=-32.5599  pop_best=+179.3350
+gen 822  best=+820.6651  mean=-39.5441  pop_best=+240.6246
+gen 823  best=+820.6651  mean=-29.5122  pop_best=+253.5308
+gen 824  best=+820.6651  mean=-36.2080  pop_best=+269.6779
+gen 825  best=+820.6651  mean=-25.6159  pop_best=+215.2366
+gen 826  best=+820.6651  mean=-20.0311  pop_best=+197.2262
+>>> RESTART 26 — stalled for 15 gens, sigma=44.0
+gen 827  best=+820.6651  mean=-82.1947  pop_best=+229.8128
+gen 828  best=+820.6651  mean=-59.5620  pop_best=+248.1511
+gen 829  best=+820.6651  mean=-59.4896  pop_best=+215.6807
+gen 830  best=+820.6651  mean=-51.4498  pop_best=+262.3317
+gen 831  best=+820.6651  mean=-47.5742  pop_best=+264.5095
+gen 832  best=+820.6651  mean=-55.7926  pop_best=+225.6912
+gen 833  best=+820.6651  mean=-56.0104  pop_best=+265.4089
+gen 834  best=+820.6651  mean=-28.5072  pop_best=+252.1267
+gen 835  best=+820.6651  mean=-31.7708  pop_best=+243.9567
+gen 836  best=+820.6651  mean=-22.1134  pop_best=+337.3292
+gen 837  best=+820.6651  mean=-26.1925  pop_best=+189.9213
+gen 838  best=+820.6651  mean=-23.2360  pop_best=+195.6473
+gen 839  best=+820.6651  mean=-21.7012  pop_best=+364.9044
+gen 840  best=+820.6651  mean=-17.4553  pop_best=+212.7063
+gen 841  best=+820.6651  mean=-11.3202  pop_best=+247.5373
+>>> RESTART 27 — stalled for 15 gens, sigma=45.5
+gen 842  best=+820.6651  mean=-73.3188  pop_best=+172.6932
+gen 843  best=+820.6651  mean=-62.2332  pop_best=+192.8662
+gen 844  best=+820.6651  mean=-87.3067  pop_best=+224.7465
+gen 845  best=+820.6651  mean=-56.0806  pop_best=+172.9894
+gen 846  best=+820.6651  mean=-73.8401  pop_best=+214.7618
+gen 847  best=+820.6651  mean=-64.9290  pop_best=+347.9486
+gen 848  best=+820.6651  mean=-81.4168  pop_best=+207.6016
+gen 849  best=+820.6651  mean=-77.5113  pop_best=+284.0132
+gen 850  best=+820.6651  mean=-54.6970  pop_best=+231.6805
+gen 851  best=+820.6651  mean=-53.2402  pop_best=+243.0724
+gen 852  best=+820.6651  mean=-37.9623  pop_best=+280.2555
+gen 853  best=+820.6651  mean=-60.1089  pop_best=+268.7095
+gen 854  best=+820.6651  mean=-46.3306  pop_best=+243.8836
+gen 855  best=+820.6651  mean=-44.3014  pop_best=+262.1431
+gen 856  best=+820.6651  mean=-38.9607  pop_best=+230.3089
+>>> RESTART 28 — stalled for 15 gens, sigma=47.0
+gen 857  best=+820.6651  mean=-88.2202  pop_best=+33.5143
+gen 858  best=+820.6651  mean=-82.5443  pop_best=+188.6480
+gen 859  best=+820.6651  mean=-77.4239  pop_best=+285.3136
+gen 860  best=+820.6651  mean=-78.3304  pop_best=+212.3365
+gen 861  best=+820.6651  mean=-64.3140  pop_best=+200.3358
+gen 862  best=+820.6651  mean=-64.9821  pop_best=+287.2025
+gen 863  best=+820.6651  mean=-47.4619  pop_best=+188.0655
+gen 864  best=+820.6651  mean=-36.5909  pop_best=+245.1041
+gen 865  best=+820.6651  mean=-29.4739  pop_best=+258.0591
+gen 866  best=+820.6651  mean=-34.7604  pop_best=+241.8010
+gen 867  best=+820.6651  mean=-26.3943  pop_best=+242.1537
+gen 868  best=+820.6651  mean=-25.1100  pop_best=+257.3403
+gen 869  best=+820.6651  mean=-29.2653  pop_best=+361.2794
+gen 870  best=+820.6651  mean=-31.9710  pop_best=+183.7931
+gen 871  best=+820.6651  mean=-21.6667  pop_best=+269.9792
+>>> RESTART 29 — stalled for 15 gens, sigma=48.5
+gen 872  best=+820.6651  mean=-60.6129  pop_best=+205.3127
+gen 873  best=+820.6651  mean=-85.1883  pop_best=+44.4884
+gen 874  best=+820.6651  mean=-81.2308  pop_best=+134.6190
+gen 875  best=+820.6651  mean=-65.5073  pop_best=+221.4518
+gen 876  best=+820.6651  mean=-70.2444  pop_best=+171.2763
+gen 877  best=+820.6651  mean=-61.8784  pop_best=+256.6497
+gen 878  best=+820.6651  mean=-79.7362  pop_best=+312.7777
+gen 879  best=+820.6651  mean=-72.6322  pop_best=+239.4442
+gen 880  best=+820.6651  mean=-45.4616  pop_best=+197.0217
+gen 881  best=+820.6651  mean=-48.1009  pop_best=+249.1117
+gen 882  best=+820.6651  mean=-50.8741  pop_best=+285.6696
+gen 883  best=+820.6651  mean=-55.8049  pop_best=+283.0932
+gen 884  best=+820.6651  mean=-45.4240  pop_best=+239.9207
+gen 885  best=+820.6651  mean=-58.4059  pop_best=+255.0912
+gen 886  best=+820.6651  mean=-59.8337  pop_best=+258.6070
+>>> RESTART 30 — stalled for 15 gens, sigma=50.0
+gen 887  best=+820.6651  mean=-100.7667  pop_best=+178.4804
+gen 888  best=+820.6651  mean=-71.7023  pop_best=+353.1953
+gen 889  best=+820.6651  mean=-70.7620  pop_best=+286.5326
+gen 890  best=+820.6651  mean=-60.9853  pop_best=+162.7954
+gen 891  best=+820.6651  mean=-52.4446  pop_best=+315.7212
+gen 892  best=+820.6651  mean=-53.8387  pop_best=+254.9600
+gen 893  best=+820.6651  mean=-59.4683  pop_best=+258.2052
+gen 894  best=+820.6651  mean=-49.5864  pop_best=+282.3726
+gen 895  best=+820.6651  mean=-41.9967  pop_best=+250.8670
+gen 896  best=+820.6651  mean=-40.2508  pop_best=+284.0062
+gen 897  best=+820.6651  mean=-39.4484  pop_best=+193.4975
+gen 898  best=+820.6651  mean=-34.1091  pop_best=+198.4466
+gen 899  best=+820.6651  mean=-33.1856  pop_best=+218.4569
+gen 900  best=+820.6651  mean=-10.9780  pop_best=+249.9153
+gen 901  best=+820.6651  mean=-35.9576  pop_best=+230.5386
+>>> RESTART 31 — stalled for 15 gens, sigma=51.5
+gen 902  best=+820.6651  mean=-91.2363  pop_best=+237.0267
+gen 903  best=+820.6651  mean=-50.7908  pop_best=+238.2036
+gen 904  best=+820.6651  mean=-73.4495  pop_best=+203.3911
+gen 905  best=+820.6651  mean=-57.9637  pop_best=+224.3896
+gen 906  best=+820.6651  mean=-57.6883  pop_best=+195.3779
+gen 907  best=+820.6651  mean=-70.0503  pop_best=+222.1403
+gen 908  best=+820.6651  mean=-48.9975  pop_best=+301.4308
+gen 909  best=+820.6651  mean=-66.3241  pop_best=+255.3973
+gen 910  best=+820.6651  mean=-46.7807  pop_best=+253.6588
+gen 911  best=+820.6651  mean=-51.5530  pop_best=+244.7197
+gen 912  best=+820.6651  mean=-48.6723  pop_best=+259.2166
+gen 913  best=+820.6651  mean=-47.3660  pop_best=+261.0376
+gen 914  best=+820.6651  mean=-35.8539  pop_best=+229.6405
+gen 915  best=+820.6651  mean=-24.7399  pop_best=+222.1573
+gen 916  best=+820.6651  mean=-31.9538  pop_best=+239.6208
+>>> RESTART 32 — stalled for 15 gens, sigma=53.0
+gen 917  best=+820.6651  mean=-85.0987  pop_best=+97.0957
+gen 918  best=+820.6651  mean=-70.5712  pop_best=+219.7479
+gen 919  best=+820.6651  mean=-92.2182  pop_best=+260.2241
+gen 920  best=+820.6651  mean=-90.2166  pop_best=+206.9070
+gen 921  best=+820.6651  mean=-73.7568  pop_best=+258.7279
+gen 922  best=+820.6651  mean=-75.2295  pop_best=+245.5627
+gen 923  best=+820.6651  mean=-83.8106  pop_best=+285.9679
+gen 924  best=+820.6651  mean=-62.0807  pop_best=+260.5724
+gen 925  best=+820.6651  mean=-50.0658  pop_best=+233.3998
+gen 926  best=+820.6651  mean=-46.1553  pop_best=+254.5833
+gen 927  best=+820.6651  mean=-37.8086  pop_best=+312.4233
+gen 928  best=+820.6651  mean=-51.3628  pop_best=+275.0731
+gen 929  best=+820.6651  mean=-47.6186  pop_best=+280.7877
+gen 930  best=+820.6651  mean=-50.9941  pop_best=+218.2362
+gen 931  best=+820.6651  mean=-41.3433  pop_best=+319.4073
+>>> RESTART 33 — stalled for 15 gens, sigma=54.5
+gen 932  best=+820.6651  mean=-67.0786  pop_best=+105.0855
+gen 933  best=+820.6651  mean=-82.3046  pop_best=+194.4806
+gen 934  best=+820.6651  mean=-84.1754  pop_best=+223.6751
+gen 935  best=+820.6651  mean=-69.7860  pop_best=+209.2165
+gen 936  best=+820.6651  mean=-76.1296  pop_best=+114.1151
+gen 937  best=+820.6651  mean=-69.9708  pop_best=+242.0041
+gen 938  best=+820.6651  mean=-67.4621  pop_best=+323.4620
+gen 939  best=+820.6651  mean=-66.1806  pop_best=+291.1105
+gen 940  best=+820.6651  mean=-74.1002  pop_best=+251.2932
+gen 941  best=+820.6651  mean=-65.4443  pop_best=+284.2546
+gen 942  best=+820.6651  mean=-45.2877  pop_best=+288.0606
+gen 943  best=+820.6651  mean=-51.4221  pop_best=+320.9956
+gen 944  best=+820.6651  mean=-26.1409  pop_best=+270.0391
+gen 945  best=+820.6651  mean=-29.3446  pop_best=+380.1575
+gen 946  best=+820.6651  mean=-28.0754  pop_best=+244.0315
+>>> RESTART 34 — stalled for 15 gens, sigma=56.0
+gen 947  best=+820.6651  mean=-67.9646  pop_best=+215.7509
+gen 948  best=+820.6651  mean=-73.2663  pop_best=+119.5214
+gen 949  best=+820.6651  mean=-65.0681  pop_best=+318.3654
+gen 950  best=+820.6651  mean=-81.3197  pop_best=+224.9342
+gen 951  best=+820.6651  mean=-67.6485  pop_best=+275.8181
+gen 952  best=+820.6651  mean=-39.3731  pop_best=+230.2529
+gen 953  best=+820.6651  mean=-47.3159  pop_best=+263.6779
+gen 954  best=+820.6651  mean=-41.6665  pop_best=+228.7243
+gen 955  best=+820.6651  mean=-38.2168  pop_best=+230.3572
+gen 956  best=+820.6651  mean=-61.8467  pop_best=+237.0871
+gen 957  best=+820.6651  mean=-29.0207  pop_best=+185.3538
+gen 958  best=+820.6651  mean=-33.9546  pop_best=+271.7173
+gen 959  best=+820.6651  mean=-16.2045  pop_best=+300.1444
+gen 960  best=+820.6651  mean=-23.8765  pop_best=+224.3331
+gen 961  best=+820.6651  mean=-18.3307  pop_best=+314.7545
+>>> RESTART 35 — stalled for 15 gens, sigma=57.5
+gen 962  best=+820.6651  mean=-87.2607  pop_best=+209.0059
+gen 963  best=+820.6651  mean=-72.1171  pop_best=+264.8934
+gen 964  best=+820.6651  mean=-73.3109  pop_best=+301.2346
+gen 965  best=+820.6651  mean=-68.7550  pop_best=+276.2576
+gen 966  best=+820.6651  mean=-67.4777  pop_best=+391.3787
+gen 967  best=+820.6651  mean=-60.0540  pop_best=+192.8872
+gen 968  best=+820.6651  mean=-79.1498  pop_best=+194.2044
+gen 969  best=+820.6651  mean=-65.5212  pop_best=+261.8501
+gen 970  best=+820.6651  mean=-49.7544  pop_best=+195.4622
+gen 971  best=+820.6651  mean=-53.8510  pop_best=+236.1301
+gen 972  best=+820.6651  mean=-27.6876  pop_best=+215.9176
+gen 973  best=+820.6651  mean=-21.9039  pop_best=+253.0249
+gen 974  best=+820.6651  mean=-30.6586  pop_best=+281.7296
+gen 975  best=+820.6651  mean=-15.8737  pop_best=+276.5772
+gen 976  best=+820.6651  mean=-19.3646  pop_best=+225.7664
+>>> RESTART 36 — stalled for 15 gens, sigma=59.0
+gen 977  best=+820.6651  mean=-80.2351  pop_best=+186.0033
+gen 978  best=+820.6651  mean=-72.8863  pop_best=+165.7425
+gen 979  best=+820.6651  mean=-78.0306  pop_best=+234.3049
+gen 980  best=+820.6651  mean=-71.8507  pop_best=+216.6347
+gen 981  best=+820.6651  mean=-70.4426  pop_best=+201.5603
+gen 982  best=+820.6651  mean=-100.5240  pop_best=+253.6127
+gen 983  best=+820.6651  mean=-61.9340  pop_best=+237.9101
+gen 984  best=+820.6651  mean=-62.5128  pop_best=+337.9323
+gen 985  best=+820.6651  mean=-53.7268  pop_best=+273.6450
+gen 986  best=+820.6651  mean=-48.4747  pop_best=+184.3188
+gen 987  best=+820.6651  mean=-39.1811  pop_best=+251.5205
+gen 988  best=+820.6651  mean=-31.7486  pop_best=+234.8064
+gen 989  best=+820.6651  mean=-23.3675  pop_best=+287.1312
+gen 990  best=+820.6651  mean=-15.8803  pop_best=+270.3816
+gen 991  best=+820.6651  mean=-13.7830  pop_best=+239.7840
+>>> RESTART 37 — stalled for 15 gens, sigma=60.5
+gen 992  best=+820.6651  mean=-86.6443  pop_best=+227.2731
+gen 993  best=+820.6651  mean=-64.6684  pop_best=+220.6261
+gen 994  best=+820.6651  mean=-84.5737  pop_best=+145.9741
+gen 995  best=+820.6651  mean=-57.6024  pop_best=+270.0634
+gen 996  best=+820.6651  mean=-81.9603  pop_best=+279.6795
+gen 997  best=+820.6651  mean=-59.6997  pop_best=+332.6984
+gen 998  best=+820.6651  mean=-85.5544  pop_best=+296.6504
+gen 999  best=+820.6651  mean=-51.1785  pop_best=+276.0848
+gen 1000  best=+820.6651  mean=-44.7425  pop_best=+171.1818
+gen 1001  best=+820.6651  mean=-55.1685  pop_best=+222.5043
+gen 1002  best=+820.6651  mean=-48.5918  pop_best=+283.9308
+gen 1003  best=+820.6651  mean=-47.1389  pop_best=+266.0540
+gen 1004  best=+820.6651  mean=-40.5953  pop_best=+278.4388
+gen 1005  best=+820.6651  mean=-44.6159  pop_best=+214.8382
+gen 1006  best=+820.6651  mean=-28.4663  pop_best=+296.0908
+>>> RESTART 38 — stalled for 15 gens, sigma=62.0
+gen 1007  best=+820.6651  mean=-74.6979  pop_best=+187.2245
+gen 1008  best=+820.6651  mean=-73.2967  pop_best=+247.0873
+gen 1009  best=+820.6651  mean=-66.6055  pop_best=+246.5972
+gen 1010  best=+820.6651  mean=-61.3628  pop_best=+93.6741
+gen 1011  best=+820.6651  mean=-47.5714  pop_best=+341.0809
+gen 1012  best=+820.6651  mean=-52.9562  pop_best=+276.7328
+gen 1013  best=+820.6651  mean=-37.0000  pop_best=+248.4856
+gen 1014  best=+820.6651  mean=-33.3843  pop_best=+237.0726
+gen 1015  best=+820.6651  mean=-34.4071  pop_best=+254.4542
+gen 1016  best=+820.6651  mean=-29.9458  pop_best=+206.2750
+gen 1017  best=+820.6651  mean=-20.3913  pop_best=+282.2310
+gen 1018  best=+820.6651  mean=-17.6195  pop_best=+313.0482
+gen 1019  best=+820.6651  mean=-24.2131  pop_best=+246.1713
+gen 1020  best=+820.6651  mean=-26.4017  pop_best=+214.2562
+gen 1021  best=+820.6651  mean=-16.9244  pop_best=+294.3597
+>>> RESTART 39 — stalled for 15 gens, sigma=63.5
+gen 1022  best=+820.6651  mean=-80.8178  pop_best=+194.8451
+gen 1023  best=+820.6651  mean=-73.4350  pop_best=+282.8764
+gen 1024  best=+820.6651  mean=-63.1874  pop_best=+301.7608
+gen 1025  best=+820.6651  mean=-66.8684  pop_best=+330.8768
+gen 1026  best=+820.6651  mean=-76.8767  pop_best=+294.3703
+gen 1027  best=+820.6651  mean=-66.2329  pop_best=+208.1057
+gen 1028  best=+820.6651  mean=-58.8724  pop_best=+327.4283
+gen 1029  best=+820.6651  mean=-64.6908  pop_best=+263.0095
+gen 1030  best=+820.6651  mean=-59.1237  pop_best=+334.7096
+gen 1031  best=+820.6651  mean=-46.5749  pop_best=+223.8193
+gen 1032  best=+820.6651  mean=-53.6894  pop_best=+246.6226
+gen 1033  best=+820.6651  mean=-41.5917  pop_best=+294.4306
+gen 1034  best=+820.6651  mean=-38.7897  pop_best=+320.4276
+gen 1035  best=+820.6651  mean=-18.3231  pop_best=+281.9755
+gen 1036  best=+820.6651  mean=-30.3961  pop_best=+280.8071
+>>> RESTART 40 — stalled for 15 gens, sigma=65.0
+gen 1037  best=+820.6651  mean=-79.7489  pop_best=+297.7356
+gen 1038  best=+820.6651  mean=-55.4171  pop_best=+246.6252
+gen 1039  best=+820.6651  mean=-72.8621  pop_best=+231.0308
+gen 1040  best=+820.6651  mean=-60.5240  pop_best=+246.8777
+gen 1041  best=+820.6651  mean=-55.8471  pop_best=+219.4091
+gen 1042  best=+820.6651  mean=-51.2855  pop_best=+284.3243
+gen 1043  best=+820.6651  mean=-44.9553  pop_best=+225.8410
+gen 1044  best=+820.6651  mean=-42.6044  pop_best=+234.9144
+gen 1045  best=+820.6651  mean=-38.0958  pop_best=+296.4787
+gen 1046  best=+820.6651  mean=-35.2328  pop_best=+200.7826
+gen 1047  best=+820.6651  mean=-39.9132  pop_best=+213.4292
+gen 1048  best=+820.6651  mean=-35.9064  pop_best=+272.6537
+gen 1049  best=+820.6651  mean=-33.8046  pop_best=+250.6466
+gen 1050  best=+820.6651  mean=-27.4024  pop_best=+295.4682
+gen 1051  best=+820.6651  mean=-28.4414  pop_best=+340.8529
+>>> RESTART 41 — stalled for 15 gens, sigma=66.5
+gen 1052  best=+820.6651  mean=-86.2473  pop_best=+237.3179
+gen 1053  best=+820.6651  mean=-85.0781  pop_best=+277.8991
+gen 1054  best=+820.6651  mean=-76.8442  pop_best=+256.4122
+gen 1055  best=+820.6651  mean=-50.4124  pop_best=+231.3967
+gen 1056  best=+820.6651  mean=-59.2275  pop_best=+291.8579
+gen 1057  best=+820.6651  mean=-67.1100  pop_best=+220.3302
+gen 1058  best=+820.6651  mean=-61.6574  pop_best=+305.8787
+gen 1059  best=+820.6651  mean=-58.6701  pop_best=+234.0577
+gen 1060  best=+820.6651  mean=-50.1705  pop_best=+281.4474
+gen 1061  best=+820.6651  mean=-54.5014  pop_best=+225.3941
+gen 1062  best=+820.6651  mean=-30.0571  pop_best=+252.6665
+gen 1063  best=+820.6651  mean=-29.0440  pop_best=+262.3141
+gen 1064  best=+820.6651  mean=-23.7323  pop_best=+222.6508
+gen 1065  best=+820.6651  mean=-25.4821  pop_best=+231.0354
+gen 1066  best=+820.6651  mean=-27.6314  pop_best=+229.3556
+>>> RESTART 42 — stalled for 15 gens, sigma=68.0
+gen 1067  best=+820.6651  mean=-71.5148  pop_best=+184.7692
+gen 1068  best=+820.6651  mean=-72.8282  pop_best=+191.2341
+gen 1069  best=+820.6651  mean=-71.8750  pop_best=+196.2177
+gen 1070  best=+820.6651  mean=-77.0523  pop_best=+267.6116
+gen 1071  best=+820.6651  mean=-55.4292  pop_best=+281.8152
+gen 1072  best=+820.6651  mean=-52.0719  pop_best=+206.7133
+gen 1073  best=+820.6651  mean=-48.6527  pop_best=+314.3692
+gen 1074  best=+820.6651  mean=-40.0677  pop_best=+213.2953
+gen 1075  best=+820.6651  mean=-42.0704  pop_best=+206.9490
+gen 1076  best=+820.6651  mean=-32.4896  pop_best=+197.5447
+gen 1077  best=+820.6651  mean=-18.3306  pop_best=+283.3889
+gen 1078  best=+820.6651  mean=-21.2543  pop_best=+290.9709
+gen 1079  best=+820.6651  mean=-28.7616  pop_best=+265.1049
+gen 1080  best=+820.6651  mean=-21.9267  pop_best=+270.2363
+gen 1081  best=+820.6651  mean=-28.9534  pop_best=+272.2560
+>>> RESTART 43 — stalled for 15 gens, sigma=69.5
+gen 1082  best=+820.6651  mean=-84.0047  pop_best=+307.4198
+gen 1083  best=+820.6651  mean=-86.4348  pop_best=+243.1347
+gen 1084  best=+820.6651  mean=-67.2889  pop_best=+334.8685
+gen 1085  best=+820.6651  mean=-69.3461  pop_best=+225.1416
+gen 1086  best=+820.6651  mean=-59.5901  pop_best=+256.8839
+gen 1087  best=+820.6651  mean=-70.6003  pop_best=+273.2671
+gen 1088  best=+820.6651  mean=-66.4914  pop_best=+217.2826
+gen 1089  best=+820.6651  mean=-73.6824  pop_best=+264.9544
+gen 1090  best=+820.6651  mean=-47.8412  pop_best=+312.9388
+gen 1091  best=+820.6651  mean=-38.9251  pop_best=+276.7163
+gen 1092  best=+820.6651  mean=-40.7155  pop_best=+271.5711
+gen 1093  best=+820.6651  mean=-41.3923  pop_best=+293.9752
+gen 1094  best=+820.6651  mean=-34.4122  pop_best=+293.0040
+gen 1095  best=+820.6651  mean=-13.6963  pop_best=+247.9401
+gen 1096  best=+820.6651  mean=-22.7082  pop_best=+257.2173
+>>> RESTART 44 — stalled for 15 gens, sigma=71.0
+gen 1097  best=+820.6651  mean=-80.2914  pop_best=+206.5262
+gen 1098  best=+820.6651  mean=-61.6772  pop_best=+185.3518
+gen 1099  best=+820.6651  mean=-76.7376  pop_best=+323.8453
+gen 1100  best=+820.6651  mean=-68.7529  pop_best=+210.4389
+gen 1101  best=+820.6651  mean=-78.1093  pop_best=+281.8272
+gen 1102  best=+820.6651  mean=-73.9606  pop_best=+199.9171
+gen 1103  best=+820.6651  mean=-69.0968  pop_best=+288.1100
+gen 1104  best=+820.6651  mean=-41.1820  pop_best=+236.2484
+gen 1105  best=+820.6651  mean=-64.8139  pop_best=+254.1529
+gen 1106  best=+820.6651  mean=-55.4662  pop_best=+241.7531
+gen 1107  best=+820.6651  mean=-65.1159  pop_best=+256.0146
+gen 1108  best=+820.6651  mean=-70.1202  pop_best=+252.8129
+gen 1109  best=+820.6651  mean=-54.3826  pop_best=+247.1369
+gen 1110  best=+820.6651  mean=-56.8207  pop_best=+207.8255
+gen 1111  best=+820.6651  mean=-42.2179  pop_best=+242.3922
+>>> RESTART 45 — stalled for 15 gens, sigma=72.5
+gen 1112  best=+820.6651  mean=-73.1332  pop_best=+256.2388
+gen 1113  best=+820.6651  mean=-58.0377  pop_best=+229.2445
+gen 1114  best=+820.6651  mean=-76.7323  pop_best=+242.5238
+gen 1115  best=+820.6651  mean=-55.5651  pop_best=+188.9761
+gen 1116  best=+820.6651  mean=-55.6251  pop_best=+307.6265
+gen 1117  best=+820.6651  mean=-50.5661  pop_best=+285.5509
+gen 1118  best=+820.6651  mean=-50.9221  pop_best=+271.3006
+gen 1119  best=+820.6651  mean=-35.6968  pop_best=+159.1772
+gen 1120  best=+820.6651  mean=-28.5691  pop_best=+250.4174
+gen 1121  best=+820.6651  mean=-31.8505  pop_best=+367.4086
+gen 1122  best=+820.6651  mean=-25.7751  pop_best=+260.6160
+gen 1123  best=+820.6651  mean=-40.0535  pop_best=+245.8599
+gen 1124  best=+820.6651  mean=-41.8569  pop_best=+273.7634
+gen 1125  best=+820.6651  mean=-40.5999  pop_best=+241.0995
+gen 1126  best=+820.6651  mean=-23.3861  pop_best=+311.3785
+>>> RESTART 46 — stalled for 15 gens, sigma=74.0
+gen 1127  best=+820.6651  mean=-88.9967  pop_best=+161.7656
+gen 1128  best=+820.6651  mean=-74.4382  pop_best=+216.8442
+gen 1129  best=+820.6651  mean=-81.4727  pop_best=+293.9152
+gen 1130  best=+820.6651  mean=-64.4526  pop_best=+299.7464
+gen 1131  best=+820.6651  mean=-63.0783  pop_best=+208.2464
+gen 1132  best=+820.6651  mean=-60.2087  pop_best=+273.7134
+gen 1133  best=+820.6651  mean=-50.4259  pop_best=+289.9880
+gen 1134  best=+820.6651  mean=-49.0492  pop_best=+247.3113
+gen 1135  best=+820.6651  mean=-39.3446  pop_best=+275.4450
+gen 1136  best=+820.6651  mean=-47.4132  pop_best=+281.9391
+gen 1137  best=+820.6651  mean=-34.6835  pop_best=+341.6247
+gen 1138  best=+820.6651  mean=-27.6530  pop_best=+353.2610
+gen 1139  best=+820.6651  mean=-37.1883  pop_best=+217.5132
+gen 1140  best=+820.6651  mean=-26.9395  pop_best=+212.2698
+gen 1141  best=+820.6651  mean=-33.3135  pop_best=+288.4027
+>>> RESTART 47 — stalled for 15 gens, sigma=75.5
+gen 1142  best=+820.6651  mean=-82.2563  pop_best=+229.1946
+gen 1143  best=+820.6651  mean=-78.2548  pop_best=+199.1918
+gen 1144  best=+820.6651  mean=-87.5953  pop_best=+198.9608
+gen 1145  best=+820.6651  mean=-69.4877  pop_best=+273.4503
+gen 1146  best=+820.6651  mean=-53.6673  pop_best=+124.9766
+gen 1147  best=+820.6651  mean=-65.8288  pop_best=+257.3342
+gen 1148  best=+820.6651  mean=-63.9171  pop_best=+243.3211
+gen 1149  best=+820.6651  mean=-49.2930  pop_best=+256.6165
+gen 1150  best=+820.6651  mean=-39.1590  pop_best=+284.3501
+gen 1151  best=+820.6651  mean=-39.9329  pop_best=+258.0654
+gen 1152  best=+820.6651  mean=-33.0034  pop_best=+236.3459
+gen 1153  best=+820.6651  mean=-19.4614  pop_best=+278.1474
+gen 1154  best=+820.6651  mean=-16.6327  pop_best=+263.1632
+gen 1155  best=+820.6651  mean=-22.2187  pop_best=+256.2361
+gen 1156  best=+820.6651  mean=-7.1155  pop_best=+280.8371
+>>> RESTART 48 — stalled for 15 gens, sigma=77.0
+gen 1157  best=+820.6651  mean=-74.9766  pop_best=+279.7734
+gen 1158  best=+820.6651  mean=-81.4787  pop_best=+341.5550
+gen 1159  best=+820.6651  mean=-57.5256  pop_best=+275.1993
+gen 1160  best=+820.6651  mean=-59.8856  pop_best=+215.2705
+gen 1161  best=+820.6651  mean=-65.6999  pop_best=+284.1207
+gen 1162  best=+820.6651  mean=-55.6213  pop_best=+245.3362
+gen 1163  best=+820.6651  mean=-57.5747  pop_best=+276.2919
+gen 1164  best=+820.6651  mean=-42.9108  pop_best=+236.5463
+gen 1165  best=+820.6651  mean=-50.9912  pop_best=+241.3570
+gen 1166  best=+820.6651  mean=-43.1084  pop_best=+329.9357
+gen 1167  best=+820.6651  mean=-44.3325  pop_best=+245.8373
+gen 1168  best=+820.6651  mean=-30.8458  pop_best=+295.0314
+gen 1169  best=+820.6651  mean=-20.1406  pop_best=+258.7275
+gen 1170  best=+820.6651  mean=-22.0104  pop_best=+288.7096
+gen 1171  best=+820.6651  mean=-20.7775  pop_best=+261.1032
+>>> RESTART 49 — stalled for 15 gens, sigma=78.5
+gen 1172  best=+820.6651  mean=-78.2960  pop_best=+182.2501
+gen 1173  best=+820.6651  mean=-75.1010  pop_best=+250.6122
+gen 1174  best=+820.6651  mean=-66.5728  pop_best=+343.0339
+gen 1175  best=+820.6651  mean=-64.9914  pop_best=+325.3516
+gen 1176  best=+820.6651  mean=-76.2568  pop_best=+255.3502
+gen 1177  best=+820.6651  mean=-56.3355  pop_best=+252.5045
+gen 1178  best=+820.6651  mean=-53.8785  pop_best=+239.0427
+gen 1179  best=+820.6651  mean=-41.5728  pop_best=+244.3063
+gen 1180  best=+820.6651  mean=-41.3774  pop_best=+270.0255
+gen 1181  best=+820.6651  mean=-38.9502  pop_best=+267.3368
+gen 1182  best=+820.6651  mean=-29.2577  pop_best=+304.2363
+gen 1183  best=+820.6651  mean=-23.9079  pop_best=+300.0834
+gen 1184  best=+820.6651  mean=-25.2198  pop_best=+276.0548
+gen 1185  best=+820.6651  mean=-16.9962  pop_best=+292.3537
+gen 1186  best=+820.6651  mean=-23.1864  pop_best=+281.9480
+>>> RESTART 50 — stalled for 15 gens, sigma=80.0
+gen 1187  best=+820.6651  mean=-75.9987  pop_best=+232.6065
+gen 1188  best=+820.6651  mean=-69.1517  pop_best=+243.3853
+gen 1189  best=+820.6651  mean=-69.1229  pop_best=+194.5809
+gen 1190  best=+820.6651  mean=-82.3575  pop_best=+279.9360
+gen 1191  best=+820.6651  mean=-59.8970  pop_best=+269.3670
+gen 1192  best=+820.6651  mean=-55.4989  pop_best=+234.7493
+gen 1193  best=+820.6651  mean=-40.3933  pop_best=+286.6742
+gen 1194  best=+820.6651  mean=-41.8944  pop_best=+340.2909
+gen 1195  best=+820.6651  mean=-42.0847  pop_best=+317.8697
+gen 1196  best=+820.6651  mean=-42.0172  pop_best=+273.0907
+gen 1197  best=+820.6651  mean=-47.7226  pop_best=+277.3639
+gen 1198  best=+820.6651  mean=-24.4732  pop_best=+324.0950
+gen 1199  best=+820.6651  mean=-30.0627  pop_best=+335.9208
+gen 1200  best=+820.6651  mean=-30.7588  pop_best=+363.6002
+gen 1201  best=+820.6651  mean=-33.6385  pop_best=+304.3915
+>>> RESTART 51 — stalled for 15 gens, sigma=81.5
+gen 1202  best=+820.6651  mean=-86.3409  pop_best=+169.4609
+gen 1203  best=+820.6651  mean=-73.8159  pop_best=+325.5803
+gen 1204  best=+820.6651  mean=-56.3551  pop_best=+283.8364
+gen 1205  best=+820.6651  mean=-60.5427  pop_best=+270.6015
+gen 1206  best=+820.6651  mean=-72.9649  pop_best=+306.4181
+gen 1207  best=+820.6651  mean=-66.1930  pop_best=+197.3200
+gen 1208  best=+820.6651  mean=-62.3115  pop_best=+265.4672
+gen 1209  best=+820.6651  mean=-59.4195  pop_best=+306.1590
+gen 1210  best=+820.6651  mean=-67.0334  pop_best=+236.1579
+gen 1211  best=+820.6651  mean=-49.3743  pop_best=+255.1490
+gen 1212  best=+820.6651  mean=-46.6813  pop_best=+312.1827
+gen 1213  best=+820.6651  mean=-32.1839  pop_best=+271.1834
+gen 1214  best=+820.6651  mean=-42.4519  pop_best=+269.7002
+gen 1215  best=+820.6651  mean=-26.9714  pop_best=+264.0592
+gen 1216  best=+820.6651  mean=-21.9832  pop_best=+273.5140
+>>> RESTART 52 — stalled for 15 gens, sigma=83.0
+gen 1217  best=+820.6651  mean=-68.5755  pop_best=+190.0805
+gen 1218  best=+820.6651  mean=-66.8136  pop_best=+303.1040
+gen 1219  best=+820.6651  mean=-72.5726  pop_best=+358.8123
+gen 1220  best=+820.6651  mean=-81.3370  pop_best=+208.2729
+gen 1221  best=+820.6651  mean=-70.5128  pop_best=+237.7775
+gen 1222  best=+820.6651  mean=-55.6383  pop_best=+245.2582
+gen 1223  best=+820.6651  mean=-73.3322  pop_best=+295.8813
+gen 1224  best=+820.6651  mean=-62.1370  pop_best=+236.3176
+gen 1225  best=+820.6651  mean=-51.1498  pop_best=+251.3348
+gen 1226  best=+820.6651  mean=-54.4576  pop_best=+270.8716
+gen 1227  best=+820.6651  mean=-53.3574  pop_best=+191.1805
+gen 1228  best=+820.6651  mean=-34.4784  pop_best=+284.9955
+gen 1229  best=+820.6651  mean=-35.8081  pop_best=+295.2692
+gen 1230  best=+820.6651  mean=-35.1922  pop_best=+281.5577
+gen 1231  best=+820.6651  mean=-35.4408  pop_best=+311.1686
+>>> RESTART 53 — stalled for 15 gens, sigma=84.5
+gen 1232  best=+820.6651  mean=-68.1298  pop_best=+255.7973
+gen 1233  best=+820.6651  mean=-76.5255  pop_best=+253.4060
+gen 1234  best=+820.6651  mean=-76.1995  pop_best=+263.1812
+gen 1235  best=+820.6651  mean=-68.5823  pop_best=+245.9151
+gen 1236  best=+820.6651  mean=-65.5857  pop_best=+327.2921
+gen 1237  best=+820.6651  mean=-62.6756  pop_best=+329.3098
+gen 1238  best=+820.6651  mean=-87.3888  pop_best=+242.3634
+gen 1239  best=+820.6651  mean=-74.2830  pop_best=+324.2247
+gen 1240  best=+820.6651  mean=-62.6253  pop_best=+249.9726
+gen 1241  best=+820.6651  mean=-70.1897  pop_best=+318.6127
+gen 1242  best=+820.6651  mean=-58.9091  pop_best=+264.6922
+gen 1243  best=+820.6651  mean=-42.8800  pop_best=+210.4535
+gen 1244  best=+820.6651  mean=-30.2755  pop_best=+271.1738
+gen 1245  best=+820.6651  mean=-51.6329  pop_best=+292.1772
+gen 1246  best=+820.6651  mean=-45.4017  pop_best=+264.9653
+>>> RESTART 54 — stalled for 15 gens, sigma=86.0
+gen 1247  best=+820.6651  mean=-62.3172  pop_best=+272.7345
+gen 1248  best=+820.6651  mean=-75.0050  pop_best=+279.1208
+gen 1249  best=+820.6651  mean=-65.8185  pop_best=+317.1748
+gen 1250  best=+820.6651  mean=-70.1468  pop_best=+291.4721
+gen 1251  best=+820.6651  mean=-64.9232  pop_best=+231.3613
+gen 1252  best=+820.6651  mean=-61.7122  pop_best=+247.4527
+gen 1253  best=+820.6651  mean=-65.3063  pop_best=+208.6408
+gen 1254  best=+820.6651  mean=-41.0368  pop_best=+283.3916
+gen 1255  best=+820.6651  mean=-45.9363  pop_best=+272.6157
+gen 1256  best=+820.6651  mean=-34.9872  pop_best=+215.2965
+gen 1257  best=+820.6651  mean=-37.4826  pop_best=+224.9550
+gen 1258  best=+820.6651  mean=-41.5736  pop_best=+295.8461
+gen 1259  best=+820.6651  mean=-34.0996  pop_best=+240.4773
+gen 1260  best=+820.6651  mean=-25.3019  pop_best=+299.9755
+gen 1261  best=+820.6651  mean=-26.5357  pop_best=+241.2567
+>>> RESTART 55 — stalled for 15 gens, sigma=87.5
+gen 1262  best=+820.6651  mean=-79.6783  pop_best=+193.9504
+gen 1263  best=+820.6651  mean=-84.7456  pop_best=+191.7661
+gen 1264  best=+820.6651  mean=-67.2699  pop_best=+246.5577
+gen 1265  best=+820.6651  mean=-68.8858  pop_best=+228.1308
+gen 1266  best=+820.6651  mean=-65.3801  pop_best=+345.6692
+gen 1267  best=+820.6651  mean=-61.1842  pop_best=+284.9038
+gen 1268  best=+820.6651  mean=-68.2803  pop_best=+258.0353
+gen 1269  best=+820.6651  mean=-50.6759  pop_best=+286.4748
+gen 1270  best=+820.6651  mean=-66.9267  pop_best=+288.7644
+gen 1271  best=+820.6651  mean=-39.8983  pop_best=+285.0707
+gen 1272  best=+820.6651  mean=-58.1316  pop_best=+337.4168
+gen 1273  best=+820.6651  mean=-55.2114  pop_best=+247.7750
+gen 1274  best=+820.6651  mean=-36.8249  pop_best=+385.7363
+gen 1275  best=+820.6651  mean=-45.7328  pop_best=+283.9845
+gen 1276  best=+820.6651  mean=-36.7152  pop_best=+312.2338
+>>> RESTART 56 — stalled for 15 gens, sigma=89.0
+gen 1277  best=+820.6651  mean=-73.8338  pop_best=+244.8636
+gen 1278  best=+820.6651  mean=-75.3937  pop_best=+181.9378
+gen 1279  best=+820.6651  mean=-67.4343  pop_best=+303.7353
+gen 1280  best=+820.6651  mean=-66.1691  pop_best=+218.7759
+gen 1281  best=+820.6651  mean=-77.9053  pop_best=+242.3028
+gen 1282  best=+820.6651  mean=-68.8644  pop_best=+194.5059
+gen 1283  best=+820.6651  mean=-77.9290  pop_best=+334.1527
+gen 1284  best=+820.6651  mean=-60.7401  pop_best=+250.6168
+gen 1285  best=+820.6651  mean=-54.2031  pop_best=+227.7725
+gen 1286  best=+820.6651  mean=-47.0447  pop_best=+245.3161
+gen 1287  best=+820.6651  mean=-54.0450  pop_best=+314.0419
+gen 1288  best=+820.6651  mean=-58.8986  pop_best=+332.8633
+gen 1289  best=+820.6651  mean=-53.0268  pop_best=+279.8233
+gen 1290  best=+820.6651  mean=-39.2091  pop_best=+265.8635
+gen 1291  best=+820.6651  mean=-38.9348  pop_best=+301.9573
+>>> RESTART 57 — stalled for 15 gens, sigma=90.5
+gen 1292  best=+820.6651  mean=-75.6518  pop_best=+238.9109
+gen 1293  best=+820.6651  mean=-75.7636  pop_best=+219.0640
+gen 1294  best=+820.6651  mean=-70.2139  pop_best=+295.0421
+gen 1295  best=+820.6651  mean=-70.1040  pop_best=+319.8603
+gen 1296  best=+820.6651  mean=-68.1135  pop_best=+208.5711
+gen 1297  best=+820.6651  mean=-78.9586  pop_best=+182.2687
+gen 1298  best=+820.6651  mean=-60.6405  pop_best=+226.0764
+gen 1299  best=+820.6651  mean=-55.8993  pop_best=+261.5971
+gen 1300  best=+820.6651  mean=-42.8207  pop_best=+264.8489
+gen 1301  best=+820.6651  mean=-35.7028  pop_best=+211.5565
+gen 1302  best=+820.6651  mean=-29.2324  pop_best=+301.7503
+gen 1303  best=+820.6651  mean=-27.8734  pop_best=+308.6130
+gen 1304  best=+820.6651  mean=-14.9978  pop_best=+295.0141
+gen 1305  best=+820.6651  mean=-16.2949  pop_best=+260.5404
+gen 1306  best=+820.6651  mean=-15.1826  pop_best=+269.5846
+>>> RESTART 58 — stalled for 15 gens, sigma=92.0
+gen 1307  best=+820.6651  mean=-73.4178  pop_best=+216.6771
+gen 1308  best=+820.6651  mean=-66.7101  pop_best=+182.6586
+gen 1309  best=+820.6651  mean=-63.3691  pop_best=+204.6613
+gen 1310  best=+820.6651  mean=-74.1233  pop_best=+308.2474
+gen 1311  best=+820.6651  mean=-58.6124  pop_best=+271.1718
+gen 1312  best=+820.6651  mean=-65.2993  pop_best=+328.9201
+gen 1313  best=+820.6651  mean=-64.0271  pop_best=+283.3354
+gen 1314  best=+820.6651  mean=-70.8540  pop_best=+239.1726
+gen 1315  best=+820.6651  mean=-67.6631  pop_best=+281.7261
+gen 1316  best=+820.6651  mean=-56.2303  pop_best=+293.5887
+gen 1317  best=+820.6651  mean=-46.0393  pop_best=+312.3773
+gen 1318  best=+820.6651  mean=-39.1724  pop_best=+261.4684
+gen 1319  best=+820.6651  mean=-33.2697  pop_best=+384.3470
+gen 1320  best=+820.6651  mean=-29.6667  pop_best=+283.8622
+gen 1321  best=+820.6651  mean=-31.7978  pop_best=+231.2482
+>>> RESTART 59 — stalled for 15 gens, sigma=93.5
+gen 1322  best=+820.6651  mean=-78.4409  pop_best=+205.4700
+gen 1323  best=+820.6651  mean=-76.1871  pop_best=+133.2325
+gen 1324  best=+820.6651  mean=-64.5439  pop_best=+197.8993
+gen 1325  best=+820.6651  mean=-59.3440  pop_best=+301.1700
+gen 1326  best=+820.6651  mean=-72.8151  pop_best=+255.0040
+gen 1327  best=+820.6651  mean=-56.5384  pop_best=+304.9636
+gen 1328  best=+820.6651  mean=-58.5617  pop_best=+284.4973
+gen 1329  best=+820.6651  mean=-51.5971  pop_best=+297.5361
+gen 1330  best=+820.6651  mean=-45.0197  pop_best=+280.1240
+gen 1331  best=+820.6651  mean=-53.1498  pop_best=+270.3519
+gen 1332  best=+820.6651  mean=-39.9557  pop_best=+282.0183
+gen 1333  best=+820.6651  mean=-37.5236  pop_best=+288.7384
+gen 1334  best=+820.6651  mean=-35.5172  pop_best=+232.2184
+gen 1335  best=+820.6651  mean=-30.7105  pop_best=+261.1003
+gen 1336  best=+820.6651  mean=-23.2509  pop_best=+253.4029
+>>> RESTART 60 — stalled for 15 gens, sigma=95.0
+gen 1337  best=+820.6651  mean=-77.3818  pop_best=+221.7267
+gen 1338  best=+820.6651  mean=-81.1733  pop_best=+228.2943
+gen 1339  best=+820.6651  mean=-85.6138  pop_best=+229.9891
+gen 1340  best=+820.6651  mean=-72.6605  pop_best=+293.8535
+gen 1341  best=+820.6651  mean=-59.4036  pop_best=+267.5338
+gen 1342  best=+820.6651  mean=-55.8904  pop_best=+315.1885
+gen 1343  best=+820.6651  mean=-50.9541  pop_best=+312.9446
+gen 1344  best=+820.6651  mean=-42.9304  pop_best=+296.5581
+gen 1345  best=+820.6651  mean=-39.7135  pop_best=+284.1538
+gen 1346  best=+820.6651  mean=-32.9556  pop_best=+244.7850
+gen 1347  best=+820.6651  mean=-28.0259  pop_best=+266.8803
+gen 1348  best=+820.6651  mean=-31.3841  pop_best=+243.1388
+gen 1349  best=+820.6651  mean=-23.4615  pop_best=+254.0883
+gen 1350  best=+820.6651  mean=-21.2415  pop_best=+244.7825
+gen 1351  best=+820.6651  mean=-10.4813  pop_best=+346.5430
+>>> RESTART 61 — stalled for 15 gens, sigma=96.5
+gen 1352  best=+820.6651  mean=-77.8042  pop_best=+268.8903
+gen 1353  best=+820.6651  mean=-77.0750  pop_best=+211.3898
+gen 1354  best=+820.6651  mean=-71.9627  pop_best=+226.0280
+gen 1355  best=+820.6651  mean=-82.7553  pop_best=+264.6194
+gen 1356  best=+820.6651  mean=-75.5196  pop_best=+215.9216
+gen 1357  best=+820.6651  mean=-66.6055  pop_best=+232.7123
+gen 1358  best=+820.6651  mean=-75.6356  pop_best=+274.2920
+gen 1359  best=+820.6651  mean=-74.2805  pop_best=+251.0900
+gen 1360  best=+820.6651  mean=-49.8481  pop_best=+225.8169
+gen 1361  best=+820.6651  mean=-66.5404  pop_best=+247.7007
+gen 1362  best=+820.6651  mean=-50.6553  pop_best=+245.8854
+gen 1363  best=+820.6651  mean=-38.5023  pop_best=+403.3406
+gen 1364  best=+820.6651  mean=-49.0952  pop_best=+310.0493
+gen 1365  best=+820.6651  mean=-43.5237  pop_best=+262.4310
+gen 1366  best=+820.6651  mean=-56.2242  pop_best=+257.3797
+>>> RESTART 62 — stalled for 15 gens, sigma=98.0
+gen 1367  best=+820.6651  mean=-86.2134  pop_best=+233.8325
+gen 1368  best=+820.6651  mean=-64.0279  pop_best=+126.1718
+gen 1369  best=+820.6651  mean=-78.6470  pop_best=+227.1505
+gen 1370  best=+820.6651  mean=-69.4962  pop_best=+203.1814
+gen 1371  best=+820.6651  mean=-64.4778  pop_best=+278.6887
+gen 1372  best=+820.6651  mean=-56.8260  pop_best=+246.2927
+gen 1373  best=+820.6651  mean=-59.9434  pop_best=+233.1649
+gen 1374  best=+820.6651  mean=-67.6204  pop_best=+273.1024
+gen 1375  best=+820.6651  mean=-56.1784  pop_best=+237.5457
+gen 1376  best=+820.6651  mean=-52.0525  pop_best=+299.4227
+gen 1377  best=+820.6651  mean=-33.6482  pop_best=+296.1384
+gen 1378  best=+820.6651  mean=-29.2365  pop_best=+316.1852
+gen 1379  best=+820.6651  mean=-31.8594  pop_best=+306.4380
+gen 1380  best=+820.6651  mean=-27.1132  pop_best=+243.3057
+gen 1381  best=+820.6651  mean=-30.2103  pop_best=+294.7585
+>>> RESTART 63 — stalled for 15 gens, sigma=99.5
+gen 1382  best=+820.6651  mean=-70.8872  pop_best=+260.8078
+gen 1383  best=+820.6651  mean=-67.3729  pop_best=+255.0070
+gen 1384  best=+820.6651  mean=-58.2449  pop_best=+325.3797
+gen 1385  best=+820.6651  mean=-71.4264  pop_best=+255.8582
+gen 1386  best=+820.6651  mean=-60.5887  pop_best=+277.2828
+gen 1387  best=+820.6651  mean=-47.3852  pop_best=+203.3980
+gen 1388  best=+820.6651  mean=-41.0838  pop_best=+308.6289
+gen 1389  best=+820.6651  mean=-52.3397  pop_best=+240.1676
+gen 1390  best=+820.6651  mean=-34.3875  pop_best=+260.8855
+gen 1391  best=+820.6651  mean=-36.6905  pop_best=+254.6991
+gen 1392  best=+820.6651  mean=-28.7365  pop_best=+257.9714
+gen 1393  best=+820.6651  mean=-29.1994  pop_best=+233.3167
+gen 1394  best=+820.6651  mean=-28.1054  pop_best=+257.7362
+gen 1395  best=+820.6651  mean=-12.7325  pop_best=+252.0254
+gen 1396  best=+820.6651  mean=-16.1855  pop_best=+322.1929
+>>> RESTART 64 — stalled for 15 gens, sigma=101.0
+gen 1397  best=+820.6651  mean=-66.5799  pop_best=+220.7236
+gen 1398  best=+820.6651  mean=-75.0900  pop_best=+198.2283
+gen 1399  best=+820.6651  mean=-67.4697  pop_best=+235.6029
+gen 1400  best=+820.6651  mean=-49.8320  pop_best=+308.5786
+gen 1401  best=+820.6651  mean=-56.8221  pop_best=+345.1209
+gen 1402  best=+820.6651  mean=-49.4751  pop_best=+247.8460
+gen 1403  best=+820.6651  mean=-56.7228  pop_best=+223.5451
+gen 1404  best=+820.6651  mean=-40.4976  pop_best=+244.9015
+gen 1405  best=+820.6651  mean=-34.9230  pop_best=+296.3240
+gen 1406  best=+820.6651  mean=-23.4939  pop_best=+305.5504
+gen 1407  best=+820.6651  mean=-33.3696  pop_best=+239.7920
+gen 1408  best=+820.6651  mean=-30.0961  pop_best=+291.2276
+gen 1409  best=+820.6651  mean=-20.4285  pop_best=+323.5552
+gen 1410  best=+820.6651  mean=-23.1878  pop_best=+304.3384
+gen 1411  best=+820.6651  mean=-31.7614  pop_best=+283.3632
+>>> RESTART 65 — stalled for 15 gens, sigma=102.5
+gen 1412  best=+820.6651  mean=-75.8796  pop_best=+198.8327
+gen 1413  best=+820.6651  mean=-68.8914  pop_best=+236.5690
+gen 1414  best=+820.6651  mean=-67.7789  pop_best=+248.4757
+gen 1415  best=+820.6651  mean=-57.1905  pop_best=+248.1160
+gen 1416  best=+820.6651  mean=-53.5003  pop_best=+317.9309
+gen 1417  best=+820.6651  mean=-56.0523  pop_best=+293.5272
+gen 1418  best=+820.6651  mean=-51.7520  pop_best=+265.4733
+gen 1419  best=+820.6651  mean=-44.3960  pop_best=+305.6765
+gen 1420  best=+820.6651  mean=-39.2490  pop_best=+258.8379
+gen 1421  best=+820.6651  mean=-34.9527  pop_best=+259.2524
+gen 1422  best=+820.6651  mean=-32.6756  pop_best=+277.4637
+gen 1423  best=+820.6651  mean=-37.7390  pop_best=+277.7903
+gen 1424  best=+820.6651  mean=-29.1664  pop_best=+271.1463
+gen 1425  best=+820.6651  mean=-32.5019  pop_best=+241.1820
+gen 1426  best=+820.6651  mean=-27.8674  pop_best=+277.6216
+>>> RESTART 66 — stalled for 15 gens, sigma=104.0
+gen 1427  best=+820.6651  mean=-87.6256  pop_best=+240.3411
+gen 1428  best=+820.6651  mean=-66.4483  pop_best=+247.2798
+gen 1429  best=+820.6651  mean=-74.0058  pop_best=+313.4145
+gen 1430  best=+820.6651  mean=-63.2370  pop_best=+211.6918
+gen 1431  best=+820.6651  mean=-58.2821  pop_best=+328.4118
+gen 1432  best=+820.6651  mean=-47.7687  pop_best=+224.4086
+gen 1433  best=+820.6651  mean=-62.6471  pop_best=+346.2211
+gen 1434  best=+820.6651  mean=-42.2376  pop_best=+265.3744
+gen 1435  best=+820.6651  mean=-40.5259  pop_best=+246.0876
+gen 1436  best=+820.6651  mean=-34.2571  pop_best=+290.6547
+gen 1437  best=+820.6651  mean=-30.2155  pop_best=+315.0809
+gen 1438  best=+820.6651  mean=-24.4233  pop_best=+235.1557
+gen 1439  best=+820.6651  mean=-22.2907  pop_best=+293.6614
+gen 1440  best=+820.6651  mean=-20.0293  pop_best=+278.9419
+gen 1441  best=+820.6651  mean=-12.8126  pop_best=+266.3095
+>>> RESTART 67 — stalled for 15 gens, sigma=105.5
+gen 1442  best=+820.6651  mean=-73.5356  pop_best=+254.1937
+gen 1443  best=+820.6651  mean=-79.8869  pop_best=+261.1244
+gen 1444  best=+820.6651  mean=-76.8016  pop_best=+256.6404
+gen 1445  best=+820.6651  mean=-61.8241  pop_best=+202.0584
+gen 1446  best=+820.6651  mean=-66.9378  pop_best=+224.8456
+gen 1447  best=+820.6651  mean=-53.7299  pop_best=+258.8302
+gen 1448  best=+820.6651  mean=-58.6082  pop_best=+240.5436
+gen 1449  best=+820.6651  mean=-45.8118  pop_best=+302.3746
+gen 1450  best=+820.6651  mean=-38.7972  pop_best=+259.3184
+gen 1451  best=+820.6651  mean=-36.7867  pop_best=+273.9538
+gen 1452  best=+820.6651  mean=-33.0327  pop_best=+288.2678
+gen 1453  best=+820.6651  mean=-28.2456  pop_best=+272.8364
+gen 1454  best=+820.6651  mean=-34.7169  pop_best=+283.7884
+gen 1455  best=+820.6651  mean=-29.4041  pop_best=+236.7507
+gen 1456  best=+820.6651  mean=-15.7788  pop_best=+317.8995
+>>> RESTART 68 — stalled for 15 gens, sigma=107.0
+gen 1457  best=+820.6651  mean=-59.9856  pop_best=+266.2404
+gen 1458  best=+820.6651  mean=-73.1605  pop_best=+217.8777
+gen 1459  best=+820.6651  mean=-66.3028  pop_best=+231.3592
+gen 1460  best=+820.6651  mean=-65.5363  pop_best=+271.7132
+gen 1461  best=+820.6651  mean=-57.8788  pop_best=+376.1141
+gen 1462  best=+820.6651  mean=-61.6672  pop_best=+216.5069
+gen 1463  best=+820.6651  mean=-45.1625  pop_best=+328.7931
+gen 1464  best=+820.6651  mean=-43.6923  pop_best=+243.5305
+gen 1465  best=+820.6651  mean=-35.0405  pop_best=+248.5676
+gen 1466  best=+820.6651  mean=-31.3720  pop_best=+279.2830
+gen 1467  best=+820.6651  mean=-27.8486  pop_best=+250.3688
+gen 1468  best=+820.6651  mean=-23.4427  pop_best=+262.3291
+gen 1469  best=+820.6651  mean=-11.2692  pop_best=+338.0265
+gen 1470  best=+820.6651  mean=-8.1148  pop_best=+262.3317
+gen 1471  best=+820.6651  mean=-2.7101  pop_best=+285.0150
+>>> RESTART 69 — stalled for 15 gens, sigma=108.5
+gen 1472  best=+820.6651  mean=-80.0635  pop_best=+210.1857
+gen 1473  best=+820.6651  mean=-77.8166  pop_best=+218.6827
+gen 1474  best=+820.6651  mean=-65.8858  pop_best=+280.5523
+gen 1475  best=+820.6651  mean=-68.1002  pop_best=+242.9750
+gen 1476  best=+820.6651  mean=-58.9855  pop_best=+207.7432
+gen 1477  best=+820.6651  mean=-42.4558  pop_best=+262.0881
+gen 1478  best=+820.6651  mean=-43.2008  pop_best=+255.1341
+gen 1479  best=+820.6651  mean=-50.3944  pop_best=+234.7400
+gen 1480  best=+820.6651  mean=-44.4667  pop_best=+286.4318
+gen 1481  best=+820.6651  mean=-34.8997  pop_best=+244.2860
+gen 1482  best=+820.6651  mean=-34.9391  pop_best=+326.8768
+gen 1483  best=+820.6651  mean=-35.5064  pop_best=+264.1725
+gen 1484  best=+820.6651  mean=-46.0656  pop_best=+278.9201
+gen 1485  best=+820.6651  mean=-30.9018  pop_best=+294.8657
+gen 1486  best=+820.6651  mean=-24.8330  pop_best=+327.1247
+>>> RESTART 70 — stalled for 15 gens, sigma=110.0
+gen 1487  best=+820.6651  mean=-90.7880  pop_best=+287.9101
+gen 1488  best=+820.6651  mean=-65.2588  pop_best=+239.5181
+gen 1489  best=+820.6651  mean=-68.2668  pop_best=+285.8184
+gen 1490  best=+820.6651  mean=-64.8239  pop_best=+209.3474
+gen 1491  best=+820.6651  mean=-60.3799  pop_best=+294.8879
+gen 1492  best=+820.6651  mean=-62.7467  pop_best=+248.5354
+gen 1493  best=+820.6651  mean=-62.4080  pop_best=+251.9933
+gen 1494  best=+820.6651  mean=-56.2825  pop_best=+308.0255
+gen 1495  best=+820.6651  mean=-65.2047  pop_best=+285.5937
+gen 1496  best=+820.6651  mean=-38.2967  pop_best=+275.5119
+gen 1497  best=+820.6651  mean=-39.4566  pop_best=+222.9068
+gen 1498  best=+820.6651  mean=-27.5763  pop_best=+328.8278
+gen 1499  best=+820.6651  mean=-38.4715  pop_best=+289.0562
+gen 1500  best=+820.6651  mean=-26.5412  pop_best=+308.4910
+gen 1501  best=+820.6651  mean=-28.4423  pop_best=+347.6459
+>>> RESTART 71 — stalled for 15 gens, sigma=111.5
+gen 1502  best=+820.6651  mean=-76.2009  pop_best=+314.2412
+gen 1503  best=+820.6651  mean=-68.2983  pop_best=+255.4134
+gen 1504  best=+820.6651  mean=-62.8187  pop_best=+140.9420
+gen 1505  best=+820.6651  mean=-65.7877  pop_best=+284.7046
+gen 1506  best=+820.6651  mean=-57.8450  pop_best=+276.0956
+gen 1507  best=+820.6651  mean=-72.0361  pop_best=+294.4763
+gen 1508  best=+820.6651  mean=-55.1577  pop_best=+310.9655
+gen 1509  best=+820.6651  mean=-48.0387  pop_best=+348.2359
+gen 1510  best=+820.6651  mean=-55.6093  pop_best=+258.4165
+gen 1511  best=+820.6651  mean=-43.6750  pop_best=+324.3712
+gen 1512  best=+820.6651  mean=-42.9343  pop_best=+331.8663
+gen 1513  best=+820.6651  mean=-44.6476  pop_best=+317.7553
+gen 1514  best=+820.6651  mean=-41.1711  pop_best=+288.4387
+gen 1515  best=+820.6651  mean=-42.8397  pop_best=+314.7508
+gen 1516  best=+820.6651  mean=-41.3904  pop_best=+290.2102
+>>> RESTART 72 — stalled for 15 gens, sigma=113.0
+gen 1517  best=+820.6651  mean=-81.8504  pop_best=+231.9737
+gen 1518  best=+820.6651  mean=-72.7376  pop_best=+418.1156
+gen 1519  best=+820.6651  mean=-63.1356  pop_best=+253.3566
+gen 1520  best=+820.6651  mean=-60.1809  pop_best=+366.4270
+gen 1521  best=+820.6651  mean=-68.0547  pop_best=+363.2052
+gen 1522  best=+820.6651  mean=-58.1407  pop_best=+244.3731
+gen 1523  best=+820.6651  mean=-55.9935  pop_best=+266.6717
+gen 1524  best=+820.6651  mean=-74.3383  pop_best=+260.3216
+gen 1525  best=+820.6651  mean=-46.5617  pop_best=+301.1966
+gen 1526  best=+820.6651  mean=-52.7812  pop_best=+236.2794
+gen 1527  best=+820.6651  mean=-40.7359  pop_best=+313.7619
+gen 1528  best=+820.6651  mean=-42.3297  pop_best=+278.8059
+gen 1529  best=+820.6651  mean=-34.8088  pop_best=+264.3795
+gen 1530  best=+820.6651  mean=-40.8398  pop_best=+303.2210
+gen 1531  best=+820.6651  mean=-26.1383  pop_best=+260.3489
+>>> RESTART 73 — stalled for 15 gens, sigma=114.5
+gen 1532  best=+820.6651  mean=-69.4261  pop_best=+287.2548
+gen 1533  best=+820.6651  mean=-70.5036  pop_best=+297.0778
+gen 1534  best=+820.6651  mean=-72.8701  pop_best=+225.6498
+gen 1535  best=+820.6651  mean=-64.3566  pop_best=+264.8519
+gen 1536  best=+820.6651  mean=-53.1807  pop_best=+250.1807
+gen 1537  best=+820.6651  mean=-64.6251  pop_best=+240.3283
+gen 1538  best=+820.6651  mean=-65.8178  pop_best=+287.8159
+gen 1539  best=+820.6651  mean=-66.4895  pop_best=+303.3982
+gen 1540  best=+820.6651  mean=-62.1627  pop_best=+302.5332
+gen 1541  best=+820.6651  mean=-42.1537  pop_best=+352.8649
+gen 1542  best=+820.6651  mean=-48.2364  pop_best=+367.9284
+gen 1543  best=+820.6651  mean=-44.0744  pop_best=+309.6115
+gen 1544  best=+820.6651  mean=-28.7737  pop_best=+278.1312
+gen 1545  best=+820.6651  mean=-41.6863  pop_best=+285.3904
+gen 1546  best=+820.6651  mean=-18.5174  pop_best=+326.0769
+>>> RESTART 74 — stalled for 15 gens, sigma=116.0
+gen 1547  best=+820.6651  mean=-80.6986  pop_best=+277.3868
+gen 1548  best=+820.6651  mean=-77.3904  pop_best=+243.7772
+gen 1549  best=+820.6651  mean=-64.0279  pop_best=+311.9953
+gen 1550  best=+820.6651  mean=-72.6336  pop_best=+300.1226
+gen 1551  best=+820.6651  mean=-63.3291  pop_best=+254.8548
+gen 1552  best=+820.6651  mean=-62.8487  pop_best=+351.0826
+gen 1553  best=+820.6651  mean=-72.5853  pop_best=+178.7648
+gen 1554  best=+820.6651  mean=-56.6679  pop_best=+270.8762
+gen 1555  best=+820.6651  mean=-49.2787  pop_best=+283.2268
+gen 1556  best=+820.6651  mean=-54.1835  pop_best=+234.5293
+gen 1557  best=+820.6651  mean=-52.0402  pop_best=+274.0182
+gen 1558  best=+820.6651  mean=-32.7788  pop_best=+254.6137
+gen 1559  best=+820.6651  mean=-42.4102  pop_best=+283.6800
+gen 1560  best=+820.6651  mean=-38.8455  pop_best=+236.0339
+gen 1561  best=+820.6651  mean=-32.8126  pop_best=+361.8408
+>>> RESTART 75 — stalled for 15 gens, sigma=117.5
+gen 1562  best=+820.6651  mean=-71.2783  pop_best=+215.6645
+gen 1563  best=+820.6651  mean=-77.8507  pop_best=+254.6163
+gen 1564  best=+820.6651  mean=-79.0691  pop_best=+332.1081
+gen 1565  best=+820.6651  mean=-72.1475  pop_best=+233.4963
+gen 1566  best=+820.6651  mean=-70.5983  pop_best=+300.3743
+gen 1567  best=+820.6651  mean=-60.0127  pop_best=+370.6137
+gen 1568  best=+820.6651  mean=-69.1482  pop_best=+285.1571
+gen 1569  best=+820.6651  mean=-60.0481  pop_best=+246.0618
+gen 1570  best=+820.6651  mean=-52.9460  pop_best=+264.4569
+gen 1571  best=+820.6651  mean=-59.5644  pop_best=+319.5201
+gen 1572  best=+820.6651  mean=-43.7426  pop_best=+233.4418
+gen 1573  best=+820.6651  mean=-39.1382  pop_best=+225.8767
+gen 1574  best=+820.6651  mean=-21.7870  pop_best=+321.5170
+gen 1575  best=+820.6651  mean=-29.7036  pop_best=+292.7163
+gen 1576  best=+820.6651  mean=-28.4052  pop_best=+265.3500
+>>> RESTART 76 — stalled for 15 gens, sigma=119.0
+gen 1577  best=+820.6651  mean=-63.2818  pop_best=+254.5786
+gen 1578  best=+820.6651  mean=-68.6890  pop_best=+256.9579
+gen 1579  best=+820.6651  mean=-56.6231  pop_best=+241.9316
+gen 1580  best=+820.6651  mean=-64.9553  pop_best=+342.0728
+gen 1581  best=+820.6651  mean=-53.5211  pop_best=+271.7316
+gen 1582  best=+820.6651  mean=-56.4683  pop_best=+275.8691
+gen 1583  best=+820.6651  mean=-55.6818  pop_best=+277.4321
+gen 1584  best=+820.6651  mean=-36.7775  pop_best=+240.6219
+gen 1585  best=+820.6651  mean=-34.8253  pop_best=+248.9006
+gen 1586  best=+820.6651  mean=-31.2993  pop_best=+333.8426
+gen 1587  best=+820.6651  mean=-23.1691  pop_best=+257.5575
+gen 1588  best=+820.6651  mean=-22.7611  pop_best=+281.3374
+gen 1589  best=+820.6651  mean=-20.8250  pop_best=+343.2756
+gen 1590  best=+820.6651  mean=-18.8493  pop_best=+316.2213
+gen 1591  best=+820.6651  mean=-7.5546  pop_best=+257.6297
+>>> RESTART 77 — stalled for 15 gens, sigma=120.5
+gen 1592  best=+820.6651  mean=-88.7182  pop_best=+149.6319
+gen 1593  best=+820.6651  mean=-74.0304  pop_best=+375.8179
+gen 1594  best=+820.6651  mean=-79.3419  pop_best=+235.5127
+gen 1595  best=+820.6651  mean=-82.0152  pop_best=+227.0582
+gen 1596  best=+820.6651  mean=-62.1446  pop_best=+247.5082
+gen 1597  best=+820.6651  mean=-69.9319  pop_best=+259.3351
+gen 1598  best=+820.6651  mean=-61.7387  pop_best=+295.3515
+gen 1599  best=+820.6651  mean=-58.1873  pop_best=+219.1245
+gen 1600  best=+820.6651  mean=-63.1674  pop_best=+264.4755
+gen 1601  best=+820.6651  mean=-54.5850  pop_best=+345.9580
+gen 1602  best=+820.6651  mean=-48.6214  pop_best=+267.3046
+gen 1603  best=+820.6651  mean=-41.9154  pop_best=+266.6338
+gen 1604  best=+820.6651  mean=-39.5330  pop_best=+239.4595
+gen 1605  best=+820.6651  mean=-26.9529  pop_best=+271.3542
+gen 1606  best=+820.6651  mean=-20.3774  pop_best=+266.5756
+>>> RESTART 78 — stalled for 15 gens, sigma=122.0
+gen 1607  best=+820.6651  mean=-73.2111  pop_best=+300.0077
+gen 1608  best=+820.6651  mean=-75.5655  pop_best=+205.3216
+gen 1609  best=+820.6651  mean=-80.3081  pop_best=+222.6874
+gen 1610  best=+820.6651  mean=-52.6637  pop_best=+278.5684
+gen 1611  best=+820.6651  mean=-63.8241  pop_best=+237.6390
+gen 1612  best=+820.6651  mean=-53.9688  pop_best=+304.6028
+gen 1613  best=+820.6651  mean=-42.9695  pop_best=+198.4249
+gen 1614  best=+820.6651  mean=-48.3469  pop_best=+321.5129
+gen 1615  best=+820.6651  mean=-39.1404  pop_best=+302.0195
+gen 1616  best=+820.6651  mean=-34.4314  pop_best=+257.0692
+gen 1617  best=+820.6651  mean=-32.3923  pop_best=+312.4520
+gen 1618  best=+820.6651  mean=-38.7475  pop_best=+322.7353
+gen 1619  best=+820.6651  mean=-30.4745  pop_best=+330.2614
+gen 1620  best=+820.6651  mean=-35.9843  pop_best=+327.8811
+gen 1621  best=+820.6651  mean=-29.8673  pop_best=+317.6328
+>>> RESTART 79 — stalled for 15 gens, sigma=123.5
+gen 1622  best=+820.6651  mean=-75.5642  pop_best=+244.1113
+gen 1623  best=+820.6651  mean=-77.1743  pop_best=+215.0421
+gen 1624  best=+820.6651  mean=-66.9262  pop_best=+250.8426
+gen 1625  best=+820.6651  mean=-67.1327  pop_best=+249.7526
+gen 1626  best=+820.6651  mean=-59.0849  pop_best=+239.1936
+gen 1627  best=+820.6651  mean=-62.0503  pop_best=+227.2380
+gen 1628  best=+820.6651  mean=-66.1364  pop_best=+260.6496
+gen 1629  best=+820.6651  mean=-63.2437  pop_best=+338.0889
+gen 1630  best=+820.6651  mean=-45.2362  pop_best=+259.8611
+gen 1631  best=+820.6651  mean=-42.8098  pop_best=+263.6301
+gen 1632  best=+820.6651  mean=-33.3300  pop_best=+270.5859
+gen 1633  best=+820.6651  mean=-37.6042  pop_best=+278.4426
+gen 1634  best=+820.6651  mean=-31.0572  pop_best=+293.2300
+gen 1635  best=+820.6651  mean=-29.9805  pop_best=+251.7169
+gen 1636  best=+820.6651  mean=-32.0400  pop_best=+292.2099
+>>> RESTART 80 — stalled for 15 gens, sigma=125.0
+gen 1637  best=+820.6651  mean=-75.1730  pop_best=+309.5421
+gen 1638  best=+820.6651  mean=-68.1539  pop_best=+234.4893
+gen 1639  best=+820.6651  mean=-69.1984  pop_best=+257.3449
+gen 1640  best=+820.6651  mean=-69.2507  pop_best=+287.6108
+gen 1641  best=+820.6651  mean=-57.2223  pop_best=+279.0056
+gen 1642  best=+820.6651  mean=-65.7497  pop_best=+263.2586
+gen 1643  best=+820.6651  mean=-60.5003  pop_best=+241.0372
+gen 1644  best=+820.6651  mean=-61.7850  pop_best=+263.4773
+gen 1645  best=+820.6651  mean=-45.8919  pop_best=+276.9345
+gen 1646  best=+820.6651  mean=-35.8562  pop_best=+293.7341
+gen 1647  best=+820.6651  mean=-38.5512  pop_best=+356.8974
+gen 1648  best=+820.6651  mean=-31.7609  pop_best=+322.7319
+gen 1649  best=+820.6651  mean=-29.8154  pop_best=+292.2201
+gen 1650  best=+820.6651  mean=-23.0340  pop_best=+335.6764
+gen 1651  best=+820.6651  mean=-18.4563  pop_best=+309.6530
+>>> RESTART 81 — stalled for 15 gens, sigma=126.5
+gen 1652  best=+820.6651  mean=-69.5003  pop_best=+199.1657
+gen 1653  best=+820.6651  mean=-81.6217  pop_best=+306.8819
+gen 1654  best=+820.6651  mean=-65.0689  pop_best=+222.9912
+gen 1655  best=+820.6651  mean=-71.9119  pop_best=+254.6998
+gen 1656  best=+820.6651  mean=-77.3278  pop_best=+268.7358
+gen 1657  best=+820.6651  mean=-71.1155  pop_best=+265.8410
+gen 1658  best=+820.6651  mean=-59.9714  pop_best=+266.9527
+gen 1659  best=+820.6651  mean=-57.3098  pop_best=+279.6593
+gen 1660  best=+820.6651  mean=-59.7709  pop_best=+275.0953
+gen 1661  best=+820.6651  mean=-43.9990  pop_best=+249.5323
+gen 1662  best=+820.6651  mean=-38.7867  pop_best=+255.9301
+gen 1663  best=+820.6651  mean=-40.6809  pop_best=+292.7709
+gen 1664  best=+820.6651  mean=-42.4043  pop_best=+320.9103
+gen 1665  best=+820.6651  mean=-36.9785  pop_best=+259.9125
+gen 1666  best=+820.6651  mean=-22.9976  pop_best=+268.3161
+>>> RESTART 82 — stalled for 15 gens, sigma=128.0
+gen 1667  best=+820.6651  mean=-81.0350  pop_best=+274.7281
+gen 1668  best=+820.6651  mean=-76.0912  pop_best=+201.6292
+gen 1669  best=+820.6651  mean=-78.3487  pop_best=+320.5352
+gen 1670  best=+820.6651  mean=-76.6615  pop_best=+288.1744
+gen 1671  best=+820.6651  mean=-67.0648  pop_best=+304.5459
+gen 1672  best=+820.6651  mean=-62.5763  pop_best=+330.3051
+gen 1673  best=+820.6651  mean=-50.1843  pop_best=+217.7380
+gen 1674  best=+820.6651  mean=-50.7087  pop_best=+251.9723
+gen 1675  best=+820.6651  mean=-37.8302  pop_best=+265.7287
+gen 1676  best=+820.6651  mean=-38.0836  pop_best=+259.9241
+gen 1677  best=+820.6651  mean=-41.4539  pop_best=+313.1877
+gen 1678  best=+820.6651  mean=-35.6595  pop_best=+296.0831
+gen 1679  best=+820.6651  mean=-20.0937  pop_best=+313.6937
+gen 1680  best=+820.6651  mean=-30.2396  pop_best=+259.7581
+gen 1681  best=+820.6651  mean=-33.3211  pop_best=+289.6968
+>>> RESTART 83 — stalled for 15 gens, sigma=129.5
+gen 1682  best=+820.6651  mean=-83.3786  pop_best=+187.7840
+gen 1683  best=+820.6651  mean=-68.3773  pop_best=+281.2406
+gen 1684  best=+820.6651  mean=-69.5114  pop_best=+297.4080
+gen 1685  best=+820.6651  mean=-65.3796  pop_best=+266.1326
+gen 1686  best=+820.6651  mean=-54.4764  pop_best=+294.8782
+gen 1687  best=+820.6651  mean=-47.0232  pop_best=+298.5551
+gen 1688  best=+820.6651  mean=-60.3494  pop_best=+312.1426
+gen 1689  best=+820.6651  mean=-57.0142  pop_best=+279.6254
+gen 1690  best=+820.6651  mean=-55.1196  pop_best=+292.9776
+gen 1691  best=+820.6651  mean=-51.9516  pop_best=+399.4282
+gen 1692  best=+820.6651  mean=-43.7528  pop_best=+322.4307
+gen 1693  best=+820.6651  mean=-35.9927  pop_best=+360.7672
+gen 1694  best=+820.6651  mean=-29.4900  pop_best=+316.1627
+gen 1695  best=+820.6651  mean=-25.9123  pop_best=+322.4053
+gen 1696  best=+820.6651  mean=-22.5310  pop_best=+293.0665
+>>> RESTART 84 — stalled for 15 gens, sigma=131.0
+gen 1697  best=+820.6651  mean=-79.7522  pop_best=+157.7032
+gen 1698  best=+820.6651  mean=-68.2242  pop_best=+237.7979
+gen 1699  best=+820.6651  mean=-60.6255  pop_best=+217.9053
+gen 1700  best=+820.6651  mean=-80.6513  pop_best=+211.7118
+gen 1701  best=+820.6651  mean=-80.3164  pop_best=+304.0248
+gen 1702  best=+820.6651  mean=-66.1516  pop_best=+281.0137
+gen 1703  best=+820.6651  mean=-71.9483  pop_best=+399.1602
+gen 1704  best=+820.6651  mean=-73.9468  pop_best=+296.8606
+gen 1705  best=+820.6651  mean=-68.6178  pop_best=+261.7865
+gen 1706  best=+820.6651  mean=-65.2251  pop_best=+340.7219
+gen 1707  best=+820.6651  mean=-70.2895  pop_best=+285.9884
+gen 1708  best=+820.6651  mean=-55.6848  pop_best=+370.0638
+gen 1709  best=+820.6651  mean=-52.4372  pop_best=+312.9957
+gen 1710  best=+820.6651  mean=-50.5567  pop_best=+281.4949
+gen 1711  best=+820.6651  mean=-38.6123  pop_best=+330.4267
+>>> RESTART 85 — stalled for 15 gens, sigma=132.5
+gen 1712  best=+820.6651  mean=-76.7990  pop_best=+299.5704
+gen 1713  best=+820.6651  mean=-59.6155  pop_best=+243.5152
+gen 1714  best=+820.6651  mean=-70.0113  pop_best=+239.5105
+gen 1715  best=+820.6651  mean=-73.6360  pop_best=+275.8351
+gen 1716  best=+820.6651  mean=-64.0380  pop_best=+254.2370
+gen 1717  best=+820.6651  mean=-70.8671  pop_best=+361.7892
+gen 1718  best=+820.6651  mean=-55.7426  pop_best=+262.0551
+gen 1719  best=+820.6651  mean=-43.1491  pop_best=+301.5151
+gen 1720  best=+820.6651  mean=-45.8771  pop_best=+330.9755
+gen 1721  best=+820.6651  mean=-37.8220  pop_best=+277.8656
+gen 1722  best=+820.6651  mean=-34.2710  pop_best=+252.0815
+gen 1723  best=+820.6651  mean=-20.3523  pop_best=+296.4978
+gen 1724  best=+820.6651  mean=-26.3267  pop_best=+245.8840
+gen 1725  best=+820.6651  mean=-27.9341  pop_best=+255.3455
+gen 1726  best=+820.6651  mean=-22.3011  pop_best=+270.0779
+>>> RESTART 86 — stalled for 15 gens, sigma=134.0
+gen 1727  best=+820.6651  mean=-81.3984  pop_best=+295.6003
+gen 1728  best=+820.6651  mean=-71.3727  pop_best=+258.0011
+gen 1729  best=+820.6651  mean=-62.6117  pop_best=+288.7060
+gen 1730  best=+820.6651  mean=-64.3862  pop_best=+272.0605
+gen 1731  best=+820.6651  mean=-64.9163  pop_best=+272.3927
+gen 1732  best=+820.6651  mean=-54.1009  pop_best=+310.2771
+gen 1733  best=+820.6651  mean=-42.4072  pop_best=+306.9789
+gen 1734  best=+820.6651  mean=-38.2279  pop_best=+265.4721
+gen 1735  best=+820.6651  mean=-38.9815  pop_best=+277.4092
+gen 1736  best=+820.6651  mean=-35.9498  pop_best=+297.0788
+gen 1737  best=+820.6651  mean=-21.4266  pop_best=+313.7172
+gen 1738  best=+820.6651  mean=-21.7713  pop_best=+265.9958
+gen 1739  best=+820.6651  mean=-11.3871  pop_best=+282.9422
+gen 1740  best=+820.6651  mean=-8.8357  pop_best=+274.2037
+gen 1741  best=+820.6651  mean=-9.7055  pop_best=+265.2822
+>>> RESTART 87 — stalled for 15 gens, sigma=135.5
+gen 1742  best=+820.6651  mean=-83.3296  pop_best=+205.2897
+gen 1743  best=+820.6651  mean=-65.7907  pop_best=+246.4816
+gen 1744  best=+820.6651  mean=-70.6114  pop_best=+259.2094
+gen 1745  best=+820.6651  mean=-69.0016  pop_best=+294.4825
+gen 1746  best=+820.6651  mean=-65.6877  pop_best=+278.7753
+gen 1747  best=+820.6651  mean=-56.9002  pop_best=+250.6412
+gen 1748  best=+820.6651  mean=-47.4426  pop_best=+287.2587
+gen 1749  best=+820.6651  mean=-48.1846  pop_best=+277.3661
+gen 1750  best=+820.6651  mean=-45.6660  pop_best=+265.1130
+gen 1751  best=+820.6651  mean=-46.6431  pop_best=+253.0572
+gen 1752  best=+820.6651  mean=-33.5642  pop_best=+283.8958
+gen 1753  best=+820.6651  mean=-33.5761  pop_best=+296.4622
+gen 1754  best=+820.6651  mean=-20.5281  pop_best=+285.5705
+gen 1755  best=+820.6651  mean=-21.7663  pop_best=+299.2291
+gen 1756  best=+820.6651  mean=-15.5356  pop_best=+244.4725
+>>> RESTART 88 — stalled for 15 gens, sigma=137.0
+gen 1757  best=+820.6651  mean=-70.7093  pop_best=+203.6716
+gen 1758  best=+820.6651  mean=-79.9126  pop_best=+278.0667
+gen 1759  best=+820.6651  mean=-74.4312  pop_best=+223.3225
+gen 1760  best=+820.6651  mean=-71.1122  pop_best=+296.7265
+gen 1761  best=+820.6651  mean=-69.9728  pop_best=+286.5460
+gen 1762  best=+820.6651  mean=-57.9303  pop_best=+264.4039
+gen 1763  best=+820.6651  mean=-56.9972  pop_best=+251.7876
+gen 1764  best=+820.6651  mean=-58.9166  pop_best=+286.8344
+gen 1765  best=+820.6651  mean=-45.1248  pop_best=+316.5441
+gen 1766  best=+820.6651  mean=-39.3824  pop_best=+245.2023
+gen 1767  best=+820.6651  mean=-44.0822  pop_best=+302.8773
+gen 1768  best=+820.6651  mean=-33.9605  pop_best=+390.6982
+gen 1769  best=+820.6651  mean=-29.6864  pop_best=+288.8251
+gen 1770  best=+820.6651  mean=-21.2267  pop_best=+322.0529
+gen 1771  best=+820.6651  mean=-20.6408  pop_best=+273.7913
+>>> RESTART 89 — stalled for 15 gens, sigma=138.5
+gen 1772  best=+820.6651  mean=-75.1142  pop_best=+167.4648
+gen 1773  best=+820.6651  mean=-83.2432  pop_best=+293.4999
+gen 1774  best=+820.6651  mean=-72.2333  pop_best=+255.8965
+gen 1775  best=+820.6651  mean=-82.2593  pop_best=+239.5995
+gen 1776  best=+820.6651  mean=-86.7516  pop_best=+270.0814
+gen 1777  best=+820.6651  mean=-85.9378  pop_best=+280.1457
+gen 1778  best=+820.6651  mean=-85.2300  pop_best=+253.4819
+gen 1779  best=+820.6651  mean=-64.7678  pop_best=+212.2815
+gen 1780  best=+820.6651  mean=-48.9194  pop_best=+273.9468
+gen 1781  best=+820.6651  mean=-54.7368  pop_best=+277.4561
+gen 1782  best=+820.6651  mean=-48.3501  pop_best=+295.1136
+gen 1783  best=+820.6651  mean=-44.0713  pop_best=+258.3839
+gen 1784  best=+820.6651  mean=-45.2764  pop_best=+272.7407
+gen 1785  best=+820.6651  mean=-41.4794  pop_best=+302.6192
+gen 1786  best=+820.6651  mean=-34.8269  pop_best=+337.0202
+>>> RESTART 90 — stalled for 15 gens, sigma=140.0
+gen 1787  best=+820.6651  mean=-78.5526  pop_best=+241.3292
+gen 1788  best=+820.6651  mean=-81.6574  pop_best=+124.8690
+gen 1789  best=+820.6651  mean=-80.0224  pop_best=+255.5697
+gen 1790  best=+820.6651  mean=-71.8380  pop_best=+214.1811
+gen 1791  best=+820.6651  mean=-63.4814  pop_best=+250.5052
+gen 1792  best=+820.6651  mean=-68.1064  pop_best=+297.9218
+gen 1793  best=+820.6651  mean=-66.4140  pop_best=+294.2434
+gen 1794  best=+820.6651  mean=-61.4460  pop_best=+229.3989
+gen 1795  best=+820.6651  mean=-57.3191  pop_best=+282.3091
+gen 1796  best=+820.6651  mean=-49.7551  pop_best=+329.6607
+gen 1797  best=+820.6651  mean=-43.9051  pop_best=+257.7180
+gen 1798  best=+820.6651  mean=-38.7163  pop_best=+253.6632
+gen 1799  best=+820.6651  mean=-40.6847  pop_best=+337.4929
+gen 1800  best=+820.6651  mean=-34.5553  pop_best=+244.7857
+gen 1801  best=+820.6651  mean=-26.2017  pop_best=+328.5758
+>>> RESTART 91 — stalled for 15 gens, sigma=141.5
+gen 1802  best=+820.6651  mean=-78.2563  pop_best=+219.2220
+gen 1803  best=+820.6651  mean=-87.3977  pop_best=+267.0306
+gen 1804  best=+820.6651  mean=-66.3031  pop_best=+225.6602
+gen 1805  best=+820.6651  mean=-71.4208  pop_best=+282.9987
+gen 1806  best=+820.6651  mean=-61.8670  pop_best=+220.7165
+gen 1807  best=+820.6651  mean=-46.2052  pop_best=+262.5374
+gen 1808  best=+820.6651  mean=-53.0042  pop_best=+252.4262
+gen 1809  best=+820.6651  mean=-49.2827  pop_best=+316.8902
+gen 1810  best=+820.6651  mean=-36.9771  pop_best=+260.8907
+gen 1811  best=+820.6651  mean=-39.1321  pop_best=+323.9463
+gen 1812  best=+820.6651  mean=-28.3620  pop_best=+295.3726
+gen 1813  best=+820.6651  mean=-24.3148  pop_best=+273.0552
+gen 1814  best=+820.6651  mean=-22.2205  pop_best=+308.4777
+gen 1815  best=+820.6651  mean=-24.4704  pop_best=+298.3672
+gen 1816  best=+820.6651  mean=-17.5586  pop_best=+292.7441
+>>> RESTART 92 — stalled for 15 gens, sigma=143.0
+gen 1817  best=+820.6651  mean=-69.2974  pop_best=+247.8610
+gen 1818  best=+820.6651  mean=-74.7690  pop_best=+257.1000
+gen 1819  best=+820.6651  mean=-85.6872  pop_best=+268.0638
+gen 1820  best=+820.6651  mean=-71.0303  pop_best=+345.9216
+gen 1821  best=+820.6651  mean=-69.9609  pop_best=+248.6932
+gen 1822  best=+820.6651  mean=-61.1683  pop_best=+225.8977
+gen 1823  best=+820.6651  mean=-63.1077  pop_best=+256.9828
+gen 1824  best=+820.6651  mean=-60.6019  pop_best=+278.5810
+gen 1825  best=+820.6651  mean=-50.7403  pop_best=+320.7498
+gen 1826  best=+820.6651  mean=-47.0007  pop_best=+281.8324
+gen 1827  best=+820.6651  mean=-47.4173  pop_best=+332.8341
+gen 1828  best=+820.6651  mean=-41.2605  pop_best=+271.6807
+gen 1829  best=+820.6651  mean=-40.7285  pop_best=+309.1079
+gen 1830  best=+820.6651  mean=-28.3704  pop_best=+355.7350
+gen 1831  best=+820.6651  mean=-22.8231  pop_best=+281.6180
+>>> RESTART 93 — stalled for 15 gens, sigma=144.5
+gen 1832  best=+820.6651  mean=-76.7374  pop_best=+223.7656
+gen 1833  best=+820.6651  mean=-72.6587  pop_best=+217.3853
+gen 1834  best=+820.6651  mean=-78.6184  pop_best=+271.8191
+gen 1835  best=+820.6651  mean=-58.0888  pop_best=+421.7657
+gen 1836  best=+820.6651  mean=-66.0225  pop_best=+279.5521
+gen 1837  best=+820.6651  mean=-57.7361  pop_best=+227.8770
+gen 1838  best=+820.6651  mean=-49.6802  pop_best=+229.6159
+gen 1839  best=+820.6651  mean=-46.5357  pop_best=+225.9123
+gen 1840  best=+820.6651  mean=-47.4717  pop_best=+287.4770
+gen 1841  best=+820.6651  mean=-43.7850  pop_best=+278.0786
+gen 1842  best=+820.6651  mean=-32.9135  pop_best=+286.9481
+gen 1843  best=+820.6651  mean=-35.7806  pop_best=+298.0167
+gen 1844  best=+820.6651  mean=-35.0376  pop_best=+410.9119
+gen 1845  best=+820.6651  mean=-28.3948  pop_best=+285.6666
+gen 1846  best=+820.6651  mean=-22.5516  pop_best=+281.7373
+>>> RESTART 94 — stalled for 15 gens, sigma=146.0
+gen 1847  best=+820.6651  mean=-71.3096  pop_best=+248.5102
+gen 1848  best=+820.6651  mean=-72.0460  pop_best=+397.6926
+gen 1849  best=+820.6651  mean=-82.8086  pop_best=+319.9188
+gen 1850  best=+820.6651  mean=-78.8959  pop_best=+248.3125
+gen 1851  best=+820.6651  mean=-59.2937  pop_best=+293.5890
+gen 1852  best=+820.6651  mean=-63.3278  pop_best=+319.5259
+gen 1853  best=+820.6651  mean=-66.3085  pop_best=+286.1943
+gen 1854  best=+820.6651  mean=-60.2436  pop_best=+305.7378
+gen 1855  best=+820.6651  mean=-52.1494  pop_best=+338.4026
+gen 1856  best=+820.6651  mean=-49.2665  pop_best=+308.4293
+gen 1857  best=+820.6651  mean=-49.0675  pop_best=+268.0040
+gen 1858  best=+820.6651  mean=-46.7961  pop_best=+323.7307
+gen 1859  best=+820.6651  mean=-28.7103  pop_best=+261.9495
+gen 1860  best=+820.6651  mean=-34.5254  pop_best=+280.9054
+gen 1861  best=+820.6651  mean=-15.1833  pop_best=+357.7877
+>>> RESTART 95 — stalled for 15 gens, sigma=147.5
+gen 1862  best=+820.6651  mean=-87.6729  pop_best=+208.5366
+gen 1863  best=+820.6651  mean=-69.8000  pop_best=+291.6378
+gen 1864  best=+820.6651  mean=-66.3569  pop_best=+259.1541
+gen 1865  best=+820.6651  mean=-62.6302  pop_best=+270.5561
+gen 1866  best=+820.6651  mean=-69.7333  pop_best=+260.3304
+gen 1867  best=+820.6651  mean=-57.2546  pop_best=+317.4300
+gen 1868  best=+820.6651  mean=-69.5006  pop_best=+246.6320
+gen 1869  best=+820.6651  mean=-46.4794  pop_best=+256.4273
+gen 1870  best=+820.6651  mean=-50.4520  pop_best=+277.7040
+gen 1871  best=+820.6651  mean=-47.2624  pop_best=+307.1756
+gen 1872  best=+820.6651  mean=-40.1155  pop_best=+288.8076
+gen 1873  best=+820.6651  mean=-44.7897  pop_best=+292.6779
+gen 1874  best=+820.6651  mean=-45.6935  pop_best=+245.9245
+gen 1875  best=+820.6651  mean=-35.0999  pop_best=+280.1523
+gen 1876  best=+820.6651  mean=-35.6049  pop_best=+289.0190
+>>> RESTART 96 — stalled for 15 gens, sigma=149.0
+gen 1877  best=+820.6651  mean=-74.9303  pop_best=+236.4234
+gen 1878  best=+820.6651  mean=-77.6721  pop_best=+305.1421
+gen 1879  best=+820.6651  mean=-70.7917  pop_best=+344.9299
+gen 1880  best=+820.6651  mean=-67.5710  pop_best=+298.8332
+gen 1881  best=+820.6651  mean=-69.3496  pop_best=+315.5486
+gen 1882  best=+820.6651  mean=-53.0361  pop_best=+297.4847
+gen 1883  best=+820.6651  mean=-57.2133  pop_best=+247.3564
+gen 1884  best=+820.6651  mean=-39.4341  pop_best=+333.2654
+gen 1885  best=+820.6651  mean=-29.1852  pop_best=+328.5803
+gen 1886  best=+820.6651  mean=-30.8513  pop_best=+349.4843
+gen 1887  best=+820.6651  mean=-35.5821  pop_best=+239.2406
+gen 1888  best=+820.6651  mean=-32.7453  pop_best=+293.0233
+gen 1889  best=+820.6651  mean=-26.1253  pop_best=+350.2009
+gen 1890  best=+820.6651  mean=-23.0759  pop_best=+282.6824
+gen 1891  best=+820.6651  mean=-17.6629  pop_best=+246.0497
+>>> RESTART 97 — stalled for 15 gens, sigma=150.5
+gen 1892  best=+820.6651  mean=-78.3203  pop_best=+243.8778
+gen 1893  best=+820.6651  mean=-71.1541  pop_best=+271.3965
+gen 1894  best=+820.6651  mean=-66.9268  pop_best=+301.1615
+gen 1895  best=+820.6651  mean=-62.6517  pop_best=+291.7359
+gen 1896  best=+820.6651  mean=-65.0212  pop_best=+269.3219
+gen 1897  best=+820.6651  mean=-62.4891  pop_best=+226.8847
+gen 1898  best=+820.6651  mean=-55.1423  pop_best=+358.5283
+gen 1899  best=+820.6651  mean=-56.7030  pop_best=+280.7268
+gen 1900  best=+820.6651  mean=-51.9061  pop_best=+323.8935
+gen 1901  best=+820.6651  mean=-52.9632  pop_best=+298.0495
+gen 1902  best=+820.6651  mean=-42.2770  pop_best=+324.6237
+gen 1903  best=+820.6651  mean=-38.3736  pop_best=+330.5282
+gen 1904  best=+820.6651  mean=-28.0191  pop_best=+282.9014
+gen 1905  best=+820.6651  mean=-29.3856  pop_best=+275.8912
+gen 1906  best=+820.6651  mean=-22.3388  pop_best=+332.7125
+>>> RESTART 98 — stalled for 15 gens, sigma=152.0
+gen 1907  best=+820.6651  mean=-74.5670  pop_best=+290.2527
+gen 1908  best=+820.6651  mean=-68.0254  pop_best=+326.1827
+gen 1909  best=+820.6651  mean=-82.4258  pop_best=+269.7051
+gen 1910  best=+820.6651  mean=-67.7602  pop_best=+299.2081
+gen 1911  best=+820.6651  mean=-74.4775  pop_best=+328.6190
+gen 1912  best=+820.6651  mean=-60.9634  pop_best=+269.4587
+gen 1913  best=+820.6651  mean=-70.4408  pop_best=+237.2129
+gen 1914  best=+820.6651  mean=-65.3012  pop_best=+283.0964
+gen 1915  best=+820.6651  mean=-52.8731  pop_best=+288.1815
+gen 1916  best=+820.6651  mean=-58.7392  pop_best=+323.6936
+gen 1917  best=+820.6651  mean=-45.7789  pop_best=+294.6182
+gen 1918  best=+820.6651  mean=-37.0186  pop_best=+321.9508
+gen 1919  best=+820.6651  mean=-43.4865  pop_best=+272.0901
+gen 1920  best=+820.6651  mean=-39.2762  pop_best=+296.2701
+gen 1921  best=+820.6651  mean=-32.4292  pop_best=+259.9298
+>>> RESTART 99 — stalled for 15 gens, sigma=153.5
+gen 1922  best=+820.6651  mean=-77.6438  pop_best=+275.4979
+gen 1923  best=+820.6651  mean=-76.3167  pop_best=+260.2821
+gen 1924  best=+820.6651  mean=-75.6699  pop_best=+267.0654
+gen 1925  best=+820.6651  mean=-62.0726  pop_best=+245.2012
+gen 1926  best=+820.6651  mean=-67.2871  pop_best=+270.1487
+gen 1927  best=+820.6651  mean=-55.8398  pop_best=+247.3690
+gen 1928  best=+820.6651  mean=-54.8753  pop_best=+280.2037
+gen 1929  best=+820.6651  mean=-42.5468  pop_best=+280.5054
+gen 1930  best=+820.6651  mean=-33.9874  pop_best=+304.5403
+gen 1931  best=+820.6651  mean=-30.6690  pop_best=+284.7241
+gen 1932  best=+820.6651  mean=-33.6548  pop_best=+288.4052
+gen 1933  best=+820.6651  mean=-20.5148  pop_best=+303.0496
+gen 1934  best=+820.6651  mean=-20.5461  pop_best=+342.9154
+gen 1935  best=+820.6651  mean=-15.6695  pop_best=+362.8141
+gen 1936  best=+820.6651  mean=-12.4753  pop_best=+304.1552
+>>> RESTART 100 — stalled for 15 gens, sigma=155.0
+gen 1937  best=+820.6651  mean=-85.2861  pop_best=+287.3585
+gen 1938  best=+820.6651  mean=-80.0937  pop_best=+183.1850
+gen 1939  best=+820.6651  mean=-73.4889  pop_best=+255.3686
+gen 1940  best=+820.6651  mean=-68.6414  pop_best=+248.2898
+gen 1941  best=+820.6651  mean=-58.1733  pop_best=+294.1846
+gen 1942  best=+820.6651  mean=-68.7358  pop_best=+369.5017
+gen 1943  best=+820.6651  mean=-56.3045  pop_best=+283.5071
+gen 1944  best=+820.6651  mean=-50.5242  pop_best=+337.6353
+gen 1945  best=+820.6651  mean=-45.6865  pop_best=+340.2145
+gen 1946  best=+820.6651  mean=-41.9108  pop_best=+344.1768
+gen 1947  best=+820.6651  mean=-29.3233  pop_best=+286.0021
+gen 1948  best=+820.6651  mean=-24.1682  pop_best=+363.4701
+gen 1949  best=+820.6651  mean=-23.6085  pop_best=+343.6495
+gen 1950  best=+820.6651  mean=-25.5620  pop_best=+282.7945
+gen 1951  best=+820.6651  mean=-12.1338  pop_best=+322.4473
+>>> RESTART 101 — stalled for 15 gens, sigma=156.5
+gen 1952  best=+820.6651  mean=-81.4231  pop_best=+276.2089
+gen 1953  best=+820.6651  mean=-74.3181  pop_best=+203.6356
+gen 1954  best=+820.6651  mean=-78.1053  pop_best=+261.1723
+gen 1955  best=+820.6651  mean=-66.2608  pop_best=+285.3659
+gen 1956  best=+820.6651  mean=-80.5078  pop_best=+321.1492
+gen 1957  best=+820.6651  mean=-77.3702  pop_best=+274.0413
+gen 1958  best=+820.6651  mean=-63.8333  pop_best=+308.1020
+gen 1959  best=+820.6651  mean=-65.3170  pop_best=+343.2174
+gen 1960  best=+820.6651  mean=-62.2155  pop_best=+261.5997
+gen 1961  best=+820.6651  mean=-49.9491  pop_best=+318.7813
+gen 1962  best=+820.6651  mean=-63.6342  pop_best=+268.4055
+gen 1963  best=+820.6651  mean=-51.7651  pop_best=+295.8669
+gen 1964  best=+820.6651  mean=-57.5301  pop_best=+251.3381
+gen 1965  best=+820.6651  mean=-58.4405  pop_best=+307.8682
+gen 1966  best=+820.6651  mean=-51.4037  pop_best=+409.4940
+>>> RESTART 102 — stalled for 15 gens, sigma=158.0
+gen 1967  best=+820.6651  mean=-72.6742  pop_best=+293.7743
+gen 1968  best=+820.6651  mean=-81.0422  pop_best=+217.6842
+gen 1969  best=+820.6651  mean=-69.1306  pop_best=+271.1079
+gen 1970  best=+820.6651  mean=-73.6141  pop_best=+297.1114
+gen 1971  best=+820.6651  mean=-72.2733  pop_best=+337.5489
+gen 1972  best=+820.6651  mean=-64.5864  pop_best=+287.3862
+gen 1973  best=+820.6651  mean=-69.3504  pop_best=+232.8362
+gen 1974  best=+820.6651  mean=-62.3825  pop_best=+253.5420
+gen 1975  best=+820.6651  mean=-53.2354  pop_best=+252.4249
+gen 1976  best=+820.6651  mean=-46.5683  pop_best=+302.7250
+gen 1977  best=+820.6651  mean=-52.7583  pop_best=+265.4279
+gen 1978  best=+820.6651  mean=-47.0108  pop_best=+353.0556
+gen 1979  best=+820.6651  mean=-36.4229  pop_best=+250.8951
+gen 1980  best=+820.6651  mean=-42.0322  pop_best=+299.4482
+gen 1981  best=+820.6651  mean=-28.7267  pop_best=+273.4081
+>>> RESTART 103 — stalled for 15 gens, sigma=159.5
+gen 1982  best=+820.6651  mean=-79.3222  pop_best=+269.1744
+gen 1983  best=+820.6651  mean=-73.7378  pop_best=+291.7888
+gen 1984  best=+820.6651  mean=-69.8403  pop_best=+264.5320
+gen 1985  best=+820.6651  mean=-70.9125  pop_best=+297.0671
+gen 1986  best=+820.6651  mean=-71.8465  pop_best=+277.3525
+gen 1987  best=+820.6651  mean=-60.9726  pop_best=+299.8766
+gen 1988  best=+820.6651  mean=-58.7979  pop_best=+297.7021
+gen 1989  best=+820.6651  mean=-56.3074  pop_best=+323.6885
+gen 1990  best=+820.6651  mean=-55.3787  pop_best=+321.5637
+gen 1991  best=+820.6651  mean=-53.8882  pop_best=+306.7213
+gen 1992  best=+820.6651  mean=-61.4374  pop_best=+288.1140
+gen 1993  best=+820.6651  mean=-49.2183  pop_best=+333.7106
+gen 1994  best=+820.6651  mean=-53.0743  pop_best=+312.1506
+gen 1995  best=+820.6651  mean=-45.8022  pop_best=+281.9894
+gen 1996  best=+820.6651  mean=-37.4811  pop_best=+308.3789
+>>> RESTART 104 — stalled for 15 gens, sigma=161.0
+gen 1997  best=+820.6651  mean=-83.0869  pop_best=+251.3308
+gen 1998  best=+820.6651  mean=-70.8155  pop_best=+264.6293
+gen 1999  best=+820.6651  mean=-61.6183  pop_best=+303.0749
+gen 2000  best=+820.6651  mean=-64.8207  pop_best=+202.3516
+gen 2001  best=+820.6651  mean=-66.7062  pop_best=+277.2466
+gen 2002  best=+820.6651  mean=-70.0436  pop_best=+303.0111
+gen 2003  best=+820.6651  mean=-57.6244  pop_best=+300.1732
+gen 2004  best=+820.6651  mean=-52.3744  pop_best=+289.2436
+gen 2005  best=+820.6651  mean=-49.9846  pop_best=+309.3730
+gen 2006  best=+820.6651  mean=-45.7977  pop_best=+326.8467
+gen 2007  best=+820.6651  mean=-41.8386  pop_best=+307.2039
+gen 2008  best=+820.6651  mean=-30.7230  pop_best=+237.3298
+gen 2009  best=+820.6651  mean=-29.4670  pop_best=+252.9800
+gen 2010  best=+820.6651  mean=-31.5426  pop_best=+258.7203
+gen 2011  best=+820.6651  mean=-18.4169  pop_best=+321.7326
+>>> RESTART 105 — stalled for 15 gens, sigma=162.5
+gen 2012  best=+820.6651  mean=-85.2830  pop_best=+230.6088
+gen 2013  best=+820.6651  mean=-73.6727  pop_best=+282.2518
+gen 2014  best=+820.6651  mean=-90.9933  pop_best=+252.9870
+gen 2015  best=+820.6651  mean=-73.6492  pop_best=+257.4092
+gen 2016  best=+820.6651  mean=-68.6492  pop_best=+299.6449
+gen 2017  best=+820.6651  mean=-64.6988  pop_best=+263.6091
+gen 2018  best=+820.6651  mean=-55.3739  pop_best=+367.2129
+gen 2019  best=+820.6651  mean=-60.9706  pop_best=+266.3602
+gen 2020  best=+820.6651  mean=-44.2126  pop_best=+263.1131
+gen 2021  best=+820.6651  mean=-36.5921  pop_best=+371.5042
+gen 2022  best=+820.6651  mean=-34.7774  pop_best=+323.7434
+gen 2023  best=+820.6651  mean=-37.8294  pop_best=+336.7183
+gen 2024  best=+820.6651  mean=-35.5280  pop_best=+307.6073
+gen 2025  best=+820.6651  mean=-38.9822  pop_best=+321.9551
+gen 2026  best=+820.6651  mean=-27.3146  pop_best=+335.5127
+>>> RESTART 106 — stalled for 15 gens, sigma=164.0
+gen 2027  best=+820.6651  mean=-74.3792  pop_best=+225.1709
+gen 2028  best=+820.6651  mean=-75.1004  pop_best=+213.2662
+gen 2029  best=+820.6651  mean=-79.1977  pop_best=+220.6389
+gen 2030  best=+820.6651  mean=-78.8548  pop_best=+235.0932
+gen 2031  best=+820.6651  mean=-56.6750  pop_best=+294.2606
+gen 2032  best=+820.6651  mean=-56.8426  pop_best=+293.9445
+gen 2033  best=+820.6651  mean=-48.5050  pop_best=+252.5860
+gen 2034  best=+820.6651  mean=-50.2805  pop_best=+297.8618
+gen 2035  best=+820.6651  mean=-42.7236  pop_best=+361.7131
+gen 2036  best=+820.6651  mean=-37.9002  pop_best=+295.8158
+gen 2037  best=+820.6651  mean=-27.5795  pop_best=+325.6130
+gen 2038  best=+820.6651  mean=-28.0585  pop_best=+321.6281
+gen 2039  best=+820.6651  mean=-19.9749  pop_best=+286.3814
+gen 2040  best=+820.6651  mean=-29.6968  pop_best=+273.5591
+gen 2041  best=+820.6651  mean=-18.2460  pop_best=+240.2059
+>>> RESTART 107 — stalled for 15 gens, sigma=165.5
+gen 2042  best=+820.6651  mean=-76.1199  pop_best=+272.6188
+gen 2043  best=+820.6651  mean=-77.4274  pop_best=+259.8528
+gen 2044  best=+820.6651  mean=-77.8350  pop_best=+225.3944
+gen 2045  best=+820.6651  mean=-79.4415  pop_best=+252.7360
+gen 2046  best=+820.6651  mean=-80.2435  pop_best=+366.8096
+gen 2047  best=+820.6651  mean=-69.3381  pop_best=+302.1590
+gen 2048  best=+820.6651  mean=-67.1895  pop_best=+285.6810
+gen 2049  best=+820.6651  mean=-58.0087  pop_best=+274.4185
+gen 2050  best=+820.6651  mean=-54.9518  pop_best=+267.7966
+gen 2051  best=+820.6651  mean=-51.7069  pop_best=+308.1361
+gen 2052  best=+820.6651  mean=-58.2513  pop_best=+273.3669
+gen 2053  best=+820.6651  mean=-53.8093  pop_best=+290.1629
+gen 2054  best=+820.6651  mean=-49.1807  pop_best=+267.3000
+gen 2055  best=+820.6651  mean=-48.9588  pop_best=+313.0203
+gen 2056  best=+820.6651  mean=-46.8189  pop_best=+275.8750
+>>> RESTART 108 — stalled for 15 gens, sigma=167.0
+gen 2057  best=+820.6651  mean=-76.7006  pop_best=+289.3363
+gen 2058  best=+820.6651  mean=-81.8690  pop_best=+236.5123
+gen 2059  best=+820.6651  mean=-72.0926  pop_best=+300.0554
+gen 2060  best=+820.6651  mean=-73.5186  pop_best=+310.8454
+gen 2061  best=+820.6651  mean=-68.6340  pop_best=+295.4846
+gen 2062  best=+820.6651  mean=-73.9442  pop_best=+329.3321
+gen 2063  best=+820.6651  mean=-66.3609  pop_best=+291.8249
+gen 2064  best=+820.6651  mean=-67.2768  pop_best=+298.3030
+gen 2065  best=+820.6651  mean=-43.6132  pop_best=+341.1269
+gen 2066  best=+820.6651  mean=-55.2911  pop_best=+306.6846
+gen 2067  best=+820.6651  mean=-48.4945  pop_best=+245.8727
+gen 2068  best=+820.6651  mean=-34.2129  pop_best=+290.7002
+gen 2069  best=+820.6651  mean=-36.2636  pop_best=+271.7225
+gen 2070  best=+820.6651  mean=-31.2259  pop_best=+357.3330
+gen 2071  best=+820.6651  mean=-16.0797  pop_best=+272.8137
+>>> RESTART 109 — stalled for 15 gens, sigma=168.5
+gen 2072  best=+820.6651  mean=-75.7247  pop_best=+276.7008
+gen 2073  best=+820.6651  mean=-86.8438  pop_best=+209.2834
+gen 2074  best=+820.6651  mean=-74.9582  pop_best=+293.2964
+gen 2075  best=+820.6651  mean=-72.3063  pop_best=+307.2216
+gen 2076  best=+820.6651  mean=-63.9720  pop_best=+331.2423
+gen 2077  best=+820.6651  mean=-58.6216  pop_best=+289.4093
+gen 2078  best=+820.6651  mean=-61.1620  pop_best=+266.8808
+gen 2079  best=+820.6651  mean=-57.8750  pop_best=+335.6731
+gen 2080  best=+820.6651  mean=-50.3105  pop_best=+300.6694
+gen 2081  best=+820.6651  mean=-44.2840  pop_best=+269.5922
+gen 2082  best=+820.6651  mean=-42.8674  pop_best=+272.4636
+gen 2083  best=+820.6651  mean=-31.1506  pop_best=+291.2046
+gen 2084  best=+820.6651  mean=-30.9450  pop_best=+264.1476
+gen 2085  best=+820.6651  mean=-25.3918  pop_best=+238.8963
+gen 2086  best=+820.6651  mean=-34.6483  pop_best=+315.7575
+>>> RESTART 110 — stalled for 15 gens, sigma=170.0
+gen 2087  best=+820.6651  mean=-73.3502  pop_best=+240.2400
+gen 2088  best=+820.6651  mean=-73.2585  pop_best=+288.9759
+gen 2089  best=+820.6651  mean=-80.1384  pop_best=+283.8250
+gen 2090  best=+820.6651  mean=-70.8639  pop_best=+327.5535
+gen 2091  best=+820.6651  mean=-57.0165  pop_best=+287.5151
+gen 2092  best=+820.6651  mean=-75.8067  pop_best=+261.6839
+gen 2093  best=+820.6651  mean=-59.3407  pop_best=+279.8939
+gen 2094  best=+820.6651  mean=-61.4037  pop_best=+261.8233
+gen 2095  best=+820.6651  mean=-54.4999  pop_best=+292.3041
+gen 2096  best=+820.6651  mean=-47.0298  pop_best=+282.2189
+gen 2097  best=+820.6651  mean=-49.4805  pop_best=+258.9543
+gen 2098  best=+820.6651  mean=-36.1416  pop_best=+303.6119
+gen 2099  best=+820.6651  mean=-30.3265  pop_best=+300.3650
+gen 2100  best=+820.6651  mean=-27.4696  pop_best=+252.1555
+gen 2101  best=+820.6651  mean=-23.4745  pop_best=+280.6963
+>>> RESTART 111 — stalled for 15 gens, sigma=171.5
+gen 2102  best=+820.6651  mean=-80.4660  pop_best=+260.4376
+gen 2103  best=+820.6651  mean=-77.4694  pop_best=+250.6676
+gen 2104  best=+820.6651  mean=-78.7486  pop_best=+369.1814
+gen 2105  best=+820.6651  mean=-70.8395  pop_best=+249.4464
+gen 2106  best=+820.6651  mean=-66.0019  pop_best=+312.0753
+gen 2107  best=+820.6651  mean=-57.1389  pop_best=+230.5443
+gen 2108  best=+820.6651  mean=-58.0493  pop_best=+279.6896
+gen 2109  best=+820.6651  mean=-58.4435  pop_best=+298.6762
+gen 2110  best=+820.6651  mean=-45.4679  pop_best=+241.7513
+gen 2111  best=+820.6651  mean=-46.0059  pop_best=+273.7033
+gen 2112  best=+820.6651  mean=-50.3551  pop_best=+318.6970
+gen 2113  best=+820.6651  mean=-40.9513  pop_best=+408.9595
+gen 2114  best=+820.6651  mean=-38.9355  pop_best=+292.0684
+gen 2115  best=+820.6651  mean=-34.8354  pop_best=+330.1804
+gen 2116  best=+820.6651  mean=-36.1043  pop_best=+294.2444
+>>> RESTART 112 — stalled for 15 gens, sigma=173.0
+gen 2117  best=+820.6651  mean=-70.6983  pop_best=+266.8239
+gen 2118  best=+820.6651  mean=-69.3599  pop_best=+307.0457
+gen 2119  best=+820.6651  mean=-79.2212  pop_best=+240.0255
+gen 2120  best=+820.6651  mean=-68.5976  pop_best=+292.7259
+gen 2121  best=+820.6651  mean=-63.1198  pop_best=+266.9495
+gen 2122  best=+820.6651  mean=-61.6973  pop_best=+336.8427
+gen 2123  best=+820.6651  mean=-67.0600  pop_best=+343.1367
+gen 2124  best=+820.6651  mean=-54.1335  pop_best=+259.1630
+gen 2125  best=+820.6651  mean=-40.5193  pop_best=+369.6282
+gen 2126  best=+820.6651  mean=-42.2966  pop_best=+302.3064
+gen 2127  best=+820.6651  mean=-44.1251  pop_best=+263.9724
+gen 2128  best=+820.6651  mean=-25.4603  pop_best=+295.9545
+gen 2129  best=+820.6651  mean=-29.1142  pop_best=+328.4409
+gen 2130  best=+820.6651  mean=-25.6061  pop_best=+379.4129
+gen 2131  best=+820.6651  mean=-26.9407  pop_best=+294.2807
+>>> RESTART 113 — stalled for 15 gens, sigma=174.5
+gen 2132  best=+820.6651  mean=-77.8378  pop_best=+275.6997
+gen 2133  best=+820.6651  mean=-62.3598  pop_best=+300.1919
+gen 2134  best=+820.6651  mean=-86.0459  pop_best=+368.3210
+gen 2135  best=+820.6651  mean=-74.3399  pop_best=+314.8167
+gen 2136  best=+820.6651  mean=-64.2384  pop_best=+297.0880
+gen 2137  best=+820.6651  mean=-56.9208  pop_best=+361.4423
+gen 2138  best=+820.6651  mean=-53.3727  pop_best=+379.7720
+gen 2139  best=+820.6651  mean=-42.2743  pop_best=+392.3407
+gen 2140  best=+820.6651  mean=-38.4377  pop_best=+316.0734
+gen 2141  best=+820.6651  mean=-40.7918  pop_best=+281.6514
+gen 2142  best=+820.6651  mean=-35.3719  pop_best=+269.9706
+gen 2143  best=+820.6651  mean=-39.8571  pop_best=+294.0763
+gen 2144  best=+820.6651  mean=-28.9591  pop_best=+340.0212
+gen 2145  best=+820.6651  mean=-28.0171  pop_best=+310.6914
+gen 2146  best=+820.6651  mean=-30.5041  pop_best=+294.6318
+>>> RESTART 114 — stalled for 15 gens, sigma=176.0
+gen 2147  best=+820.6651  mean=-74.2526  pop_best=+337.7480
+gen 2148  best=+820.6651  mean=-76.7686  pop_best=+269.2930
+gen 2149  best=+820.6651  mean=-66.5762  pop_best=+279.4838
+gen 2150  best=+820.6651  mean=-66.6071  pop_best=+209.7314
+gen 2151  best=+820.6651  mean=-64.2597  pop_best=+285.5320
+gen 2152  best=+820.6651  mean=-52.4835  pop_best=+283.4449
+gen 2153  best=+820.6651  mean=-60.5026  pop_best=+310.1588
+gen 2154  best=+820.6651  mean=-54.6228  pop_best=+281.5771
+gen 2155  best=+820.6651  mean=-46.9246  pop_best=+311.5710
+gen 2156  best=+820.6651  mean=-47.3048  pop_best=+329.8986
+gen 2157  best=+820.6651  mean=-30.1872  pop_best=+287.9961
+gen 2158  best=+820.6651  mean=-38.6282  pop_best=+244.9447
+gen 2159  best=+820.6651  mean=-27.1814  pop_best=+334.4407
+gen 2160  best=+820.6651  mean=-27.5598  pop_best=+288.0628
+gen 2161  best=+820.6651  mean=-24.2482  pop_best=+254.8081
+>>> RESTART 115 — stalled for 15 gens, sigma=177.5
+gen 2162  best=+820.6651  mean=-77.8610  pop_best=+287.9945
+gen 2163  best=+820.6651  mean=-72.8907  pop_best=+247.5480
+gen 2164  best=+820.6651  mean=-72.4896  pop_best=+319.3050
+gen 2165  best=+820.6651  mean=-66.1873  pop_best=+326.6907
+gen 2166  best=+820.6651  mean=-66.6969  pop_best=+260.3992
+gen 2167  best=+820.6651  mean=-55.8579  pop_best=+279.0079
+gen 2168  best=+820.6651  mean=-54.5373  pop_best=+310.2850
+gen 2169  best=+820.6651  mean=-48.2014  pop_best=+334.8483
+gen 2170  best=+820.6651  mean=-49.8714  pop_best=+253.3702
+gen 2171  best=+820.6651  mean=-35.3086  pop_best=+287.1601
+gen 2172  best=+820.6651  mean=-34.3115  pop_best=+294.3820
+gen 2173  best=+820.6651  mean=-33.1473  pop_best=+333.9788
+gen 2174  best=+820.6651  mean=-26.3993  pop_best=+264.6335
+gen 2175  best=+820.6651  mean=-21.0320  pop_best=+277.8838
+gen 2176  best=+820.6651  mean=-25.4341  pop_best=+318.0840
+>>> RESTART 116 — stalled for 15 gens, sigma=179.0
+gen 2177  best=+820.6651  mean=-74.8150  pop_best=+209.9119
+gen 2178  best=+820.6651  mean=-83.2073  pop_best=+289.7840
+gen 2179  best=+820.6651  mean=-62.4405  pop_best=+387.0687
+gen 2180  best=+820.6651  mean=-63.0171  pop_best=+277.3968
+gen 2181  best=+820.6651  mean=-59.5062  pop_best=+241.5546
+gen 2182  best=+820.6651  mean=-52.2727  pop_best=+328.7687
+gen 2183  best=+820.6651  mean=-42.0897  pop_best=+284.1634
+gen 2184  best=+820.6651  mean=-44.7845  pop_best=+337.9316
+gen 2185  best=+820.6651  mean=-34.3965  pop_best=+306.1606
+gen 2186  best=+820.6651  mean=-30.7612  pop_best=+296.7381
+gen 2187  best=+820.6651  mean=-30.8902  pop_best=+280.3790
+gen 2188  best=+820.6651  mean=-26.4260  pop_best=+338.2122
+gen 2189  best=+820.6651  mean=-19.6690  pop_best=+295.7165
+gen 2190  best=+820.6651  mean=-20.9346  pop_best=+372.8003
+gen 2191  best=+820.6651  mean=-21.0783  pop_best=+314.4700
+>>> RESTART 117 — stalled for 15 gens, sigma=180.5
+gen 2192  best=+820.6651  mean=-81.0763  pop_best=+242.2619
+gen 2193  best=+820.6651  mean=-80.1191  pop_best=+215.9386
+gen 2194  best=+820.6651  mean=-69.3460  pop_best=+231.4440
+gen 2195  best=+820.6651  mean=-68.6086  pop_best=+292.7989
+gen 2196  best=+820.6651  mean=-75.9206  pop_best=+262.4322
+gen 2197  best=+820.6651  mean=-61.7963  pop_best=+346.2647
+gen 2198  best=+820.6651  mean=-63.5647  pop_best=+300.3735
+gen 2199  best=+820.6651  mean=-60.0499  pop_best=+271.7812
+gen 2200  best=+820.6651  mean=-56.8108  pop_best=+320.6873
+gen 2201  best=+820.6651  mean=-46.9490  pop_best=+286.6835
+gen 2202  best=+820.6651  mean=-34.8929  pop_best=+363.6835
+gen 2203  best=+820.6651  mean=-35.9359  pop_best=+285.3406
+gen 2204  best=+820.6651  mean=-34.4318  pop_best=+296.5625
+gen 2205  best=+820.6651  mean=-29.1111  pop_best=+291.8358
+gen 2206  best=+820.6651  mean=-26.7158  pop_best=+300.5400
+>>> RESTART 118 — stalled for 15 gens, sigma=182.0
+gen 2207  best=+820.6651  mean=-76.1566  pop_best=+244.7406
+gen 2208  best=+820.6651  mean=-69.8013  pop_best=+246.0621
+gen 2209  best=+820.6651  mean=-66.5275  pop_best=+234.3688
+gen 2210  best=+820.6651  mean=-61.5160  pop_best=+272.8335
+gen 2211  best=+820.6651  mean=-72.3581  pop_best=+311.5551
+gen 2212  best=+820.6651  mean=-58.1615  pop_best=+275.1505
+gen 2213  best=+820.6651  mean=-56.3217  pop_best=+314.0485
+gen 2214  best=+820.6651  mean=-53.8158  pop_best=+280.2089
+gen 2215  best=+820.6651  mean=-48.9497  pop_best=+302.4465
+gen 2216  best=+820.6651  mean=-50.3075  pop_best=+277.4020
+gen 2217  best=+820.6651  mean=-47.8718  pop_best=+329.5021
+gen 2218  best=+820.6651  mean=-44.4052  pop_best=+309.6255
+gen 2219  best=+820.6651  mean=-43.0205  pop_best=+254.0919
+gen 2220  best=+820.6651  mean=-35.1729  pop_best=+351.4845
+gen 2221  best=+820.6651  mean=-24.1139  pop_best=+380.4495
+>>> RESTART 119 — stalled for 15 gens, sigma=183.5
+gen 2222  best=+820.6651  mean=-75.3664  pop_best=+216.3900
+gen 2223  best=+820.6651  mean=-76.4644  pop_best=+238.4534
+gen 2224  best=+820.6651  mean=-72.0453  pop_best=+327.6814
+gen 2225  best=+820.6651  mean=-65.0100  pop_best=+324.5492
+gen 2226  best=+820.6651  mean=-57.8047  pop_best=+298.2575
+gen 2227  best=+820.6651  mean=-62.2523  pop_best=+298.4690
+gen 2228  best=+820.6651  mean=-54.9111  pop_best=+300.0705
+gen 2229  best=+820.6651  mean=-59.5113  pop_best=+261.0199
+gen 2230  best=+820.6651  mean=-49.1134  pop_best=+285.8629
+gen 2231  best=+820.6651  mean=-46.1542  pop_best=+265.2372
+gen 2232  best=+820.6651  mean=-34.0734  pop_best=+255.8483
+gen 2233  best=+820.6651  mean=-24.9855  pop_best=+375.6401
+gen 2234  best=+820.6651  mean=-28.5301  pop_best=+314.3030
+gen 2235  best=+820.6651  mean=-24.9819  pop_best=+254.3463
+gen 2236  best=+820.6651  mean=-28.8492  pop_best=+328.5476
+>>> RESTART 120 — stalled for 15 gens, sigma=185.0
+gen 2237  best=+820.6651  mean=-71.0822  pop_best=+254.8099
+gen 2238  best=+820.6651  mean=-78.9472  pop_best=+268.7301
+gen 2239  best=+820.6651  mean=-75.1269  pop_best=+280.1510
+gen 2240  best=+820.6651  mean=-71.9882  pop_best=+304.1972
+gen 2241  best=+820.6651  mean=-61.3931  pop_best=+260.3267
+gen 2242  best=+820.6651  mean=-58.2833  pop_best=+311.0914
+gen 2243  best=+820.6651  mean=-49.3128  pop_best=+314.3049
+gen 2244  best=+820.6651  mean=-44.0389  pop_best=+316.0710
+gen 2245  best=+820.6651  mean=-36.8464  pop_best=+354.1160
+gen 2246  best=+820.6651  mean=-34.4654  pop_best=+314.1853
+gen 2247  best=+820.6651  mean=-40.9999  pop_best=+295.0466
+gen 2248  best=+820.6651  mean=-23.0945  pop_best=+363.4241
+gen 2249  best=+820.6651  mean=-25.2313  pop_best=+310.6125
+gen 2250  best=+820.6651  mean=-26.0498  pop_best=+311.6442
+gen 2251  best=+820.6651  mean=-24.8463  pop_best=+302.7040
+>>> RESTART 121 — stalled for 15 gens, sigma=186.5
+gen 2252  best=+820.6651  mean=-78.5408  pop_best=+327.2241
+gen 2253  best=+820.6651  mean=-76.8811  pop_best=+241.1682
+gen 2254  best=+820.6651  mean=-70.3645  pop_best=+252.7156
+gen 2255  best=+820.6651  mean=-78.2107  pop_best=+349.7627
+gen 2256  best=+820.6651  mean=-70.7426  pop_best=+266.9131
+gen 2257  best=+820.6651  mean=-59.7401  pop_best=+261.2539
+gen 2258  best=+820.6651  mean=-63.1403  pop_best=+307.5220
+gen 2259  best=+820.6651  mean=-49.8733  pop_best=+336.2656
+gen 2260  best=+820.6651  mean=-57.2639  pop_best=+275.5482
+gen 2261  best=+820.6651  mean=-45.0840  pop_best=+280.0038
+gen 2262  best=+820.6651  mean=-43.8477  pop_best=+357.9029
+gen 2263  best=+820.6651  mean=-38.0822  pop_best=+301.9541
+gen 2264  best=+820.6651  mean=-37.1347  pop_best=+327.9129
+gen 2265  best=+820.6651  mean=-45.7837  pop_best=+327.1127
+gen 2266  best=+820.6651  mean=-30.7277  pop_best=+310.6994
+>>> RESTART 122 — stalled for 15 gens, sigma=188.0
+gen 2267  best=+820.6651  mean=-76.6956  pop_best=+214.3753
+gen 2268  best=+820.6651  mean=-78.6447  pop_best=+266.4387
+gen 2269  best=+820.6651  mean=-71.6860  pop_best=+254.9183
+gen 2270  best=+820.6651  mean=-68.0903  pop_best=+283.0257
+gen 2271  best=+820.6651  mean=-54.9111  pop_best=+286.4667
+gen 2272  best=+820.6651  mean=-57.6663  pop_best=+253.9100
+gen 2273  best=+820.6651  mean=-55.2160  pop_best=+262.4554
+gen 2274  best=+820.6651  mean=-48.9277  pop_best=+251.7410
+gen 2275  best=+820.6651  mean=-52.3571  pop_best=+292.6736
+gen 2276  best=+820.6651  mean=-50.8107  pop_best=+282.0071
+gen 2277  best=+820.6651  mean=-42.7040  pop_best=+288.6615
+gen 2278  best=+820.6651  mean=-34.8230  pop_best=+344.7462
+gen 2279  best=+820.6651  mean=-32.0062  pop_best=+274.9325
+gen 2280  best=+820.6651  mean=-27.2362  pop_best=+275.9973
+gen 2281  best=+820.6651  mean=-21.9941  pop_best=+296.0000
+>>> RESTART 123 — stalled for 15 gens, sigma=189.5
+gen 2282  best=+820.6651  mean=-79.7126  pop_best=+265.9995
+gen 2283  best=+820.6651  mean=-81.3487  pop_best=+180.3840
+gen 2284  best=+820.6651  mean=-74.6049  pop_best=+293.2718
+gen 2285  best=+820.6651  mean=-66.2070  pop_best=+246.5730
+gen 2286  best=+820.6651  mean=-61.7593  pop_best=+281.7648
+gen 2287  best=+820.6651  mean=-61.8682  pop_best=+257.8625
+gen 2288  best=+820.6651  mean=-50.9487  pop_best=+421.2417
+gen 2289  best=+820.6651  mean=-45.0425  pop_best=+377.8613
+gen 2290  best=+820.6651  mean=-48.9995  pop_best=+344.2623
+gen 2291  best=+820.6651  mean=-38.5657  pop_best=+316.9804
+gen 2292  best=+820.6651  mean=-24.8870  pop_best=+358.3188
+gen 2293  best=+820.6651  mean=-21.7844  pop_best=+308.5343
+gen 2294  best=+820.6651  mean=-23.5465  pop_best=+284.9425
+gen 2295  best=+820.6651  mean=-21.3146  pop_best=+298.6527
+gen 2296  best=+820.6651  mean=-21.3808  pop_best=+284.4953
+>>> RESTART 124 — stalled for 15 gens, sigma=191.0
+gen 2297  best=+820.6651  mean=-77.2133  pop_best=+258.3349
+gen 2298  best=+820.6651  mean=-77.4593  pop_best=+287.2822
+gen 2299  best=+820.6651  mean=-68.3595  pop_best=+299.9535
+gen 2300  best=+820.6651  mean=-68.9236  pop_best=+263.9529
+gen 2301  best=+820.6651  mean=-57.9635  pop_best=+241.6518
+gen 2302  best=+820.6651  mean=-50.9024  pop_best=+424.6579
+gen 2303  best=+820.6651  mean=-59.8370  pop_best=+325.4725
+gen 2304  best=+820.6651  mean=-51.6265  pop_best=+344.1752
+gen 2305  best=+820.6651  mean=-44.9563  pop_best=+278.5249
+gen 2306  best=+820.6651  mean=-38.3281  pop_best=+292.6610
+gen 2307  best=+820.6651  mean=-34.3906  pop_best=+279.4370
+gen 2308  best=+820.6651  mean=-32.6837  pop_best=+266.3168
+gen 2309  best=+820.6651  mean=-22.4710  pop_best=+295.4134
+gen 2310  best=+820.6651  mean=-24.9567  pop_best=+305.2113
+gen 2311  best=+820.6651  mean=-18.1499  pop_best=+278.5141
+>>> RESTART 125 — stalled for 15 gens, sigma=192.5
+gen 2312  best=+820.6651  mean=-78.8833  pop_best=+187.3944
+gen 2313  best=+820.6651  mean=-69.8210  pop_best=+269.3937
+gen 2314  best=+820.6651  mean=-66.0230  pop_best=+178.1837
+gen 2315  best=+820.6651  mean=-74.7106  pop_best=+245.1854
+gen 2316  best=+820.6651  mean=-54.4261  pop_best=+270.1344
+gen 2317  best=+820.6651  mean=-49.9252  pop_best=+299.5906
+gen 2318  best=+820.6651  mean=-53.6234  pop_best=+261.8976
+gen 2319  best=+820.6651  mean=-45.9139  pop_best=+292.9976
+gen 2320  best=+820.6651  mean=-39.7370  pop_best=+313.3172
+gen 2321  best=+820.6651  mean=-34.6655  pop_best=+277.2632
+gen 2322  best=+820.6651  mean=-39.9092  pop_best=+329.5163
+gen 2323  best=+820.6651  mean=-26.0840  pop_best=+337.1066
+gen 2324  best=+820.6651  mean=-26.1591  pop_best=+319.0132
+gen 2325  best=+820.6651  mean=-24.0520  pop_best=+323.8535
+gen 2326  best=+820.6651  mean=-18.6283  pop_best=+344.7159
+>>> RESTART 126 — stalled for 15 gens, sigma=194.0
+gen 2327  best=+820.6651  mean=-78.2018  pop_best=+336.3196
+gen 2328  best=+820.6651  mean=-71.6623  pop_best=+341.9853
+gen 2329  best=+820.6651  mean=-75.8999  pop_best=+259.3135
+gen 2330  best=+820.6651  mean=-61.4618  pop_best=+303.0138
+gen 2331  best=+820.6651  mean=-67.3260  pop_best=+291.5438
+gen 2332  best=+820.6651  mean=-66.1347  pop_best=+278.5979
+gen 2333  best=+820.6651  mean=-66.5193  pop_best=+328.8277
+gen 2334  best=+820.6651  mean=-54.8175  pop_best=+323.8995
+gen 2335  best=+820.6651  mean=-47.0433  pop_best=+350.4252
+gen 2336  best=+820.6651  mean=-49.5872  pop_best=+270.2859
+gen 2337  best=+820.6651  mean=-44.6740  pop_best=+356.0616
+gen 2338  best=+820.6651  mean=-51.3917  pop_best=+332.6771
+gen 2339  best=+820.6651  mean=-39.6401  pop_best=+286.4224
+gen 2340  best=+820.6651  mean=-27.8296  pop_best=+314.1111
+gen 2341  best=+820.6651  mean=-27.2640  pop_best=+304.7428
+>>> RESTART 127 — stalled for 15 gens, sigma=195.5
+gen 2342  best=+820.6651  mean=-74.3831  pop_best=+224.8757
+gen 2343  best=+820.6651  mean=-72.2755  pop_best=+263.1588
+gen 2344  best=+820.6651  mean=-62.7072  pop_best=+300.8915
+gen 2345  best=+820.6651  mean=-60.5369  pop_best=+253.8108
+gen 2346  best=+820.6651  mean=-57.7607  pop_best=+273.2938
+gen 2347  best=+820.6651  mean=-44.0298  pop_best=+444.9457
+gen 2348  best=+820.6651  mean=-46.3689  pop_best=+372.8934
+gen 2349  best=+820.6651  mean=-37.9684  pop_best=+308.9426
+gen 2350  best=+820.6651  mean=-34.0534  pop_best=+311.1520
+gen 2351  best=+820.6651  mean=-29.6857  pop_best=+326.4168
+gen 2352  best=+820.6651  mean=-29.5377  pop_best=+341.2149
+gen 2353  best=+820.6651  mean=-21.5675  pop_best=+280.6178
+gen 2354  best=+820.6651  mean=-28.1822  pop_best=+288.3805
+gen 2355  best=+820.6651  mean=-28.1875  pop_best=+276.9335
+gen 2356  best=+820.6651  mean=-23.8614  pop_best=+273.8356
+>>> RESTART 128 — stalled for 15 gens, sigma=197.0
+gen 2357  best=+820.6651  mean=-71.2403  pop_best=+319.4436
+gen 2358  best=+820.6651  mean=-79.8663  pop_best=+296.7999
+gen 2359  best=+820.6651  mean=-68.9271  pop_best=+278.7821
+gen 2360  best=+820.6651  mean=-61.4985  pop_best=+293.0925
+gen 2361  best=+820.6651  mean=-58.1546  pop_best=+264.1150
+gen 2362  best=+820.6651  mean=-59.2695  pop_best=+292.4108
+gen 2363  best=+820.6651  mean=-51.0586  pop_best=+256.2884
+gen 2364  best=+820.6651  mean=-47.4285  pop_best=+301.3679
+gen 2365  best=+820.6651  mean=-61.6753  pop_best=+315.6306
+gen 2366  best=+820.6651  mean=-45.8283  pop_best=+290.2718
+gen 2367  best=+820.6651  mean=-50.4227  pop_best=+302.4091
+gen 2368  best=+820.6651  mean=-43.2402  pop_best=+269.9772
+gen 2369  best=+820.6651  mean=-28.7476  pop_best=+334.4848
+gen 2370  best=+820.6651  mean=-36.0768  pop_best=+308.6001
+gen 2371  best=+820.6651  mean=-35.5223  pop_best=+312.7013
+>>> RESTART 129 — stalled for 15 gens, sigma=198.5
+gen 2372  best=+820.6651  mean=-71.8603  pop_best=+285.6097
+gen 2373  best=+820.6651  mean=-63.2691  pop_best=+226.3666
+gen 2374  best=+820.6651  mean=-65.8471  pop_best=+248.7628
+gen 2375  best=+820.6651  mean=-66.1735  pop_best=+323.6287
+gen 2376  best=+820.6651  mean=-65.6330  pop_best=+291.7918
+gen 2377  best=+820.6651  mean=-54.2348  pop_best=+279.5791
+gen 2378  best=+820.6651  mean=-47.1860  pop_best=+307.6173
+gen 2379  best=+820.6651  mean=-45.9605  pop_best=+330.4945
+gen 2380  best=+820.6651  mean=-37.7588  pop_best=+286.5348
+gen 2381  best=+820.6651  mean=-32.6658  pop_best=+300.2845
+gen 2382  best=+820.6651  mean=-25.9449  pop_best=+310.3665
+gen 2383  best=+820.6651  mean=-26.1488  pop_best=+303.7836
+gen 2384  best=+820.6651  mean=-23.3214  pop_best=+281.3702
+gen 2385  best=+820.6651  mean=-31.0052  pop_best=+279.5814
+gen 2386  best=+820.6651  mean=-26.5565  pop_best=+271.4772
+>>> RESTART 130 — stalled for 15 gens, sigma=200.0
+gen 2387  best=+820.6651  mean=-77.6931  pop_best=+198.1903
+gen 2388  best=+820.6651  mean=-81.4905  pop_best=+285.4842
+gen 2389  best=+820.6651  mean=-65.7224  pop_best=+351.2989
+gen 2390  best=+820.6651  mean=-69.9883  pop_best=+298.4701
+gen 2391  best=+820.6651  mean=-70.4038  pop_best=+266.4713
+gen 2392  best=+820.6651  mean=-62.9369  pop_best=+331.8782
+gen 2393  best=+820.6651  mean=-65.0153  pop_best=+298.1817
+gen 2394  best=+820.6651  mean=-57.8272  pop_best=+250.7274
+gen 2395  best=+820.6651  mean=-44.2981  pop_best=+333.9423
+gen 2396  best=+820.6651  mean=-46.5387  pop_best=+311.5217
+gen 2397  best=+820.6651  mean=-46.3626  pop_best=+278.9831
+gen 2398  best=+820.6651  mean=-43.8356  pop_best=+299.4382
+gen 2399  best=+820.6651  mean=-46.2112  pop_best=+279.2755
+gen 2400  best=+820.6651  mean=-34.9365  pop_best=+313.3498
+gen 2401  best=+820.6651  mean=-40.2164  pop_best=+299.9341
+>>> RESTART 131 — stalled for 15 gens, sigma=201.5
+gen 2402  best=+820.6651  mean=-75.6365  pop_best=+315.8131
+gen 2403  best=+820.6651  mean=-71.3642  pop_best=+232.0576
+gen 2404  best=+820.6651  mean=-67.3096  pop_best=+259.4194
+gen 2405  best=+820.6651  mean=-51.8664  pop_best=+284.9293
+gen 2406  best=+820.6651  mean=-59.0705  pop_best=+320.0920
+gen 2407  best=+820.6651  mean=-57.4739  pop_best=+301.1829
+gen 2408  best=+820.6651  mean=-47.9794  pop_best=+306.9352
+gen 2409  best=+820.6651  mean=-48.4586  pop_best=+302.5753
+gen 2410  best=+820.6651  mean=-53.4309  pop_best=+286.0595
+gen 2411  best=+820.6651  mean=-48.2956  pop_best=+348.1823
+gen 2412  best=+820.6651  mean=-45.3369  pop_best=+257.0305
+gen 2413  best=+820.6651  mean=-45.1628  pop_best=+340.7936
+gen 2414  best=+820.6651  mean=-37.3755  pop_best=+311.4888
+gen 2415  best=+820.6651  mean=-38.5829  pop_best=+285.8946
+gen 2416  best=+820.6651  mean=-36.8985  pop_best=+337.9442
+>>> RESTART 132 — stalled for 15 gens, sigma=203.0
+gen 2417  best=+820.6651  mean=-70.7675  pop_best=+296.0805
+gen 2418  best=+820.6651  mean=-79.4496  pop_best=+249.6985
+gen 2419  best=+820.6651  mean=-71.8814  pop_best=+306.9507
+gen 2420  best=+820.6651  mean=-73.2275  pop_best=+284.3711
+gen 2421  best=+820.6651  mean=-69.9281  pop_best=+360.3034
+gen 2422  best=+820.6651  mean=-68.8921  pop_best=+395.1804
+gen 2423  best=+820.6651  mean=-61.8007  pop_best=+233.5566
+gen 2424  best=+820.6651  mean=-55.8555  pop_best=+239.7813
+gen 2425  best=+820.6651  mean=-63.6384  pop_best=+288.4498
+gen 2426  best=+820.6651  mean=-51.9153  pop_best=+297.2809
+gen 2427  best=+820.6651  mean=-41.0823  pop_best=+273.2846
+gen 2428  best=+820.6651  mean=-43.4078  pop_best=+361.5287
+gen 2429  best=+820.6651  mean=-38.4765  pop_best=+290.6802
+gen 2430  best=+820.6651  mean=-42.1457  pop_best=+262.1229
+gen 2431  best=+820.6651  mean=-34.3739  pop_best=+263.3121
+>>> RESTART 133 — stalled for 15 gens, sigma=204.5
+gen 2432  best=+820.6651  mean=-83.5715  pop_best=+227.9223
+gen 2433  best=+820.6651  mean=-69.0469  pop_best=+241.5633
+gen 2434  best=+820.6651  mean=-64.4835  pop_best=+303.3497
+gen 2435  best=+820.6651  mean=-59.4838  pop_best=+338.5906
+gen 2436  best=+820.6651  mean=-59.8509  pop_best=+314.6885
+gen 2437  best=+820.6651  mean=-53.5352  pop_best=+275.1632
+gen 2438  best=+820.6651  mean=-50.4489  pop_best=+278.8388
+gen 2439  best=+820.6651  mean=-49.4753  pop_best=+290.5988
+gen 2440  best=+820.6651  mean=-43.0624  pop_best=+417.6658
+gen 2441  best=+820.6651  mean=-45.7249  pop_best=+287.0906
+gen 2442  best=+820.6651  mean=-37.1413  pop_best=+343.4556
+gen 2443  best=+820.6651  mean=-36.4216  pop_best=+284.0232
+gen 2444  best=+820.6651  mean=-31.3818  pop_best=+287.0033
+gen 2445  best=+820.6651  mean=-31.2212  pop_best=+284.8853
+gen 2446  best=+820.6651  mean=-28.1878  pop_best=+285.8344
+>>> RESTART 134 — stalled for 15 gens, sigma=206.0
+gen 2447  best=+820.6651  mean=-81.7239  pop_best=+215.6573
+gen 2448  best=+820.6651  mean=-67.5816  pop_best=+286.5905
+gen 2449  best=+820.6651  mean=-68.6017  pop_best=+354.1907
+gen 2450  best=+820.6651  mean=-69.4647  pop_best=+343.4654
+gen 2451  best=+820.6651  mean=-69.8644  pop_best=+250.1450
+gen 2452  best=+820.6651  mean=-69.4220  pop_best=+275.3891
+gen 2453  best=+820.6651  mean=-66.9902  pop_best=+265.2304
+gen 2454  best=+820.6651  mean=-61.0353  pop_best=+360.8850
+gen 2455  best=+820.6651  mean=-51.8473  pop_best=+319.0848
+gen 2456  best=+820.6651  mean=-56.0631  pop_best=+286.9999
+gen 2457  best=+820.6651  mean=-61.9762  pop_best=+256.6798
+gen 2458  best=+820.6651  mean=-39.8692  pop_best=+287.0503
+gen 2459  best=+820.6651  mean=-32.7728  pop_best=+306.7389
+gen 2460  best=+820.6651  mean=-38.6210  pop_best=+335.7622
+gen 2461  best=+820.6651  mean=-29.5786  pop_best=+291.2045
+>>> RESTART 135 — stalled for 15 gens, sigma=207.5
+gen 2462  best=+820.6651  mean=-84.9296  pop_best=+326.9336
+gen 2463  best=+820.6651  mean=-72.9888  pop_best=+185.5297
+gen 2464  best=+820.6651  mean=-66.1736  pop_best=+291.5308
+gen 2465  best=+820.6651  mean=-66.2741  pop_best=+223.6413
+gen 2466  best=+820.6651  mean=-60.0035  pop_best=+305.2336
+gen 2467  best=+820.6651  mean=-56.6911  pop_best=+252.4480
+gen 2468  best=+820.6651  mean=-60.6210  pop_best=+268.6949
+gen 2469  best=+820.6651  mean=-46.0140  pop_best=+294.9126
+gen 2470  best=+820.6651  mean=-52.1698  pop_best=+287.5513
+gen 2471  best=+820.6651  mean=-44.4419  pop_best=+285.9916
+gen 2472  best=+820.6651  mean=-35.1182  pop_best=+331.7047
+gen 2473  best=+820.6651  mean=-32.0621  pop_best=+263.2658
+gen 2474  best=+820.6651  mean=-33.2354  pop_best=+297.6162
+gen 2475  best=+820.6651  mean=-27.7695  pop_best=+324.4374
+gen 2476  best=+820.6651  mean=-19.8232  pop_best=+302.5909
+>>> RESTART 136 — stalled for 15 gens, sigma=209.0
+gen 2477  best=+820.6651  mean=-77.6178  pop_best=+224.2021
+gen 2478  best=+820.6651  mean=-72.8804  pop_best=+280.6894
+gen 2479  best=+820.6651  mean=-78.2267  pop_best=+273.0191
+gen 2480  best=+820.6651  mean=-66.0623  pop_best=+220.3827
+gen 2481  best=+820.6651  mean=-65.2225  pop_best=+291.4522
+gen 2482  best=+820.6651  mean=-63.9290  pop_best=+244.0721
+gen 2483  best=+820.6651  mean=-59.2825  pop_best=+259.6081
+gen 2484  best=+820.6651  mean=-47.8438  pop_best=+314.7446
+gen 2485  best=+820.6651  mean=-47.0717  pop_best=+264.3852
+gen 2486  best=+820.6651  mean=-47.6688  pop_best=+322.0812
+gen 2487  best=+820.6651  mean=-45.8465  pop_best=+293.0098
+gen 2488  best=+820.6651  mean=-38.9755  pop_best=+295.5136
+gen 2489  best=+820.6651  mean=-25.1968  pop_best=+373.4189
+gen 2490  best=+820.6651  mean=-36.7020  pop_best=+325.5465
+gen 2491  best=+820.6651  mean=-32.0334  pop_best=+326.8096
+>>> RESTART 137 — stalled for 15 gens, sigma=210.5
+gen 2492  best=+820.6651  mean=-71.1684  pop_best=+307.3110
+gen 2493  best=+820.6651  mean=-83.1038  pop_best=+265.0788
+gen 2494  best=+820.6651  mean=-66.2355  pop_best=+287.7214
+gen 2495  best=+820.6651  mean=-59.4941  pop_best=+292.4775
+gen 2496  best=+820.6651  mean=-64.1335  pop_best=+322.8896
+gen 2497  best=+820.6651  mean=-55.2427  pop_best=+311.7471
+gen 2498  best=+820.6651  mean=-52.1245  pop_best=+280.9446
+gen 2499  best=+820.6651  mean=-55.3902  pop_best=+270.1326
+gen 2500  best=+820.6651  mean=-47.2364  pop_best=+292.3922
+
+Done. best reward 820.6651  (137 restarts)
+  phase_time=1.04s
+  start         FL( +5.8, -99.8)  FR(+48.8, -25.6)  RL(+54.9, -30.3)  RR(+54.4, -45.9)
+  shift_FR      FL(+33.8, -99.9)  FR(+36.4, -94.3)  RL(+55.0, -25.0)  RR( +5.3, -59.3)
+  swing_FR      FL(+50.0, -29.6)  FR( +5.0, -98.7)  RL(+38.1, -94.8)  RR(+54.7, -25.0)
+  plant_FR      FL( +5.2,-100.0)  FR(+55.0, -25.1)  RL(+54.9, -54.9)  RR(+51.3, -25.8)
+  shift_RL      FL(+27.6, -80.5)  FR(+13.1, -53.4)  RL(+54.9, -25.3)  RR( +5.2, -37.2)
+  swing_RL      FL(+54.9, -25.3)  FR( +5.0, -90.6)  RL(+26.6, -78.7)  RR(+47.6, -39.3)
+  plant_RL      FL(+46.7, -98.9)  FR(+55.0, -25.0)  RL(+54.4, -27.2)  RR(+29.5, -85.0)
+  shift_FL      FL(+55.0, -25.0)  FR( +5.0, -99.9)  RL(+55.0, -32.3)  RR(+54.8, -25.2)
+  swing_FL      FL( +5.3, -99.4)  FR(+27.6, -67.3)  RL( +5.0, -49.2)  RR(+54.4, -25.5)
+  plant_FL      FL( +5.5, -85.7)  FR(+54.5, -47.9)  RL(+54.8, -25.0)  RR( +5.0, -44.7)
+  shift_RR      FL(+55.0, -25.1)  FR( +5.5,-100.0)  RL(+35.9, -87.7)  RR(+52.4, -25.0)
+  swing_RR      FL(+55.0, -94.1)  FR( +8.3, -37.0)  RL(+32.0, -25.6)  RR(+28.4, -33.5)
+  plant_RR      FL(+40.7, -98.9)  FR(+55.0, -88.3)  RL( +6.3, -50.8)  RR(+53.0, -29.7)
+Saved to best_gait.json
+
+=== Moving results to /cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_2500 ===
+copied 'best_gait.json' -> '/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_2500/best_gait.json'
+removed 'best_gait.json'
+copied 'tune_gait.jsonl' -> '/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_2500/tune_gait.jsonl'
+removed 'tune_gait.jsonl'
+
+=== Done at Wed Apr 22 13:06:09 EDT 2026 ===

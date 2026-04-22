@@ -1,0 +1,241 @@
+=== Training config ===
+  algo=cma  init=gait  gens=200  popsize=48
+  cpus=16  node=p1cmp019.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_200
+  workdir=/tmp/tmp.SUexJ57gIJ
+  started=Wed Apr 22 01:27:42 EDT 2026
+
+Initial seed: gait
+Tuning gait (105 params: 104 angles + 1 timing, 5 cycles/eval)
+  workers: 15
+gen   1  best=+14.9186  mean=-21.4213  pop_best=+14.9186  dist=+0.0399m phases=60/60 z=0.167 nose_down=10.6°/17.7° roll=8.8°/29.8° d_pitch_max=1.2
+gen   2  best=+30.3269  mean=-17.0045  pop_best=+30.3269  dist=+0.2183m phases=60/60 z=0.164 nose_down=11.4°/20.7° roll=9.4°/25.1° d_pitch_max=1.1
+gen   3  best=+40.7409  mean=-2.4432  pop_best=+40.7409  dist=+0.3036m phases=60/60 z=0.167 nose_down=11.4°/18.3° roll=8.6°/28.1° d_pitch_max=0.9
+gen   4  best=+40.7409  mean=+7.8173  pop_best=+40.2314
+gen   5  best=+47.6877  mean=+15.0904  pop_best=+47.6877  dist=+0.3668m phases=60/60 z=0.166 nose_down=10.7°/19.7° roll=7.1°/25.5° d_pitch_max=0.8
+gen   6  best=+50.5619  mean=+19.6019  pop_best=+50.5619  dist=+0.3902m phases=60/60 z=0.167 nose_down=11.0°/19.0° roll=6.6°/23.7° d_pitch_max=0.9
+gen   7  best=+61.3610  mean=+19.4595  pop_best=+61.3610  dist=+0.4898m phases=60/60 z=0.168 nose_down=10.3°/19.3° roll=7.0°/22.2° d_pitch_max=0.9
+gen   8  best=+61.3610  mean=+32.1544  pop_best=+60.7724
+gen   9  best=+79.3057  mean=+34.7787  pop_best=+79.3057  dist=+0.7463m phases=60/60 z=0.168 nose_down=12.1°/22.6° roll=10.0°/26.8° d_pitch_max=1.4
+gen  10  best=+79.3057  mean=+30.6391  pop_best=+77.7026
+gen  11  best=+79.3057  mean=+39.7173  pop_best=+75.7832
+gen  12  best=+82.2867  mean=+37.4387  pop_best=+82.2867  dist=+0.6767m phases=60/60 z=0.169 nose_down=10.1°/16.3° roll=8.1°/17.7° d_pitch_max=1.3
+gen  13  best=+120.9212  mean=+37.7686  pop_best=+120.9212  dist=+1.0901m phases=60/60 z=0.172 nose_down=10.2°/18.0° roll=10.1°/23.5° d_pitch_max=1.2
+gen  14  best=+120.9212  mean=+36.0474  pop_best=+103.5131
+gen  15  best=+120.9212  mean=+42.9420  pop_best=+103.4913
+gen  16  best=+120.9212  mean=+37.1903  pop_best=+110.2755
+gen  17  best=+120.9212  mean=+39.2201  pop_best=+114.8163
+gen  18  best=+143.2473  mean=+42.4907  pop_best=+143.2473  dist=+1.3098m phases=60/60 z=0.167 nose_down=9.9°/16.5° roll=9.7°/26.9° d_pitch_max=1.8
+gen  19  best=+143.2473  mean=+51.4359  pop_best=+117.5640
+gen  20  best=+143.2473  mean=+34.6104  pop_best=+138.7053
+gen  21  best=+143.2473  mean=+47.0813  pop_best=+129.1893
+gen  22  best=+172.1664  mean=+56.3697  pop_best=+172.1664  dist=+1.5893m phases=60/60 z=0.169 nose_down=8.6°/17.8° roll=10.8°/24.5° d_pitch_max=1.2
+gen  23  best=+172.1664  mean=+47.0591  pop_best=+165.9783
+gen  24  best=+172.1664  mean=+56.1452  pop_best=+161.7077
+gen  25  best=+193.6611  mean=+59.6430  pop_best=+193.6611  dist=+1.7879m phases=60/60 z=0.171 nose_down=9.3°/14.7° roll=10.7°/26.6° d_pitch_max=1.5
+gen  26  best=+193.6611  mean=+64.3058  pop_best=+168.6759
+gen  27  best=+193.6611  mean=+72.6794  pop_best=+182.6557
+gen  28  best=+193.6611  mean=+57.6693  pop_best=+182.8526
+gen  29  best=+193.6611  mean=+66.7527  pop_best=+183.5103
+gen  30  best=+193.6611  mean=+69.8914  pop_best=+183.6081
+gen  31  best=+217.3064  mean=+78.8685  pop_best=+217.3064  dist=+2.0588m phases=60/60 z=0.169 nose_down=9.9°/16.4° roll=10.4°/27.3° d_pitch_max=2.1
+gen  32  best=+219.9272  mean=+93.9173  pop_best=+219.9272  dist=+2.0853m phases=60/60 z=0.165 nose_down=9.7°/19.1° roll=9.6°/24.3° d_pitch_max=1.4
+gen  33  best=+219.9272  mean=+74.9384  pop_best=+196.5458
+gen  34  best=+219.9272  mean=+83.7549  pop_best=+197.0704
+gen  35  best=+219.9272  mean=+74.1481  pop_best=+191.5067
+gen  36  best=+219.9272  mean=+80.9764  pop_best=+189.1495
+gen  37  best=+219.9272  mean=+84.9476  pop_best=+198.4507
+gen  38  best=+219.9272  mean=+74.1964  pop_best=+202.4956
+gen  39  best=+219.9272  mean=+69.1592  pop_best=+193.3849
+gen  40  best=+219.9272  mean=+70.2799  pop_best=+192.7876
+gen  41  best=+219.9272  mean=+69.0758  pop_best=+207.1346
+gen  42  best=+266.8714  mean=+70.1791  pop_best=+266.8714  dist=+2.5086m phases=60/60 z=0.172 nose_down=6.6°/17.2° roll=8.1°/27.5° d_pitch_max=1.7
+gen  43  best=+266.8714  mean=+87.0840  pop_best=+225.1152
+gen  44  best=+266.8714  mean=+67.3418  pop_best=+205.0651
+gen  45  best=+266.8714  mean=+99.5718  pop_best=+241.8213
+gen  46  best=+266.8714  mean=+75.7651  pop_best=+235.2034
+gen  47  best=+266.8714  mean=+82.4849  pop_best=+223.6366
+gen  48  best=+266.8714  mean=+75.1828  pop_best=+215.7641
+gen  49  best=+266.8714  mean=+75.3594  pop_best=+224.7517
+gen  50  best=+266.8714  mean=+88.0978  pop_best=+229.9177
+gen  51  best=+266.8714  mean=+79.8798  pop_best=+248.1540
+gen  52  best=+266.8714  mean=+104.7220  pop_best=+221.3172
+gen  53  best=+266.8714  mean=+80.8676  pop_best=+258.6187
+gen  54  best=+266.8714  mean=+91.7364  pop_best=+231.5583
+gen  55  best=+266.8714  mean=+81.2816  pop_best=+229.3593
+gen  56  best=+266.8714  mean=+81.1307  pop_best=+253.2165
+gen  57  best=+266.8714  mean=+67.9128  pop_best=+232.5201
+>>> RESTART 1 — stalled for 15 gens, sigma=6.5
+gen  58  best=+266.8714  mean=+27.8826  pop_best=+180.1881
+gen  59  best=+266.8714  mean=+37.0000  pop_best=+203.3658
+gen  60  best=+266.8714  mean=+60.3886  pop_best=+208.7267
+gen  61  best=+266.8714  mean=+62.6081  pop_best=+196.6439
+gen  62  best=+266.8714  mean=+86.0535  pop_best=+212.7997
+gen  63  best=+266.8714  mean=+118.9079  pop_best=+214.6548
+gen  64  best=+266.8714  mean=+139.3909  pop_best=+255.9102
+gen  65  best=+266.8714  mean=+88.0828  pop_best=+254.9689
+gen  66  best=+266.8714  mean=+100.4639  pop_best=+251.8335
+gen  67  best=+277.2837  mean=+145.6139  pop_best=+277.2837  dist=+2.5980m phases=60/60 z=0.169 nose_down=6.7°/16.4° roll=8.0°/21.1° d_pitch_max=1.9
+gen  68  best=+277.2837  mean=+126.7380  pop_best=+272.9005
+gen  69  best=+277.2837  mean=+145.5573  pop_best=+277.1982
+gen  70  best=+293.1786  mean=+147.2556  pop_best=+293.1786  dist=+2.7515m phases=60/60 z=0.169 nose_down=6.5°/13.0° roll=10.2°/28.0° d_pitch_max=1.8
+gen  71  best=+293.1786  mean=+131.8373  pop_best=+287.4999
+gen  72  best=+293.1786  mean=+144.3459  pop_best=+273.2794
+gen  73  best=+307.7875  mean=+120.1343  pop_best=+307.7875  dist=+2.9009m phases=60/60 z=0.171 nose_down=6.4°/15.8° roll=7.8°/26.3° d_pitch_max=1.6
+gen  74  best=+307.7875  mean=+112.7042  pop_best=+268.2043
+gen  75  best=+307.7875  mean=+139.6807  pop_best=+282.9855
+gen  76  best=+307.7875  mean=+161.0882  pop_best=+300.2545
+gen  77  best=+320.7347  mean=+122.7526  pop_best=+320.7347  dist=+3.0165m phases=60/60 z=0.173 nose_down=6.7°/14.0° roll=6.9°/19.6° d_pitch_max=2.0
+gen  78  best=+329.0078  mean=+143.0856  pop_best=+329.0078  dist=+3.1211m phases=60/60 z=0.174 nose_down=6.9°/15.2° roll=7.9°/24.2° d_pitch_max=2.1
+gen  79  best=+340.6528  mean=+132.1586  pop_best=+340.6528  dist=+3.2335m phases=60/60 z=0.170 nose_down=5.3°/15.8° roll=9.2°/29.3° d_pitch_max=1.8
+gen  80  best=+340.6528  mean=+123.7172  pop_best=+316.4691
+gen  81  best=+340.6528  mean=+145.5179  pop_best=+328.1800
+gen  82  best=+340.6528  mean=+136.1049  pop_best=+306.7354
+gen  83  best=+340.6528  mean=+140.9029  pop_best=+336.3953
+gen  84  best=+340.6528  mean=+180.9399  pop_best=+325.4329
+gen  85  best=+340.6528  mean=+140.2277  pop_best=+339.3827
+gen  86  best=+340.6528  mean=+171.8201  pop_best=+315.8054
+gen  87  best=+340.6528  mean=+144.2612  pop_best=+325.9694
+gen  88  best=+340.6528  mean=+142.3409  pop_best=+324.1625
+gen  89  best=+342.7323  mean=+133.0398  pop_best=+342.7323  dist=+3.2136m phases=60/60 z=0.169 nose_down=4.8°/14.3° roll=7.7°/19.1° d_pitch_max=1.2
+gen  90  best=+342.7323  mean=+154.5289  pop_best=+310.9836
+gen  91  best=+342.7323  mean=+145.6447  pop_best=+316.9306
+gen  92  best=+343.4223  mean=+199.8880  pop_best=+343.4223  dist=+3.2367m phases=60/60 z=0.169 nose_down=6.5°/13.9° roll=8.1°/24.8° d_pitch_max=1.3
+gen  93  best=+343.4223  mean=+163.9492  pop_best=+325.3748
+gen  94  best=+343.4223  mean=+169.2560  pop_best=+339.1813
+gen  95  best=+343.4223  mean=+160.8483  pop_best=+328.8562
+gen  96  best=+357.2250  mean=+189.1903  pop_best=+357.2250  dist=+3.3428m phases=60/60 z=0.173 nose_down=4.3°/11.3° roll=7.4°/20.8° d_pitch_max=1.6
+gen  97  best=+357.2250  mean=+191.2547  pop_best=+341.9563
+gen  98  best=+357.2250  mean=+187.8364  pop_best=+346.0342
+gen  99  best=+357.2250  mean=+201.8308  pop_best=+356.0131
+gen 100  best=+357.2250  mean=+212.1990  pop_best=+347.2556
+gen 101  best=+357.2250  mean=+150.8378  pop_best=+332.5337
+gen 102  best=+370.0247  mean=+186.4269  pop_best=+370.0247  dist=+3.4949m phases=60/60 z=0.170 nose_down=4.8°/13.1° roll=8.4°/25.8° d_pitch_max=1.6
+gen 103  best=+370.0247  mean=+198.9242  pop_best=+352.9214
+gen 104  best=+381.0210  mean=+220.1563  pop_best=+381.0210  dist=+3.5964m phases=60/60 z=0.172 nose_down=4.4°/12.1° roll=8.3°/23.3° d_pitch_max=1.8
+gen 105  best=+381.0210  mean=+217.0080  pop_best=+351.9448
+gen 106  best=+381.0210  mean=+209.9879  pop_best=+365.4722
+gen 107  best=+381.0210  mean=+203.8395  pop_best=+371.4686
+gen 108  best=+381.0210  mean=+175.5865  pop_best=+362.9537
+gen 109  best=+381.0210  mean=+224.4274  pop_best=+371.0655
+gen 110  best=+381.0210  mean=+210.3374  pop_best=+360.0125
+gen 111  best=+381.0210  mean=+167.0506  pop_best=+355.5359
+gen 112  best=+381.0210  mean=+218.0162  pop_best=+365.8538
+gen 113  best=+381.0210  mean=+192.6838  pop_best=+378.7885
+gen 114  best=+381.0210  mean=+153.7557  pop_best=+369.8819
+gen 115  best=+384.1099  mean=+181.1153  pop_best=+384.1099  dist=+3.6349m phases=60/60 z=0.167 nose_down=3.8°/12.4° roll=8.6°/26.4° d_pitch_max=2.0
+gen 116  best=+398.3755  mean=+218.5910  pop_best=+398.3755  dist=+3.7867m phases=60/60 z=0.171 nose_down=3.6°/12.8° roll=9.5°/24.4° d_pitch_max=2.3
+gen 117  best=+398.3755  mean=+201.6125  pop_best=+387.2605
+gen 118  best=+398.3755  mean=+134.5349  pop_best=+390.2478
+gen 119  best=+398.3755  mean=+176.3868  pop_best=+367.9421
+gen 120  best=+398.3755  mean=+158.3338  pop_best=+384.4484
+gen 121  best=+398.3755  mean=+201.9594  pop_best=+379.3300
+gen 122  best=+398.3755  mean=+199.7971  pop_best=+388.9621
+gen 123  best=+398.3755  mean=+218.7679  pop_best=+393.8490
+gen 124  best=+398.3755  mean=+193.1071  pop_best=+362.4575
+gen 125  best=+398.3755  mean=+248.7377  pop_best=+379.7501
+gen 126  best=+398.3755  mean=+205.2311  pop_best=+373.7393
+gen 127  best=+398.3755  mean=+231.3113  pop_best=+389.2646
+gen 128  best=+398.3755  mean=+240.4849  pop_best=+384.6651
+gen 129  best=+398.3755  mean=+203.5251  pop_best=+394.7642
+gen 130  best=+398.3755  mean=+171.8451  pop_best=+373.9618
+gen 131  best=+398.3755  mean=+191.7002  pop_best=+366.5923
+>>> RESTART 2 — stalled for 15 gens, sigma=8.0
+gen 132  best=+398.3755  mean=+19.4303  pop_best=+344.0794
+gen 133  best=+398.3755  mean=+70.3051  pop_best=+347.1350
+gen 134  best=+398.3755  mean=+91.3128  pop_best=+346.2496
+gen 135  best=+398.3755  mean=+83.7246  pop_best=+314.0529
+gen 136  best=+398.3755  mean=+128.6572  pop_best=+313.8431
+gen 137  best=+398.3755  mean=+117.3839  pop_best=+313.3552
+gen 138  best=+398.3755  mean=+111.4519  pop_best=+334.5195
+gen 139  best=+398.3755  mean=+71.9132  pop_best=+325.2068
+gen 140  best=+398.3755  mean=+106.9108  pop_best=+352.3839
+gen 141  best=+398.3755  mean=+102.2111  pop_best=+355.7593
+gen 142  best=+398.3755  mean=+133.1563  pop_best=+350.4354
+gen 143  best=+398.3755  mean=+155.4070  pop_best=+353.7793
+gen 144  best=+398.3755  mean=+194.8207  pop_best=+358.0272
+gen 145  best=+398.3755  mean=+146.1974  pop_best=+362.5424
+gen 146  best=+398.3755  mean=+186.6323  pop_best=+382.8973
+>>> RESTART 3 — stalled for 15 gens, sigma=9.5
+gen 147  best=+398.3755  mean=+30.7883  pop_best=+290.4577
+gen 148  best=+398.3755  mean=+35.7571  pop_best=+305.2530
+gen 149  best=+398.3755  mean=+66.3005  pop_best=+327.2689
+gen 150  best=+398.3755  mean=+68.7713  pop_best=+317.2456
+gen 151  best=+398.3755  mean=+98.7516  pop_best=+320.0459
+gen 152  best=+398.3755  mean=+89.8566  pop_best=+307.8315
+gen 153  best=+398.3755  mean=+99.4932  pop_best=+316.9880
+gen 154  best=+398.3755  mean=+105.1659  pop_best=+325.6334
+gen 155  best=+398.3755  mean=+115.1603  pop_best=+319.2240
+gen 156  best=+398.3755  mean=+127.2682  pop_best=+319.1631
+gen 157  best=+398.3755  mean=+142.6502  pop_best=+347.4157
+gen 158  best=+398.3755  mean=+144.5732  pop_best=+378.2943
+gen 159  best=+398.3755  mean=+143.3318  pop_best=+326.7752
+gen 160  best=+398.3755  mean=+120.3593  pop_best=+301.6937
+gen 161  best=+398.3755  mean=+151.0428  pop_best=+341.0126
+>>> RESTART 4 — stalled for 15 gens, sigma=11.0
+gen 162  best=+398.3755  mean=+15.2696  pop_best=+264.3787
+gen 163  best=+398.3755  mean=+5.9283  pop_best=+249.8109
+gen 164  best=+398.3755  mean=+5.9269  pop_best=+236.4491
+gen 165  best=+398.3755  mean=+25.6661  pop_best=+213.8822
+gen 166  best=+398.3755  mean=+41.5507  pop_best=+296.6017
+gen 167  best=+398.3755  mean=+29.3322  pop_best=+259.3313
+gen 168  best=+398.3755  mean=+58.8257  pop_best=+289.6550
+gen 169  best=+398.3755  mean=+65.4800  pop_best=+240.5309
+gen 170  best=+398.3755  mean=+64.7382  pop_best=+245.7452
+gen 171  best=+398.3755  mean=+71.0108  pop_best=+241.7556
+gen 172  best=+398.3755  mean=+95.6705  pop_best=+259.5888
+gen 173  best=+398.3755  mean=+96.6497  pop_best=+332.2367
+gen 174  best=+398.3755  mean=+94.3538  pop_best=+283.3433
+gen 175  best=+398.3755  mean=+61.5781  pop_best=+247.4055
+gen 176  best=+398.3755  mean=+81.5693  pop_best=+295.5117
+>>> RESTART 5 — stalled for 15 gens, sigma=12.5
+gen 177  best=+398.3755  mean=+2.8054  pop_best=+225.8728
+gen 178  best=+398.3755  mean=+8.2579  pop_best=+251.2580
+gen 179  best=+398.3755  mean=+23.4629  pop_best=+232.6827
+gen 180  best=+398.3755  mean=+28.4643  pop_best=+235.8689
+gen 181  best=+398.3755  mean=+34.4337  pop_best=+230.9610
+gen 182  best=+398.3755  mean=+44.0609  pop_best=+241.8107
+gen 183  best=+398.3755  mean=+52.8431  pop_best=+235.9337
+gen 184  best=+398.3755  mean=+56.3150  pop_best=+261.3674
+gen 185  best=+398.3755  mean=+60.0519  pop_best=+226.3895
+gen 186  best=+398.3755  mean=+72.8958  pop_best=+261.9961
+gen 187  best=+398.3755  mean=+58.0928  pop_best=+297.4743
+gen 188  best=+398.3755  mean=+75.0934  pop_best=+270.5804
+gen 189  best=+398.3755  mean=+64.9485  pop_best=+271.5364
+gen 190  best=+398.3755  mean=+69.9628  pop_best=+280.2309
+gen 191  best=+398.3755  mean=+32.1364  pop_best=+271.3816
+>>> RESTART 6 — stalled for 15 gens, sigma=14.0
+gen 192  best=+398.3755  mean=-5.1312  pop_best=+201.3131
+gen 193  best=+398.3755  mean=+2.5483  pop_best=+252.3471
+gen 194  best=+398.3755  mean=+5.1789  pop_best=+206.1076
+gen 195  best=+398.3755  mean=+17.5800  pop_best=+261.3049
+gen 196  best=+398.3755  mean=+20.0007  pop_best=+225.0877
+gen 197  best=+398.3755  mean=+22.4876  pop_best=+230.9060
+gen 198  best=+398.3755  mean=+22.7288  pop_best=+183.2253
+gen 199  best=+398.3755  mean=+19.3489  pop_best=+197.7678
+gen 200  best=+398.3755  mean=+27.3731  pop_best=+221.8959
+
+Done. best reward 398.3755  (6 restarts)
+  phase_time=0.68s
+  start         FL(+10.7, -71.5)  FR(+34.7, -56.9)  RL(+26.2, -55.4)  RR(+22.8, -50.4)
+  shift_FR      FL( +7.4, -51.0)  FR( +9.4, -99.9)  RL(+51.4, -58.2)  RR(+48.9, -49.4)
+  swing_FR      FL(+52.5, -92.3)  FR( +9.0, -83.0)  RL(+22.2, -62.6)  RR(+54.9, -32.6)
+  plant_FR      FL(+38.6, -89.7)  FR(+49.5, -26.9)  RL(+49.4, -37.9)  RR(+33.2, -56.1)
+  shift_RL      FL(+52.3, -71.5)  FR( +7.1, -69.4)  RL(+50.8, -32.1)  RR(+30.7, -77.0)
+  swing_RL      FL(+36.0, -58.9)  FR(+19.3, -87.3)  RL(+44.7, -66.3)  RR(+54.6, -95.4)
+  plant_RL      FL( +5.7, -69.3)  FR(+28.1, -68.8)  RL(+22.5, -36.4)  RR(+44.7, -85.1)
+  shift_FL      FL(+51.2, -50.6)  FR( +5.0, -93.9)  RL(+15.0, -40.3)  RR(+54.6, -39.1)
+  swing_FL      FL(+14.4,-100.0)  FR(+54.9, -66.7)  RL(+16.5, -25.0)  RR(+22.6, -50.5)
+  plant_FL      FL(+53.5, -34.6)  FR( +5.7, -81.9)  RL(+54.2, -32.5)  RR(+46.9, -42.0)
+  shift_RR      FL(+13.5, -99.4)  FR(+38.9, -66.3)  RL( +5.0, -53.4)  RR(+54.9, -32.5)
+  swing_RR      FL(+14.4, -84.9)  FR(+33.0, -79.6)  RL(+47.4, -49.6)  RR(+12.1, -42.6)
+  plant_RR      FL(+37.7, -33.4)  FR(+14.0, -54.0)  RL(+39.6, -41.5)  RR(+35.6, -40.6)
+Saved to best_gait.json
+
+=== Moving results to /cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_200 ===
+‘best_gait.json’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_200/best_gait.json’
+removed ‘best_gait.json’
+‘tune_gait.jsonl’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_200/tune_gait.jsonl’
+removed ‘tune_gait.jsonl’
+
+=== Done at Wed Apr 22 02:06:02 EDT 2026 ===

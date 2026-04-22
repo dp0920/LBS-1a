@@ -1,0 +1,84 @@
+=== Training config ===
+  algo=random  init=stand  gens=50  popsize=48
+  cpus=16  node=p1cmp019.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_50
+  workdir=/tmp/tmp.sgqhJsMR7i
+  started=Wed Apr 22 01:21:42 EDT 2026
+
+Random search (105 params, popsize=48, gens=50, 5 cycles/eval)
+  workers: 15
+gen   1  best=+25.7346  mean=-43.5696  pop_best=+25.7346  dist=+0.0007m phases=60/60 z=0.174
+gen   2  best=+25.7346  mean=-33.7345  pop_best=+25.7346
+gen   3  best=+25.7346  mean=-36.5274  pop_best=+25.7346
+gen   4  best=+25.7346  mean=-37.6618  pop_best=+25.7346
+gen   5  best=+25.7346  mean=-54.5837  pop_best=+25.7346
+gen   6  best=+25.7346  mean=-29.7197  pop_best=+25.7346
+gen   7  best=+25.7346  mean=-34.4153  pop_best=+25.7346
+gen   8  best=+25.7346  mean=-34.5135  pop_best=+25.7346
+gen   9  best=+25.7346  mean=-24.4672  pop_best=+25.7346
+gen  10  best=+25.7346  mean=-32.9951  pop_best=+25.7346
+gen  11  best=+25.7346  mean=-49.7090  pop_best=+25.7346
+gen  12  best=+25.7346  mean=-37.3658  pop_best=+25.7346
+gen  13  best=+25.7346  mean=-42.9699  pop_best=+25.7346
+gen  14  best=+25.7346  mean=-34.4762  pop_best=+25.7346
+gen  15  best=+25.7346  mean=-41.4042  pop_best=+25.7346
+gen  16  best=+25.7346  mean=-28.3906  pop_best=+25.7346
+gen  17  best=+25.7346  mean=-55.0287  pop_best=+25.7346
+gen  18  best=+25.7346  mean=-29.5216  pop_best=+25.7346
+gen  19  best=+25.7346  mean=-34.9762  pop_best=+25.7346
+gen  20  best=+25.7346  mean=-29.6721  pop_best=+25.7346
+gen  21  best=+25.7346  mean=-49.3227  pop_best=+25.7346
+gen  22  best=+25.7346  mean=-40.9782  pop_best=+25.7346
+gen  23  best=+25.7346  mean=-37.1917  pop_best=+25.7346
+gen  24  best=+25.7346  mean=-49.1596  pop_best=+25.7346
+gen  25  best=+25.7346  mean=-48.4295  pop_best=+25.7346
+gen  26  best=+25.7346  mean=-34.8877  pop_best=+25.7346
+gen  27  best=+25.7346  mean=-67.7934  pop_best=+25.7346
+gen  28  best=+25.7346  mean=-47.3472  pop_best=+25.7346
+gen  29  best=+25.7346  mean=-66.3428  pop_best=+25.7346
+gen  30  best=+25.7346  mean=-19.1742  pop_best=+25.7346
+gen  31  best=+25.7346  mean=-43.1985  pop_best=+25.7346
+gen  32  best=+25.7346  mean=-41.6987  pop_best=+25.7346
+gen  33  best=+25.7346  mean=-62.4491  pop_best=+25.7346
+gen  34  best=+25.7346  mean=-42.3717  pop_best=+25.7346
+gen  35  best=+25.7346  mean=-42.6590  pop_best=+25.7346
+gen  36  best=+25.7346  mean=-36.9795  pop_best=+25.7346
+gen  37  best=+25.7346  mean=-32.2631  pop_best=+25.7346
+gen  38  best=+25.7346  mean=-44.7396  pop_best=+25.7346
+gen  39  best=+25.7346  mean=-47.5612  pop_best=+25.7346
+gen  40  best=+25.7346  mean=-58.9269  pop_best=+25.7346
+gen  41  best=+25.7346  mean=-39.2430  pop_best=+25.7346
+gen  42  best=+25.7346  mean=-37.9500  pop_best=+25.7346
+gen  43  best=+25.7346  mean=-66.8059  pop_best=+25.7346
+gen  44  best=+41.3805  mean=-60.6002  pop_best=+41.3805  dist=+0.4083m phases=45/60 z=0.172
+gen  45  best=+41.3805  mean=-38.4644  pop_best=+41.3805
+gen  46  best=+41.3805  mean=-39.7839  pop_best=+41.3805
+gen  47  best=+41.3805  mean=-27.0201  pop_best=+41.3805
+gen  48  best=+41.3805  mean=-61.8324  pop_best=+41.3805
+gen  49  best=+41.3805  mean=-36.9084  pop_best=+41.3805
+gen  50  best=+41.3805  mean=-49.6144  pop_best=+41.3805
+
+Done. best reward 41.3805  (0 restarts)
+  phase_time=0.23s
+  start         FL(+50.5, -91.9)  FR(+20.8, -64.6)  RL( +5.4, -63.5)  RR(+15.4, -48.1)
+  shift_FR      FL(+50.9, -38.4)  FR(+22.4, -62.2)  RL(+30.0, -78.8)  RR(+43.5, -56.6)
+  swing_FR      FL( +6.2, -43.3)  FR(+22.2, -38.0)  RL(+53.2, -85.4)  RR(+34.2, -60.5)
+  plant_FR      FL(+26.7, -29.6)  FR(+49.9, -54.2)  RL(+35.3, -66.2)  RR(+45.0, -46.8)
+  shift_RL      FL(+28.7, -46.0)  FR(+46.6, -77.7)  RL(+28.7, -50.7)  RR(+39.4, -47.1)
+  swing_RL      FL(+18.7, -75.0)  FR(+31.4, -40.4)  RL( +9.6, -46.6)  RR(+40.1, -78.0)
+  plant_RL      FL(+21.3, -91.9)  FR(+30.7, -77.9)  RL(+30.1, -87.8)  RR(+44.4, -90.5)
+  shift_FL      FL(+48.7, -95.3)  FR(+22.4, -95.3)  RL(+49.8, -78.4)  RR(+36.7, -52.5)
+  swing_FL      FL(+19.8, -50.6)  FR( +9.6, -35.2)  RL(+44.8, -25.5)  RR(+18.5, -40.5)
+  plant_FL      FL(+12.6, -80.1)  FR(+26.9, -73.1)  RL( +5.5, -60.6)  RR(+17.5, -52.4)
+  shift_RR      FL(+36.9, -70.0)  FR(+12.7, -52.0)  RL(+38.7, -30.1)  RR(+13.8, -27.3)
+  swing_RR      FL(+44.4, -98.7)  FR(+29.5, -49.8)  RL(+12.0, -89.5)  RR( +5.4, -71.4)
+  plant_RR      FL(+22.5, -54.4)  FR(+43.0, -54.8)  RL(+13.7, -72.3)  RR(+32.5, -68.3)
+Saved to best_gait_rand_stand.json
+
+=== Moving results to /cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_50 ===
+‘best_gait_rand_stand.json’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_50/best_gait_rand_stand.json’
+removed ‘best_gait_rand_stand.json’
+‘tune_gait_rand_stand.jsonl’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_50/tune_gait_rand_stand.jsonl’
+removed ‘tune_gait_rand_stand.jsonl’
+
+=== Done at Wed Apr 22 01:23:24 EDT 2026 ===

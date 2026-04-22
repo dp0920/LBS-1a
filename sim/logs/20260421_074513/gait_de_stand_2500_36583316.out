@@ -1,0 +1,7 @@
+=== Training config ===
+  algo=de  init=stand  gens=2500  popsize=48
+  cpus=16  node=p1cmp044.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260421_074513/de_stand_2500
+  workdir=/tmp/tmp.C4UFwf2VtF
+  started=Tue Apr 21 07:53:43 EDT 2026
+

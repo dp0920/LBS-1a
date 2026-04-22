@@ -1,0 +1,234 @@
+=== Training config ===
+  algo=random  init=stand  gens=200  popsize=48
+  cpus=16  node=p1cmp019.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_200
+  workdir=/tmp/tmp.PNTTSra90d
+  started=Wed Apr 22 03:20:57 EDT 2026
+
+Random search (105 params, popsize=48, gens=200, 5 cycles/eval)
+  workers: 15
+gen   1  best=+25.7346  mean=-30.0691  pop_best=+25.7346  dist=+0.0007m phases=60/60 z=0.174
+gen   2  best=+25.7346  mean=-28.0105  pop_best=+25.7346
+gen   3  best=+25.7346  mean=-50.6190  pop_best=+25.7346
+gen   4  best=+25.7346  mean=-39.2080  pop_best=+25.7346
+gen   5  best=+25.7346  mean=-33.9612  pop_best=+25.7346
+gen   6  best=+25.7346  mean=-54.6806  pop_best=+25.7346
+gen   7  best=+25.7346  mean=-28.6792  pop_best=+25.7346
+gen   8  best=+25.7346  mean=-32.3414  pop_best=+25.7346
+gen   9  best=+25.7346  mean=-36.7656  pop_best=+25.7346
+gen  10  best=+25.7346  mean=-35.5900  pop_best=+25.7346
+gen  11  best=+25.7346  mean=-69.3549  pop_best=+25.7346
+gen  12  best=+25.7346  mean=-45.9488  pop_best=+25.7346
+gen  13  best=+25.7346  mean=-49.2915  pop_best=+25.7346
+gen  14  best=+25.7346  mean=-49.1321  pop_best=+25.7346
+gen  15  best=+25.7346  mean=-34.8516  pop_best=+25.7346
+gen  16  best=+25.7346  mean=-44.7050  pop_best=+25.7346
+gen  17  best=+25.7346  mean=-17.5105  pop_best=+25.7346
+gen  18  best=+25.7346  mean=-38.9290  pop_best=+25.7346
+gen  19  best=+25.7346  mean=-38.6738  pop_best=+25.7346
+gen  20  best=+25.7346  mean=-37.5794  pop_best=+25.7346
+gen  21  best=+25.7346  mean=-51.3089  pop_best=+25.7346
+gen  22  best=+25.7346  mean=-45.7095  pop_best=+25.7346
+gen  23  best=+25.7346  mean=-64.4691  pop_best=+25.7346
+gen  24  best=+25.7346  mean=-31.7264  pop_best=+25.7346
+gen  25  best=+25.7346  mean=-39.6294  pop_best=+25.7346
+gen  26  best=+25.7346  mean=-35.6562  pop_best=+25.7346
+gen  27  best=+25.7346  mean=-19.2668  pop_best=+25.7346
+gen  28  best=+25.7346  mean=-35.5694  pop_best=+25.7346
+gen  29  best=+25.7346  mean=-26.6686  pop_best=+25.7346
+gen  30  best=+25.7346  mean=-24.0821  pop_best=+25.7346
+gen  31  best=+25.7346  mean=-51.3667  pop_best=+25.7346
+gen  32  best=+25.7346  mean=-28.3889  pop_best=+25.7346
+gen  33  best=+25.7346  mean=-32.3292  pop_best=+25.7346
+gen  34  best=+25.7346  mean=-29.9066  pop_best=+25.7346
+gen  35  best=+25.7346  mean=-28.8909  pop_best=+25.7346
+gen  36  best=+89.1351  mean=-35.7188  pop_best=+89.1351  dist=+0.6890m phases=60/60 z=0.161
+gen  37  best=+89.1351  mean=-34.6351  pop_best=+89.1351
+gen  38  best=+89.1351  mean=-27.0157  pop_best=+89.1351
+gen  39  best=+89.1351  mean=-76.9949  pop_best=+89.1351
+gen  40  best=+89.1351  mean=-35.0689  pop_best=+89.1351
+gen  41  best=+89.1351  mean=-24.1054  pop_best=+89.1351
+gen  42  best=+89.1351  mean=-35.2652  pop_best=+89.1351
+gen  43  best=+89.1351  mean=-39.7360  pop_best=+89.1351
+gen  44  best=+89.1351  mean=-21.9231  pop_best=+89.1351
+gen  45  best=+89.1351  mean=-49.8508  pop_best=+89.1351
+gen  46  best=+89.1351  mean=-56.1713  pop_best=+89.1351
+gen  47  best=+89.1351  mean=-27.0385  pop_best=+89.1351
+gen  48  best=+89.1351  mean=-37.7008  pop_best=+89.1351
+gen  49  best=+89.1351  mean=-16.8360  pop_best=+89.1351
+gen  50  best=+89.1351  mean=-40.9893  pop_best=+89.1351
+gen  51  best=+89.1351  mean=-43.7827  pop_best=+89.1351
+gen  52  best=+89.1351  mean=-69.4139  pop_best=+89.1351
+gen  53  best=+89.1351  mean=-44.6300  pop_best=+89.1351
+gen  54  best=+89.1351  mean=-34.4004  pop_best=+89.1351
+gen  55  best=+89.1351  mean=-42.9047  pop_best=+89.1351
+gen  56  best=+89.1351  mean=-18.2687  pop_best=+89.1351
+gen  57  best=+89.1351  mean=-40.4070  pop_best=+89.1351
+gen  58  best=+89.1351  mean=-44.9789  pop_best=+89.1351
+gen  59  best=+89.1351  mean=-80.0554  pop_best=+89.1351
+gen  60  best=+89.1351  mean=-43.2023  pop_best=+89.1351
+gen  61  best=+89.1351  mean=-28.7123  pop_best=+89.1351
+gen  62  best=+89.1351  mean=-43.3941  pop_best=+89.1351
+gen  63  best=+89.1351  mean=-21.0345  pop_best=+89.1351
+gen  64  best=+89.1351  mean=-43.5501  pop_best=+89.1351
+gen  65  best=+89.1351  mean=-25.2974  pop_best=+89.1351
+gen  66  best=+89.1351  mean=-35.3347  pop_best=+89.1351
+gen  67  best=+89.1351  mean=-50.0806  pop_best=+89.1351
+gen  68  best=+89.1351  mean=-26.6953  pop_best=+89.1351
+gen  69  best=+89.1351  mean=-30.5758  pop_best=+89.1351
+gen  70  best=+89.1351  mean=-66.9902  pop_best=+89.1351
+gen  71  best=+89.1351  mean=-48.3073  pop_best=+89.1351
+gen  72  best=+89.1351  mean=-16.7209  pop_best=+89.1351
+gen  73  best=+89.1351  mean=-73.8814  pop_best=+89.1351
+gen  74  best=+89.1351  mean=-31.2510  pop_best=+89.1351
+gen  75  best=+89.1351  mean=-46.2345  pop_best=+89.1351
+gen  76  best=+89.1351  mean=-21.6840  pop_best=+89.1351
+gen  77  best=+89.1351  mean=-48.8551  pop_best=+89.1351
+gen  78  best=+89.1351  mean=-29.8931  pop_best=+89.1351
+gen  79  best=+89.1351  mean=-59.3936  pop_best=+89.1351
+gen  80  best=+89.1351  mean=-21.3325  pop_best=+89.1351
+gen  81  best=+89.1351  mean=-46.8372  pop_best=+89.1351
+gen  82  best=+89.1351  mean=-31.7168  pop_best=+89.1351
+gen  83  best=+89.1351  mean=-46.8330  pop_best=+89.1351
+gen  84  best=+89.1351  mean=-54.1330  pop_best=+89.1351
+gen  85  best=+89.1351  mean=-25.7023  pop_best=+89.1351
+gen  86  best=+89.1351  mean=-35.0589  pop_best=+89.1351
+gen  87  best=+89.1351  mean=-22.5504  pop_best=+89.1351
+gen  88  best=+89.1351  mean=-41.8682  pop_best=+89.1351
+gen  89  best=+89.1351  mean=-29.3202  pop_best=+89.1351
+gen  90  best=+89.1351  mean=-35.0721  pop_best=+89.1351
+gen  91  best=+89.1351  mean=-47.6135  pop_best=+89.1351
+gen  92  best=+89.1351  mean=-41.2256  pop_best=+89.1351
+gen  93  best=+89.1351  mean=-38.6089  pop_best=+89.1351
+gen  94  best=+89.1351  mean=-58.9675  pop_best=+89.1351
+gen  95  best=+89.1351  mean=-26.3629  pop_best=+89.1351
+gen  96  best=+89.1351  mean=-44.2121  pop_best=+89.1351
+gen  97  best=+89.1351  mean=-42.8993  pop_best=+89.1351
+gen  98  best=+89.1351  mean=-38.4501  pop_best=+89.1351
+gen  99  best=+89.1351  mean=-58.2151  pop_best=+89.1351
+gen 100  best=+89.1351  mean=-35.6358  pop_best=+89.1351
+gen 101  best=+89.1351  mean=-47.3363  pop_best=+89.1351
+gen 102  best=+89.1351  mean=-33.1930  pop_best=+89.1351
+gen 103  best=+89.1351  mean=-46.0575  pop_best=+89.1351
+gen 104  best=+89.1351  mean=-34.7394  pop_best=+89.1351
+gen 105  best=+89.1351  mean=-58.1552  pop_best=+89.1351
+gen 106  best=+89.1351  mean=-39.8630  pop_best=+89.1351
+gen 107  best=+89.1351  mean=-41.4170  pop_best=+89.1351
+gen 108  best=+89.1351  mean=-40.7357  pop_best=+89.1351
+gen 109  best=+89.1351  mean=-35.6512  pop_best=+89.1351
+gen 110  best=+89.1351  mean=-31.2325  pop_best=+89.1351
+gen 111  best=+89.1351  mean=-57.0407  pop_best=+89.1351
+gen 112  best=+89.1351  mean=-54.6154  pop_best=+89.1351
+gen 113  best=+89.1351  mean=-34.0279  pop_best=+89.1351
+gen 114  best=+89.1351  mean=-26.5023  pop_best=+89.1351
+gen 115  best=+89.1351  mean=-39.7103  pop_best=+89.1351
+gen 116  best=+89.1351  mean=-23.8984  pop_best=+89.1351
+gen 117  best=+89.1351  mean=-31.0601  pop_best=+89.1351
+gen 118  best=+89.1351  mean=-44.5510  pop_best=+89.1351
+gen 119  best=+89.1351  mean=-33.9309  pop_best=+89.1351
+gen 120  best=+89.1351  mean=-47.8019  pop_best=+89.1351
+gen 121  best=+89.1351  mean=-41.9799  pop_best=+89.1351
+gen 122  best=+89.1351  mean=-37.5458  pop_best=+89.1351
+gen 123  best=+89.1351  mean=-33.2307  pop_best=+89.1351
+gen 124  best=+89.1351  mean=-24.7584  pop_best=+89.1351
+gen 125  best=+89.1351  mean=-25.0108  pop_best=+89.1351
+gen 126  best=+89.1351  mean=-62.6889  pop_best=+89.1351
+gen 127  best=+89.1351  mean=-49.0933  pop_best=+89.1351
+gen 128  best=+89.1351  mean=-38.4380  pop_best=+89.1351
+gen 129  best=+89.1351  mean=-37.1025  pop_best=+89.1351
+gen 130  best=+89.1351  mean=-36.9798  pop_best=+89.1351
+gen 131  best=+89.1351  mean=-28.9333  pop_best=+89.1351
+gen 132  best=+89.1351  mean=-43.2404  pop_best=+89.1351
+gen 133  best=+89.1351  mean=-22.2975  pop_best=+89.1351
+gen 134  best=+89.1351  mean=-27.3413  pop_best=+89.1351
+gen 135  best=+89.1351  mean=-34.7933  pop_best=+89.1351
+gen 136  best=+89.1351  mean=-61.1469  pop_best=+89.1351
+gen 137  best=+89.1351  mean=-29.6139  pop_best=+89.1351
+gen 138  best=+89.1351  mean=-30.0789  pop_best=+89.1351
+gen 139  best=+89.1351  mean=-31.9204  pop_best=+89.1351
+gen 140  best=+89.1351  mean=-22.8128  pop_best=+89.1351
+gen 141  best=+89.1351  mean=-29.3755  pop_best=+89.1351
+gen 142  best=+89.1351  mean=-32.6130  pop_best=+89.1351
+gen 143  best=+89.1351  mean=-53.7627  pop_best=+89.1351
+gen 144  best=+89.1351  mean=-34.0671  pop_best=+89.1351
+gen 145  best=+89.1351  mean=-36.4252  pop_best=+89.1351
+gen 146  best=+89.1351  mean=-58.2070  pop_best=+89.1351
+gen 147  best=+89.1351  mean=-43.5068  pop_best=+89.1351
+gen 148  best=+89.1351  mean=-29.8693  pop_best=+89.1351
+gen 149  best=+89.1351  mean=-23.4463  pop_best=+89.1351
+gen 150  best=+89.1351  mean=-28.3244  pop_best=+89.1351
+gen 151  best=+89.1351  mean=-32.9129  pop_best=+89.1351
+gen 152  best=+89.1351  mean=-40.1279  pop_best=+89.1351
+gen 153  best=+89.1351  mean=-35.6407  pop_best=+89.1351
+gen 154  best=+89.1351  mean=-41.7293  pop_best=+89.1351
+gen 155  best=+89.1351  mean=-41.5118  pop_best=+89.1351
+gen 156  best=+89.1351  mean=-20.6404  pop_best=+89.1351
+gen 157  best=+89.1351  mean=-43.8953  pop_best=+89.1351
+gen 158  best=+89.1351  mean=-23.5293  pop_best=+89.1351
+gen 159  best=+89.1351  mean=-38.1981  pop_best=+89.1351
+gen 160  best=+89.1351  mean=-39.5120  pop_best=+89.1351
+gen 161  best=+89.1351  mean=-43.1274  pop_best=+89.1351
+gen 162  best=+89.1351  mean=-22.7265  pop_best=+89.1351
+gen 163  best=+89.1351  mean=-52.2121  pop_best=+89.1351
+gen 164  best=+89.1351  mean=-44.9163  pop_best=+89.1351
+gen 165  best=+89.1351  mean=-52.5889  pop_best=+89.1351
+gen 166  best=+89.1351  mean=-29.1979  pop_best=+89.1351
+gen 167  best=+89.1351  mean=-34.6676  pop_best=+89.1351
+gen 168  best=+89.1351  mean=-60.9004  pop_best=+89.1351
+gen 169  best=+89.1351  mean=-38.8536  pop_best=+89.1351
+gen 170  best=+89.1351  mean=-28.2691  pop_best=+89.1351
+gen 171  best=+89.1351  mean=-26.1647  pop_best=+89.1351
+gen 172  best=+89.1351  mean=-20.1524  pop_best=+89.1351
+gen 173  best=+89.1351  mean=-50.3931  pop_best=+89.1351
+gen 174  best=+89.1351  mean=-27.4962  pop_best=+89.1351
+gen 175  best=+89.1351  mean=-23.7968  pop_best=+89.1351
+gen 176  best=+89.1351  mean=-47.0250  pop_best=+89.1351
+gen 177  best=+89.1351  mean=-32.4954  pop_best=+89.1351
+gen 178  best=+89.1351  mean=-26.5506  pop_best=+89.1351
+gen 179  best=+89.1351  mean=-45.6470  pop_best=+89.1351
+gen 180  best=+89.1351  mean=-44.8661  pop_best=+89.1351
+gen 181  best=+89.1351  mean=-24.9595  pop_best=+89.1351
+gen 182  best=+89.1351  mean=-45.1073  pop_best=+89.1351
+gen 183  best=+89.1351  mean=-30.6822  pop_best=+89.1351
+gen 184  best=+89.1351  mean=-47.0891  pop_best=+89.1351
+gen 185  best=+89.1351  mean=-46.4377  pop_best=+89.1351
+gen 186  best=+89.1351  mean=-42.5105  pop_best=+89.1351
+gen 187  best=+89.1351  mean=-36.8764  pop_best=+89.1351
+gen 188  best=+89.1351  mean=-34.0484  pop_best=+89.1351
+gen 189  best=+89.1351  mean=-24.6912  pop_best=+89.1351
+gen 190  best=+89.1351  mean=-32.6347  pop_best=+89.1351
+gen 191  best=+89.1351  mean=-67.4851  pop_best=+89.1351
+gen 192  best=+89.1351  mean=-17.8791  pop_best=+89.1351
+gen 193  best=+89.1351  mean=-32.5529  pop_best=+89.1351
+gen 194  best=+89.1351  mean=-37.8559  pop_best=+89.1351
+gen 195  best=+89.1351  mean=-37.3274  pop_best=+89.1351
+gen 196  best=+89.1351  mean=-58.7414  pop_best=+89.1351
+gen 197  best=+89.1351  mean=-61.1067  pop_best=+89.1351
+gen 198  best=+89.1351  mean=-53.1108  pop_best=+89.1351
+gen 199  best=+89.1351  mean=-55.8392  pop_best=+89.1351
+gen 200  best=+89.1351  mean=-39.3485  pop_best=+89.1351
+
+Done. best reward 89.1351  (0 restarts)
+  phase_time=0.81s
+  start         FL(+28.3, -59.8)  FR(+26.5, -74.4)  RL(+16.6, -29.3)  RR(+51.9, -30.1)
+  shift_FR      FL(+21.7, -78.6)  FR(+54.5, -33.3)  RL(+50.8, -34.3)  RR(+37.8, -70.8)
+  swing_FR      FL(+40.7, -97.1)  FR(+11.9, -76.9)  RL(+48.6, -43.2)  RR(+40.0, -96.9)
+  plant_FR      FL(+16.7, -56.2)  FR( +8.6, -68.1)  RL(+49.7, -82.9)  RR(+10.3, -30.2)
+  shift_RL      FL(+21.0, -72.3)  FR(+51.5, -37.2)  RL(+13.3, -26.2)  RR(+32.6, -48.4)
+  swing_RL      FL(+17.5, -60.4)  FR(+33.5, -71.4)  RL(+20.7, -84.1)  RR( +5.3, -45.8)
+  plant_RL      FL(+19.6, -59.4)  FR(+37.9, -96.8)  RL( +6.1, -90.1)  RR(+42.4, -58.0)
+  shift_FL      FL(+14.6, -79.0)  FR(+29.5, -89.8)  RL(+13.4, -78.5)  RR(+51.8, -81.3)
+  swing_FL      FL(+30.9, -77.1)  FR(+23.6, -87.3)  RL(+52.2, -71.6)  RR(+32.9, -66.1)
+  plant_FL      FL( +9.7, -54.8)  FR(+44.0, -94.1)  RL(+36.0, -50.9)  RR(+20.9, -43.8)
+  shift_RR      FL(+45.8, -61.7)  FR(+38.1, -97.0)  RL( +6.9, -56.8)  RR(+53.2, -31.9)
+  swing_RR      FL(+41.7, -79.0)  FR(+28.4, -94.9)  RL(+25.4, -98.6)  RR(+52.5, -57.3)
+  plant_RR      FL(+51.3, -98.5)  FR(+47.7, -77.5)  RL( +6.3, -63.3)  RR(+46.9, -44.5)
+Saved to best_gait_rand_stand.json
+
+=== Moving results to /cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_200 ===
+‘best_gait_rand_stand.json’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_200/best_gait_rand_stand.json’
+removed ‘best_gait_rand_stand.json’
+‘tune_gait_rand_stand.jsonl’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/random_stand_200/tune_gait_rand_stand.jsonl’
+removed ‘tune_gait_rand_stand.jsonl’
+
+=== Done at Wed Apr 22 03:29:44 EDT 2026 ===

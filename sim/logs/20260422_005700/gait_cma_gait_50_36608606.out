@@ -1,0 +1,85 @@
+=== Training config ===
+  algo=cma  init=gait  gens=50  popsize=48
+  cpus=16  node=p1cmp019.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_50
+  workdir=/tmp/tmp.YHZAD55pIW
+  started=Wed Apr 22 00:57:39 EDT 2026
+
+Initial seed: gait
+Tuning gait (105 params: 104 angles + 1 timing, 5 cycles/eval)
+  workers: 15
+gen   1  best=+8.0382  mean=-23.1449  pop_best=+8.0382  dist=-0.0169m phases=60/60 z=0.166 nose_down=10.7°/18.8° roll=6.9°/27.0° d_pitch_max=1.0
+gen   2  best=+17.7023  mean=-14.3864  pop_best=+17.7023  dist=+0.0531m phases=60/60 z=0.167 nose_down=10.8°/18.5° roll=7.5°/23.6° d_pitch_max=0.4
+gen   3  best=+30.4481  mean=-11.0385  pop_best=+30.4481  dist=+0.1896m phases=60/60 z=0.168 nose_down=11.2°/18.6° roll=6.9°/20.8° d_pitch_max=1.0
+gen   4  best=+30.4481  mean=-6.0914  pop_best=+27.1773
+gen   5  best=+37.8527  mean=+6.0087  pop_best=+37.8527  dist=+0.2562m phases=60/60 z=0.166 nose_down=11.4°/18.1° roll=6.9°/20.2° d_pitch_max=0.9
+gen   6  best=+43.2209  mean=+12.4012  pop_best=+43.2209  dist=+0.2935m phases=60/60 z=0.170 nose_down=10.4°/17.6° roll=6.1°/21.6° d_pitch_max=0.9
+gen   7  best=+57.1166  mean=+19.3968  pop_best=+57.1166  dist=+0.4429m phases=60/60 z=0.168 nose_down=10.8°/17.5° roll=7.6°/22.5° d_pitch_max=0.9
+gen   8  best=+64.5255  mean=+26.1128  pop_best=+64.5255  dist=+0.5152m phases=60/60 z=0.169 nose_down=10.5°/17.3° roll=8.0°/26.6° d_pitch_max=1.1
+gen   9  best=+66.5962  mean=+29.8560  pop_best=+66.5962  dist=+0.5396m phases=60/60 z=0.167 nose_down=10.9°/17.6° roll=7.4°/26.7° d_pitch_max=0.9
+gen  10  best=+77.6903  mean=+33.8743  pop_best=+77.6903  dist=+0.6075m phases=60/60 z=0.171 nose_down=9.4°/15.7° roll=6.3°/19.0° d_pitch_max=1.2
+gen  11  best=+77.6903  mean=+40.7117  pop_best=+66.4908
+gen  12  best=+89.6679  mean=+37.7347  pop_best=+89.6679  dist=+0.7427m phases=60/60 z=0.170 nose_down=9.7°/16.1° roll=7.5°/21.2° d_pitch_max=1.3
+gen  13  best=+94.6536  mean=+39.6538  pop_best=+94.6536  dist=+0.7992m phases=60/60 z=0.170 nose_down=9.6°/14.8° roll=8.5°/23.3° d_pitch_max=1.9
+gen  14  best=+100.9376  mean=+50.0040  pop_best=+100.9376  dist=+0.8365m phases=60/60 z=0.171 nose_down=9.2°/14.1° roll=7.2°/24.2° d_pitch_max=1.3
+gen  15  best=+100.9376  mean=+48.1816  pop_best=+91.6589
+gen  16  best=+109.3711  mean=+46.5006  pop_best=+109.3711  dist=+0.9313m phases=60/60 z=0.171 nose_down=9.4°/16.1° roll=6.4°/20.4° d_pitch_max=1.2
+gen  17  best=+132.9169  mean=+47.8500  pop_best=+132.9169  dist=+1.1405m phases=60/60 z=0.170 nose_down=7.9°/13.8° roll=5.6°/23.0° d_pitch_max=1.6
+gen  18  best=+132.9169  mean=+53.5395  pop_best=+125.8287
+gen  19  best=+132.9169  mean=+61.8073  pop_best=+126.3528
+gen  20  best=+132.9169  mean=+68.0897  pop_best=+121.1806
+gen  21  best=+154.1749  mean=+62.1385  pop_best=+154.1749  dist=+1.3818m phases=60/60 z=0.171 nose_down=9.2°/14.1° roll=7.8°/28.9° d_pitch_max=1.3
+gen  22  best=+158.1586  mean=+50.1481  pop_best=+158.1586  dist=+1.4295m phases=60/60 z=0.170 nose_down=9.0°/15.6° roll=7.9°/26.6° d_pitch_max=1.5
+gen  23  best=+160.6671  mean=+63.4015  pop_best=+160.6671  dist=+1.4061m phases=60/60 z=0.169 nose_down=7.2°/12.7° roll=6.5°/21.3° d_pitch_max=1.4
+gen  24  best=+167.2888  mean=+45.0038  pop_best=+167.2888  dist=+1.4588m phases=60/60 z=0.171 nose_down=6.9°/11.0° roll=8.2°/21.7° d_pitch_max=1.3
+gen  25  best=+167.2888  mean=+60.3204  pop_best=+158.2275
+gen  26  best=+167.2888  mean=+61.3804  pop_best=+151.3846
+gen  27  best=+167.2888  mean=+65.0862  pop_best=+155.4485
+gen  28  best=+167.2888  mean=+52.0792  pop_best=+154.7787
+gen  29  best=+167.2888  mean=+68.1135  pop_best=+156.1129
+gen  30  best=+167.2888  mean=+67.1901  pop_best=+164.7835
+gen  31  best=+167.2888  mean=+73.8806  pop_best=+162.9168
+gen  32  best=+195.4558  mean=+72.6650  pop_best=+195.4558  dist=+1.7780m phases=60/60 z=0.169 nose_down=8.2°/14.7° roll=8.1°/24.3° d_pitch_max=1.0
+gen  33  best=+195.4558  mean=+78.7981  pop_best=+169.2704
+gen  34  best=+195.4558  mean=+90.7125  pop_best=+184.6639
+gen  35  best=+198.8858  mean=+103.4684  pop_best=+198.8858  dist=+1.8025m phases=60/60 z=0.174 nose_down=7.5°/14.8° roll=7.2°/19.0° d_pitch_max=1.6
+gen  36  best=+198.8858  mean=+95.3639  pop_best=+198.2289
+gen  37  best=+209.1342  mean=+82.4236  pop_best=+209.1342  dist=+1.8909m phases=60/60 z=0.174 nose_down=6.7°/13.5° roll=6.9°/26.9° d_pitch_max=1.2
+gen  38  best=+209.1342  mean=+77.8548  pop_best=+194.1037
+gen  39  best=+233.9296  mean=+100.6633  pop_best=+233.9296  dist=+2.1568m phases=60/60 z=0.173 nose_down=7.2°/15.5° roll=6.8°/22.3° d_pitch_max=1.3
+gen  40  best=+233.9296  mean=+104.6676  pop_best=+218.7944
+gen  41  best=+240.8275  mean=+124.7743  pop_best=+240.8275  dist=+2.2354m phases=60/60 z=0.170 nose_down=7.6°/15.8° roll=7.5°/21.0° d_pitch_max=1.7
+gen  42  best=+240.8275  mean=+105.8638  pop_best=+233.3394
+gen  43  best=+244.3765  mean=+115.7564  pop_best=+244.3765  dist=+2.2810m phases=60/60 z=0.168 nose_down=7.6°/17.6° roll=5.8°/22.3° d_pitch_max=1.7
+gen  44  best=+244.3765  mean=+110.8026  pop_best=+241.5087
+gen  45  best=+254.2508  mean=+92.3974  pop_best=+254.2508  dist=+2.3581m phases=60/60 z=0.168 nose_down=6.3°/14.0° roll=8.8°/27.0° d_pitch_max=1.6
+gen  46  best=+254.2508  mean=+94.1293  pop_best=+230.6634
+gen  47  best=+276.4990  mean=+71.5923  pop_best=+276.4990  dist=+2.6373m phases=60/60 z=0.167 nose_down=8.7°/18.2° roll=7.8°/28.0° d_pitch_max=1.7
+gen  48  best=+276.4990  mean=+32.8311  pop_best=+244.7313
+gen  49  best=+276.4990  mean=+62.3441  pop_best=+243.8232
+gen  50  best=+276.4990  mean=+34.9691  pop_best=+214.7134
+
+Done. best reward 276.4990  (0 restarts)
+  phase_time=1.15s
+  start         FL(+38.7, -64.5)  FR(+55.0, -54.7)  RL(+54.6, -65.9)  RR(+21.6, -57.6)
+  shift_FR      FL(+54.8, -69.8)  FR(+29.8, -99.9)  RL(+38.2, -41.7)  RR(+20.3, -42.4)
+  swing_FR      FL(+52.4, -76.0)  FR(+15.1, -96.0)  RL(+11.2, -62.0)  RR(+53.4, -51.1)
+  plant_FR      FL(+55.0,-100.0)  FR(+53.2, -38.1)  RL(+40.7, -34.5)  RR(+33.8, -60.1)
+  shift_RL      FL(+54.7, -48.6)  FR(+14.4, -86.6)  RL(+45.6, -34.6)  RR(+27.7, -33.3)
+  swing_RL      FL(+48.4, -88.9)  FR(+11.9,-100.0)  RL(+10.6, -38.6)  RR(+51.1, -39.0)
+  plant_RL      FL(+41.8, -99.2)  FR(+30.9, -66.2)  RL(+43.1, -31.9)  RR(+10.4, -42.4)
+  shift_FL      FL(+47.2, -45.4)  FR( +6.6, -99.8)  RL( +6.9, -25.9)  RR(+33.1, -25.8)
+  swing_FL      FL( +7.1, -89.3)  FR(+54.5, -96.8)  RL(+18.2, -44.1)  RR(+54.0, -70.2)
+  plant_FL      FL( +5.0, -78.1)  FR(+19.5, -82.5)  RL(+14.7, -53.9)  RR(+40.1, -54.6)
+  shift_RR      FL(+13.4, -73.9)  FR( +6.2, -64.1)  RL(+38.9, -51.5)  RR(+27.1, -45.6)
+  swing_RR      FL(+29.8, -91.7)  FR(+20.0, -70.5)  RL(+19.1, -50.2)  RR(+46.3, -41.5)
+  plant_RR      FL(+38.6, -98.2)  FR(+39.2, -55.4)  RL(+43.7, -30.9)  RR( +5.2, -36.0)
+Saved to best_gait.json
+
+=== Moving results to /cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_50 ===
+‘best_gait.json’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_50/best_gait.json’
+removed ‘best_gait.json’
+‘tune_gait.jsonl’ -> ‘/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/cma_gait_50/tune_gait.jsonl’
+removed ‘tune_gait.jsonl’
+
+=== Done at Wed Apr 22 01:04:41 EDT 2026 ===

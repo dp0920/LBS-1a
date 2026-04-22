@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/tmp/tmp.u5Pjref5a4/mujoco_gait.py", line 887, in <module>
+    main()
+  File "/tmp/tmp.u5Pjref5a4/mujoco_gait.py", line 878, in main
+    tune_de(model, **common)
+  File "/tmp/tmp.u5Pjref5a4/mujoco_gait.py", line 805, in tune_de
+    result = differential_evolution(
+  File "/cluster/home/dparri03/robotics/LBS-1a/venv/lib/python3.10/site-packages/scipy/_lib/_util.py", line 440, in wrapper
+    return fun(*args, **kwargs)
+  File "/cluster/home/dparri03/robotics/LBS-1a/venv/lib/python3.10/site-packages/scipy/optimize/_differentialevolution.py", line 501, in differential_evolution
+    ret = solver.solve()
+  File "/cluster/home/dparri03/robotics/LBS-1a/venv/lib/python3.10/site-packages/scipy/optimize/_differentialevolution.py", line 1176, in solve
+    self._calculate_population_energies(
+  File "/cluster/home/dparri03/robotics/LBS-1a/venv/lib/python3.10/site-packages/scipy/optimize/_differentialevolution.py", line 1338, in _calculate_population_energies
+    self._mapwrapper(self.func, parameters_pop[0:S])
+  File "/cluster/home/dparri03/robotics/LBS-1a/venv/lib/python3.10/site-packages/scipy/_lib/_util.py", line 727, in __call__
+    return self._mapfunc(func, iterable)
+  File "/cluster/tufts/hpc/tools/spack/0.17.1/spack/opt/spack/linux-rhel7-ivybridge/gcc-7.3.0/python-3.10.4-xut6hisxyypyuvejvaqdq43k5o3znhjy/lib/python3.10/multiprocessing/pool.py", line 364, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+  File "/cluster/tufts/hpc/tools/spack/0.17.1/spack/opt/spack/linux-rhel7-ivybridge/gcc-7.3.0/python-3.10.4-xut6hisxyypyuvejvaqdq43k5o3znhjy/lib/python3.10/multiprocessing/pool.py", line 771, in get
+    raise self._value
+  File "/cluster/tufts/hpc/tools/spack/0.17.1/spack/opt/spack/linux-rhel7-ivybridge/gcc-7.3.0/python-3.10.4-xut6hisxyypyuvejvaqdq43k5o3znhjy/lib/python3.10/multiprocessing/pool.py", line 537, in _handle_tasks
+    put(task)
+  File "/cluster/tufts/hpc/tools/spack/0.17.1/spack/opt/spack/linux-rhel7-ivybridge/gcc-7.3.0/python-3.10.4-xut6hisxyypyuvejvaqdq43k5o3znhjy/lib/python3.10/multiprocessing/connection.py", line 211, in send
+    self._send_bytes(_ForkingPickler.dumps(obj))
+  File "/cluster/tufts/hpc/tools/spack/0.17.1/spack/opt/spack/linux-rhel7-ivybridge/gcc-7.3.0/python-3.10.4-xut6hisxyypyuvejvaqdq43k5o3znhjy/lib/python3.10/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+AttributeError: Can't pickle local object 'tune_de.<locals>.objective'

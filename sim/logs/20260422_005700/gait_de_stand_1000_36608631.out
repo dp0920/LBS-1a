@@ -1,0 +1,9 @@
+=== Training config ===
+  algo=de  init=stand  gens=1000  popsize=48
+  cpus=16  node=d1cmp032.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260422_005700/de_stand_1000
+  workdir=/tmp/tmp.fBZoKmsvd8
+  started=Wed Apr 22 06:10:12 EDT 2026
+
+Differential Evolution (105 params, popsize=48, maxiter=1000, 5 cycles/eval)
+  workers: 15

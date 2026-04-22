@@ -1,0 +1,7 @@
+=== Training config ===
+  algo=random  init=gait  gens=2500  popsize=48
+  cpus=16  node=p1cmp044.pax.tufts.edu
+  outdir=/cluster/home/dparri03/robotics/LBS-1a/sim/results/20260421_074513/random_gait_2500
+  workdir=/tmp/tmp.sjQl8AOVoC
+  started=Tue Apr 21 07:53:32 EDT 2026
+

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/tmp.du6mppnpJv/mujoco_gait.py", line 887, in <module>
+    main()
+  File "/tmp/tmp.du6mppnpJv/mujoco_gait.py", line 862, in main
+    model = build_model()
+  File "/tmp/tmp.du6mppnpJv/mujoco_gait.py", line 41, in build_model
+    spec = mujoco.MjSpec.from_file(urdf_path)
+AttributeError: module 'mujoco' has no attribute 'MjSpec'

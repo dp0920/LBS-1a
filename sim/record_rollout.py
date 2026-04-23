@@ -99,7 +99,7 @@ def record_rollout(model, poses, phase_time, n_cycles=5):
                 sample(phase_name)
                 return False
             roll, pitch = get_rpy()[:2]
-            if abs(roll) > np.radians(30) or abs(pitch) > np.radians(30):
+            if abs(roll) > np.radians(25) or abs(pitch) > np.radians(25):
                 sample(phase_name)
                 return False
         set_ctrl(to_pose)

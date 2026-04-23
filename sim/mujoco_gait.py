@@ -240,8 +240,8 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
             data.qpos[qadr[name]] = angle
 
     FALL_Z = 0.08
-    FALL_TILT = np.radians(30)
-    FALL_NOSE_DOWN = 0.45   # body-forward world-z < -0.45 ≈ nose-down past ~27°
+    FALL_TILT = np.radians(25)
+    FALL_NOSE_DOWN = 0.34   # body-forward world-z < -0.34 ≈ nose-down past ~20°
 
     base_body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,
                                      "base_link")
@@ -437,15 +437,16 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
     # Directional forward-flop penalty — this is the one that matters for
     # front-leg collapse. nose-down ranges 0..1; we penalize its square and
     # also hammer the worst moment.
-    # Typical 10° nose-down → nd≈0.17 → 200×0.029 = 5.9 penalty.
-    # 20° nose-down → nd≈0.34 → 200×0.118 = 23.6 penalty.
-    # 25° (near fall threshold) → nd≈0.42 → 200×0.18 = 35.3 penalty.
-    flop_penalty = 200.0 * mean_nose_down_sq + 60.0 * (max_nose_down[0] ** 2)
+    # Typical 5° nose-down → nd≈0.09 → 500×0.008 = 3.9 penalty.
+    # 10° nose-down → nd≈0.17 → 500×0.029 = 14.7 penalty.
+    # 15° nose-down → nd≈0.26 → 500×0.067 = 33.7 penalty.
+    # 18° (near kill) → nd≈0.31 → 500×0.095 = 47.6 penalty.
+    flop_penalty = 500.0 * mean_nose_down_sq + 150.0 * (max_nose_down[0] ** 2)
 
     # Pitch-rate penalty catches fast floppy motions that don't linger in the
     # mean. mean_pitch_rate_sq is in (rad/s)²; typical gentle walking < 2, a
     # flop spikes to 10+.
-    pitch_rate_penalty = 2.0 * mean_pitch_rate_sq + 0.5 * (max_pitch_rate[0] ** 2)
+    pitch_rate_penalty = 5.0 * mean_pitch_rate_sq + 2.0 * (max_pitch_rate[0] ** 2)
 
     reward = (step_bonus + forward - backward_penalty + height_bonus
               - pitch_penalty - roll_penalty - peak_penalty

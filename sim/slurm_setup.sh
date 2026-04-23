@@ -16,7 +16,7 @@ fi
 
 source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
-pip install mujoco==3.1.6 --only-binary=:all:
+pip install "mujoco>=3.2" --only-binary=:all:
 pip install cma scipy numpy matplotlib
 echo ""
 echo "=== Installed packages ==="

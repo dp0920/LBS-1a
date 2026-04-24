@@ -90,7 +90,13 @@ class OptimusPrimalEnv(gym.Env):
         self._viewer = None
         self._step_count = 0
         self._last_x = 0.0
+        self._prev_action = None
         self.acc = None
+
+        # Posture shaping: reward body-z inside this band (squatted stance).
+        # Outside the band, penalty grows linearly.
+        self._z_target = 0.16
+        self._z_tolerance = 0.02    # band = [0.14, 0.18]
 
     def _get_obs(self):
         q = np.array([self.data.qpos[self.qadr[j]] for j in JOINTS],
@@ -142,6 +148,7 @@ class OptimusPrimalEnv(gym.Env):
             tilt_scale=self.tilt_scale)
         self._step_count = 0
         self._last_x = float(self.data.qpos[0])
+        self._prev_action = None
         return self._get_obs(), {}
 
     def step(self, action):
@@ -163,11 +170,28 @@ class OptimusPrimalEnv(gym.Env):
 
         self._step_count += 1
         reward = self.acc.step_reward(dx_total)
+
+        # Posture: penalty grows linearly outside the [z_target ± tolerance]
+        # band. Prevents the policy from standing on fully-extended legs.
+        z = float(self.data.qpos[2])
+        z_dev = max(0.0, abs(z - self._z_target) - self._z_tolerance)
+        posture_penalty = 30.0 * z_dev
+
+        # Action smoothness: penalize jerky motor commands step-to-step so
+        # the policy doesn't produce high-frequency wiggles that are
+        # unrealistic on real servos.
+        if self._prev_action is not None:
+            da = action - self._prev_action
+            smoothness_penalty = 0.5 * float(np.dot(da, da))
+        else:
+            smoothness_penalty = 0.0
+        self._prev_action = action.copy()
+
         # Alive bonus tuned so stable-standing ≈ 0 per step (slightly positive).
         # Falling ends the episode AND loses future +alive, so sustained
         # walking easily beats any "fall fast" strategy.
         if not fell:
-            reward += 2.0
+            reward += 2.0 - posture_penalty - smoothness_penalty
         else:
             reward -= 20.0    # one-shot fall penalty
 

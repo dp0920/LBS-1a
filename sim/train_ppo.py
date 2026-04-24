@@ -65,7 +65,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale):
     print(f"Saved {out_path} and _vecnormalize.pkl")
 
 
-def replay(policy_path, n_steps=2000, fall_tilt_deg=20.0, tilt_scale=1.0):
+def replay(policy_path, n_steps=2000, fall_tilt_deg=20.0, tilt_scale=1.0,
+           args=None):
     """Load a trained policy and run it in the viewer."""
     import mujoco.viewer
     import mujoco
@@ -98,7 +99,8 @@ def replay(policy_path, n_steps=2000, fall_tilt_deg=20.0, tilt_scale=1.0):
                 obs_in = normed_env.normalize_obs(obs.reshape(1, -1))[0]
             else:
                 obs_in = obs
-            action, _ = model.predict(obs_in, deterministic=True)
+            action, _ = model.predict(obs_in,
+                                      deterministic=args.deterministic)
             obs, r, term, trunc, info = env.step(action)
             total_r += r
             viewer.sync()
@@ -122,12 +124,16 @@ def main():
     ap.add_argument("--tilt-scale", type=float, default=1.0)
     ap.add_argument("--replay", type=str, default=None,
                     help="Path to a saved policy to visualize (skips train)")
+    ap.add_argument("--deterministic", action="store_true",
+                    help="Use mean action in replay (default: stochastic, "
+                         "which matches training-time behavior)")
     args = ap.parse_args()
 
     if args.replay:
         replay(args.replay,
                fall_tilt_deg=args.fall_tilt,
-               tilt_scale=args.tilt_scale)
+               tilt_scale=args.tilt_scale,
+               args=args)
     else:
         train(args.timesteps, args.n_envs, args.out, args.log_dir,
               args.fall_tilt, args.tilt_scale)

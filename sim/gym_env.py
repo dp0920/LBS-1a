@@ -163,9 +163,13 @@ class OptimusPrimalEnv(gym.Env):
 
         self._step_count += 1
         reward = self.acc.step_reward(dx_total)
-        # Small alive bonus so the policy doesn't prefer a quick clean fall.
+        # Alive bonus tuned so stable-standing ≈ 0 per step (slightly positive).
+        # Falling ends the episode AND loses future +alive, so sustained
+        # walking easily beats any "fall fast" strategy.
         if not fell:
-            reward += 0.5
+            reward += 2.0
+        else:
+            reward -= 20.0    # one-shot fall penalty
 
         terminated = fell
         truncated = self._step_count >= self.max_steps

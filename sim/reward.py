@@ -113,47 +113,34 @@ class RewardAccumulator:
         """Instantaneous reward for one physics step. Used by the RL env.
 
         dx: forward displacement (meters) since the last step.
-        Returns a scalar ~ per-step contribution to the episode reward.
 
-        The formula is intentionally compatible with `finalize()`: summing
-        step_reward over the whole rollout yields the forward + speed terms
-        of `finalize()`, modulo the constant step_bonus and height_bonus.
+        NOTE: these coefficients are ~10× smaller than `finalize()` because
+        they fire every step. The target is roughly:
+          - standing stable ≈ 0 per step (neither reward nor penalty)
+          - walking forward  ≈ +1 to +2 per step (policy learns to walk)
+          - falling / flopping → negative, plus episode ends.
+        Use `tune_step_reward.py` to visualize and retune.
         """
-        # Forward progress (100 per meter, matching `finalize()`).
-        fwd = 100.0 * max(0.0, dx) - 200.0 * max(0.0, -dx)
+        if self._n_steps == 0:
+            return 0.0
+        n = self._n_steps
+        mean_pitch_sq = self._pitch_sq_sum / n
+        mean_roll_sq = self._roll_sq_sum / n
+        mean_nd_sq = self._nose_down_sq_sum / n
+        mean_pr_sq = self._pitch_rate_sq_sum / n
 
-        # Per-step speed bonus: (dx/dt) × 1000 × dt = 1000 × dx, but we only
-        # want to pay it when moving forward, and averaged — so scale to an
-        # instantaneous m/s-equivalent bump.
-        speed_bonus = 1000.0 * max(0.0, dx)
+        # Forward progress reward (meters → big per-step bonus).
+        fwd = 500.0 * max(0.0, dx) - 1000.0 * max(0.0, -dx)
 
-        # Stability penalties derived from the most recent sample.
-        roll = self._roll_sq_sum_last() if self._n_steps else 0.0
-        pitch = self._pitch_sq_sum_last() if self._n_steps else 0.0
-        nd2 = self._nd_sq_last() if self._n_steps else 0.0
-        pr2 = self._pr_sq_last() if self._n_steps else 0.0
-
+        # Stability penalties — scaled way down vs `finalize()` because this
+        # fires every single physics step.
         stab = self.tilt_scale * (
-            60.0 * pitch + 80.0 * roll
-            + 800.0 * nd2
-            + 8.0 * pr2
+            6.0 * mean_pitch_sq
+            + 8.0 * mean_roll_sq
+            + 80.0 * mean_nd_sq
+            + 0.8 * mean_pr_sq
         )
-        return fwd + speed_bonus - stab
-
-    # Helpers to get the last-sampled squared values (before accumulation is
-    # folded into the running sum; we can't recover that, so just use the
-    # running mean — close enough for dense RL rewards).
-    def _pitch_sq_sum_last(self):
-        return self._pitch_sq_sum / self._n_steps
-
-    def _roll_sq_sum_last(self):
-        return self._roll_sq_sum / self._n_steps
-
-    def _nd_sq_last(self):
-        return self._nose_down_sq_sum / self._n_steps
-
-    def _pr_sq_last(self):
-        return self._pitch_rate_sq_sum / self._n_steps
+        return fwd - stab
 
     # --- Finalize --------------------------------------------------------
 

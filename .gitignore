@@ -9,3 +9,10 @@ __pycache__/
 
 # Local smoke-test outputs (--smoke flag on mujoco_gait.py)
 sim/smoke_*
+
+# PPO training artifacts
+sim/*.zip
+sim/*_vecnormalize.pkl
+sim/ppo_tb/
+sim/*_tb/
+sim/step_reward_diagnostic.png

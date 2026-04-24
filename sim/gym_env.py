@@ -94,9 +94,11 @@ class OptimusPrimalEnv(gym.Env):
         self.acc = None
 
         # Posture shaping: reward body-z inside this band (squatted stance).
-        # Outside the band, penalty grows linearly.
-        self._z_target = 0.16
-        self._z_tolerance = 0.02    # band = [0.14, 0.18]
+        # Outside the band, penalty grows linearly. Wider tolerance than v2
+        # gives early-training PPO room to explore without immediately
+        # accumulating posture penalties.
+        self._z_target = 0.15
+        self._z_tolerance = 0.03    # band = [0.12, 0.18]
 
     def _get_obs(self):
         q = np.array([self.data.qpos[self.qadr[j]] for j in JOINTS],
@@ -175,14 +177,14 @@ class OptimusPrimalEnv(gym.Env):
         # band. Prevents the policy from standing on fully-extended legs.
         z = float(self.data.qpos[2])
         z_dev = max(0.0, abs(z - self._z_target) - self._z_tolerance)
-        posture_penalty = 30.0 * z_dev
+        posture_penalty = 10.0 * z_dev
 
         # Action smoothness: penalize jerky motor commands step-to-step so
         # the policy doesn't produce high-frequency wiggles that are
         # unrealistic on real servos.
         if self._prev_action is not None:
             da = action - self._prev_action
-            smoothness_penalty = 0.5 * float(np.dot(da, da))
+            smoothness_penalty = 0.1 * float(np.dot(da, da))
         else:
             smoothness_penalty = 0.0
         self._prev_action = action.copy()

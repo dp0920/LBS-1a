@@ -43,9 +43,18 @@ ACTION_HIGH = np.array([
 ], dtype=np.float32)
 
 
+LEG_ORDER = ["FR", "RL", "FL", "RR"]   # crawl gait stride order
+FOOT_BODY_NAMES = {
+    "FL": "foot_fl", "FR": "foot_fr",
+    "RL": "foot_rl", "RR": "foot_rr",
+}
+# "Lifted" threshold — foot z above this counts as in swing.
+FOOT_LIFT_Z = 0.015
+
+
 class OptimusPrimalEnv(gym.Env):
     """
-    Observation (22-dim):
+    Observation (24-dim):
         [0:8]   joint angles  (radians)
         [8:16]  joint velocities
         [16]    body-z height
@@ -54,26 +63,37 @@ class OptimusPrimalEnv(gym.Env):
         [19]    body-frame forward velocity (qvel[0])
         [20]    body-frame pitch rate (qvel[4])
         [21]    body_fwd_z (nose-up/down proxy)
+        [22]    sin(2π · phase)   ← gait phase clock
+        [23]    cos(2π · phase)
 
     Action (8-dim):
         target joint angles (radians). Clipped to the bounds above.
 
     Reward:
-        Dense per-step reward from `RewardAccumulator.step_reward(dx)`
-        plus a small "alive" bonus. Episode terminates on fall.
+        Dense per-step reward from `RewardAccumulator.step_reward(dx)`,
+        alive bonus, posture + smoothness penalties, plus a
+        gait-contact-pattern reward that encourages the FR → RL → FL → RR
+        crawl cycle (the target swing leg in each quarter of the cycle is
+        rewarded for being up while the other three stay down).
 
     Episode: up to `max_steps` physics steps (default 2000 ≈ 10s at dt=0.005).
     """
     metadata = {"render_modes": ["human"]}
 
     def __init__(self, max_steps=2000, fall_tilt_deg=20.0, tilt_scale=1.0,
-                 ctrl_repeat=4, render_mode=None):
+                 ctrl_repeat=4, render_mode=None,
+                 phase_period=2.0, gait_reward_scale=1.0):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
         self.qadr = get_qadr(self.model)
         self.ctrl_idx = get_ctrl_idx(self.model)
         self.base_body_id = get_base_body_id(self.model)
+        self.foot_body_ids = {
+            leg: mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY,
+                                   FOOT_BODY_NAMES[leg])
+            for leg in LEG_ORDER
+        }
         self.dt = self.model.opt.timestep
         self.fall_tilt_deg = fall_tilt_deg
         self.tilt_scale = tilt_scale
@@ -81,10 +101,16 @@ class OptimusPrimalEnv(gym.Env):
                                             # action for N physics steps
         self.max_steps = max_steps
 
+        # Gait cycle: phase_period seconds per full FR→RL→FL→RR cycle.
+        # With default 2.0s and ctrl_repeat=4 (env step = 20ms), a cycle is
+        # 100 env steps, each leg gets ~25 steps of swing.
+        self.phase_period = phase_period
+        self.gait_reward_scale = gait_reward_scale
+
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(22,), dtype=np.float32)
+            low=-np.inf, high=np.inf, shape=(24,), dtype=np.float32)
 
         self.render_mode = render_mode
         self._viewer = None
@@ -113,6 +139,7 @@ class OptimusPrimalEnv(gym.Env):
             qd[i] = self.data.qvel[self.model.jnt_dofadr[jid]]
 
         roll, pitch = body_rp(self.data)
+        phase = self._phase()
         obs = np.concatenate([
             q, qd,
             [float(self.data.qpos[2]),       # body z
@@ -120,9 +147,35 @@ class OptimusPrimalEnv(gym.Env):
              float(pitch),
              float(self.data.qvel[0]),        # world-x velocity
              float(self.data.qvel[4]),        # pitch rate
-             float(body_fwd_z(self.data, self.base_body_id))],
+             float(body_fwd_z(self.data, self.base_body_id)),
+             float(np.sin(2 * np.pi * phase)),
+             float(np.cos(2 * np.pi * phase))],
         ]).astype(np.float32)
         return obs
+
+    def _phase(self):
+        """Current gait phase in [0, 1). 0.0-0.25 = FR swing, etc."""
+        t = self._step_count * self.dt * self.ctrl_repeat
+        return (t % self.phase_period) / self.phase_period
+
+    def _target_swing_leg(self):
+        """Which leg is supposed to be in swing right now."""
+        phase = self._phase()
+        return LEG_ORDER[int(phase * len(LEG_ORDER)) % len(LEG_ORDER)]
+
+    def _gait_reward(self):
+        """Per-step reward for matching the expected contact pattern.
+        +1 per correct leg (up-when-should-be-up, down-when-should-be-down),
+        -1 per wrong leg. Max +4 / min -4 per step, times gait_reward_scale.
+        """
+        target = self._target_swing_leg()
+        score = 0.0
+        for leg in LEG_ORDER:
+            foot_id = self.foot_body_ids[leg]
+            is_lifted = self.data.xpos[foot_id][2] > FOOT_LIFT_Z
+            should_lift = (leg == target)
+            score += 1.0 if (is_lifted == should_lift) else -1.0
+        return self.gait_reward_scale * score
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -189,11 +242,16 @@ class OptimusPrimalEnv(gym.Env):
             smoothness_penalty = 0.0
         self._prev_action = action.copy()
 
+        # Gait-pattern reward: encourages the FR → RL → FL → RR crawl cycle.
+        # This fires regardless of fall so the policy gets signal early.
+        gait_reward = self._gait_reward()
+
         # Alive bonus tuned so stable-standing ≈ 0 per step (slightly positive).
         # Falling ends the episode AND loses future +alive, so sustained
         # walking easily beats any "fall fast" strategy.
         if not fell:
-            reward += 2.0 - posture_penalty - smoothness_penalty
+            reward += (2.0 + gait_reward
+                       - posture_penalty - smoothness_penalty)
         else:
             reward -= 20.0    # one-shot fall penalty
 

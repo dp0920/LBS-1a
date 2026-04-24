@@ -395,7 +395,7 @@ def tune(model, out=None, generations=150, popsize=48,
     suffix = "" if init == "gait" else f"_{init}"
     if out is None:
         out = f"best_gait{suffix}.json"
-    log_path = f"tune_gait{suffix}.jsonl"
+    log_path = _log_path_for(out, suffix)
 
     # Resume from saved best if available; otherwise seed from --init mode.
     x0 = make_x0(init)
@@ -504,6 +504,23 @@ def tune(model, out=None, generations=150, popsize=48,
     _print_best(best_x, best_r, restart, out)
 
 
+def _log_path_for(out, suffix):
+    """Derive the tune_gait*.jsonl path from the best_gait*.json path.
+    Keeps the log next to the output so --smoke (timestamped prefix) and
+    --out (custom path) don't scatter files."""
+    base = os.path.basename(out)
+    dirname = os.path.dirname(out)
+    # If the filename contains "best_gait", swap it for "tune_gait".
+    if "best_gait" in base:
+        log_name = base.replace("best_gait", "tune_gait")
+        if log_name.endswith(".json"):
+            log_name = log_name[:-5] + ".jsonl"
+    else:
+        # Fall back to the historical naming.
+        log_name = f"tune_gait{suffix}.jsonl"
+    return os.path.join(dirname, log_name) if dirname else log_name
+
+
 def _print_best(best_x, best_r, restart, out):
     """Print final phase angles — shared by all tuning algorithms."""
     phases = vector_to_phases(best_x[:N_ANGLE_PARAMS])
@@ -558,7 +575,7 @@ def tune_random(model, out=None, generations=150, popsize=48,
     suffix = f"_rand_{init}" if init != "gait" else "_rand"
     if out is None:
         out = f"best_gait{suffix}.json"
-    log_path = f"tune_gait{suffix}.jsonl"
+    log_path = _log_path_for(out, suffix)
 
     x0 = make_x0(init)
     best_r = -1e9
@@ -638,7 +655,7 @@ def tune_de(model, out=None, generations=150, popsize=48,
     suffix = f"_de_{init}" if init != "gait" else "_de"
     if out is None:
         out = f"best_gait{suffix}.json"
-    log_path = f"tune_gait{suffix}.jsonl"
+    log_path = _log_path_for(out, suffix)
 
     x0 = make_x0(init)
     bounds = list(zip(BOUNDS_LO, BOUNDS_HI))
@@ -776,7 +793,26 @@ def main():
                     help="CMA-ES initial step size. Small (~2) = fine-tune "
                          "near seed, large (~15) = broad exploration. "
                          "Default 5.0. Ignored by random/de algorithms.")
+    ap.add_argument("--out", type=str, default=None,
+                    help="Output JSON path. Default: auto-named by algo/init.")
+    ap.add_argument("--smoke", action="store_true",
+                    help="Smoke-test mode: write output to "
+                         "smoke_<timestamp>_<auto>.json / .jsonl so test runs "
+                         "don't clobber committed results. Overrides --out.")
     args = ap.parse_args()
+
+    # Smoke-test mode: prepend a timestamp to the output path so short test
+    # runs never overwrite a real best_gait.json.
+    if args.smoke:
+        import datetime
+        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        suffix = "" if args.init == "gait" else f"_{args.init}"
+        if args.algo == "random":
+            suffix = f"_rand{suffix if args.init == 'gait' else suffix}"
+        elif args.algo == "de":
+            suffix = f"_de{suffix if args.init == 'gait' else suffix}"
+        args.out = f"smoke_{ts}_best_gait{suffix}.json"
+        print(f"[smoke] writing to {args.out}")
 
     model = build_model()
 
@@ -789,7 +825,8 @@ def main():
         run_viewer(model, poses, phase_time, n_cycles=args.cycles,
                    interp=replay_interp)
     elif args.tune or args.resume:
-        common = dict(generations=args.generations, popsize=args.popsize,
+        common = dict(out=args.out,
+                      generations=args.generations, popsize=args.popsize,
                       n_cycles=args.cycles, workers=args.workers,
                       init=args.init,
                       fall_tilt_deg=args.fall_tilt,

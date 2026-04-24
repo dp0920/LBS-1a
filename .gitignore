@@ -6,3 +6,6 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+
+# Local smoke-test outputs (--smoke flag on mujoco_gait.py)
+sim/smoke_*

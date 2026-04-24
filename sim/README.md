@@ -176,7 +176,10 @@ python gait_controller.py --gait best_gait.json --n=10
 
 | File | Purpose |
 |------|---------|
-| `mujoco_gait.py` | Main gait training script (CMA-ES, DE, random search) |
+| `sim_core.py` | Shared MuJoCo plumbing (build_model, joint lookups, body-attitude helpers) — used by both CMA and RL |
+| `reward.py` | `RewardAccumulator`: per-step attitude tracking, fall detection, final reward + info |
+| `mujoco_gait.py` | CMA-ES / DE / random-search training (phase-based gait structure) |
+| `gym_env.py` | Gymnasium env for RL training (closed-loop policy, no phase structure) |
 | `mujoco_balance.py` | 3-leg balance tuning |
 | `optimus_primal.urdf` | Robot model |
 | `com_calculator.py` | Center of mass layout tool |

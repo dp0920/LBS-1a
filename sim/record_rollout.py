@@ -16,11 +16,10 @@ import os
 import numpy as np
 import mujoco
 
-# Import shared infrastructure from mujoco_gait
-from mujoco_gait import (
-    build_model, JOINTS, PHASE_ORDER, decode_params,
-    get_qadr, get_ctrl_idx, lerp_pose, X0
-)
+# Shared sim plumbing lives in sim_core; phase structure and param encoding
+# stay in mujoco_gait since they're CMA-specific.
+from sim_core import build_model, JOINTS, get_qadr, get_ctrl_idx
+from mujoco_gait import PHASE_ORDER, decode_params, lerp_pose, X0
 
 
 def record_rollout(model, poses, phase_time, n_cycles=5, interp="linear"):

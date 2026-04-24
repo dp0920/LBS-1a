@@ -24,62 +24,9 @@ import time
 import numpy as np
 import mujoco
 
-JOINTS = ["hip_fl", "knee_fl", "hip_fr", "knee_fr",
-          "hip_rl", "knee_rl", "hip_rr", "knee_rr"]
-
-LEGS = {
-    "FL": ("hip_fl", "knee_fl"),
-    "FR": ("hip_fr", "knee_fr"),
-    "RL": ("hip_rl", "knee_rl"),
-    "RR": ("hip_rr", "knee_rr"),
-}
-
-
-def build_model():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    urdf_path = os.path.join(script_dir, "optimus_primal.urdf")
-    spec = mujoco.MjSpec.from_file(urdf_path)
-    spec.meshdir = os.path.join(script_dir, "meshes")
-    spec.add_texture(name="skybox", type=mujoco.mjtTexture.mjTEXTURE_SKYBOX,
-                     builtin=mujoco.mjtBuiltin.mjBUILTIN_GRADIENT,
-                     rgb1=[0.4, 0.6, 0.9], rgb2=[0.1, 0.15, 0.25],
-                     width=512, height=512)
-    spec.add_texture(name="grid", type=mujoco.mjtTexture.mjTEXTURE_2D,
-                     builtin=mujoco.mjtBuiltin.mjBUILTIN_CHECKER,
-                     rgb1=[0.25, 0.26, 0.27], rgb2=[0.32, 0.33, 0.34],
-                     width=512, height=512)
-    spec.add_material(name="grid", textures=["", "grid"], texrepeat=[10, 10],
-                      reflectance=0.1)
-    spec.worldbody.add_light(pos=[0, 0, 3], dir=[0, 0, -1],
-                             diffuse=[0.9, 0.9, 0.9])
-    spec.worldbody.add_geom(name="floor", type=mujoco.mjtGeom.mjGEOM_PLANE,
-                            size=[5, 5, 0.1], material="grid",
-                            friction=[1.0, 0.05, 0.001])
-    base = spec.body("base_link")
-    base.add_freejoint()
-    for jname in JOINTS:
-        act = spec.add_actuator(name=f"act_{jname}")
-        act.target = jname
-        act.trntype = mujoco.mjtTrn.mjTRN_JOINT
-        act.set_to_position(kp=2.5, kv=0.05)
-    return spec.compile()
-
-
-def get_qadr(model):
-    qadr = {}
-    for j in JOINTS:
-        jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, j)
-        qadr[j] = model.jnt_qposadr[jid]
-    return qadr
-
-
-def get_ctrl_idx(model):
-    ctrl = {}
-    for j in JOINTS:
-        aid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR,
-                                f"act_{j}")
-        ctrl[j] = aid
-    return ctrl
+from sim_core import (JOINTS, build_model, get_qadr, get_ctrl_idx,
+                      get_base_body_id)
+from reward import RewardAccumulator
 
 
 def _ease(t, mode):
@@ -257,6 +204,10 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None,
     qadr = get_qadr(model)
     ctrl_idx = get_ctrl_idx(model)
     dt = model.opt.timestep
+    base_body_id = get_base_body_id(model)
+
+    acc = RewardAccumulator(dt, fall_tilt_deg=fall_tilt_deg,
+                            tilt_scale=tilt_scale)
 
     def set_ctrl(pose):
         for name, angle in pose.items():
@@ -266,86 +217,6 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None,
         for name, angle in pose.items():
             data.qpos[qadr[name]] = angle
 
-    FALL_Z = 0.08
-    FALL_TILT = np.radians(max(0.1, fall_tilt_deg))
-    # nose-down kill scales with tilt budget: sin(tilt_deg) ≈ forward-z cutoff.
-    FALL_NOSE_DOWN = float(np.sin(FALL_TILT))
-
-    base_body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,
-                                     "base_link")
-
-    # Per-step body-attitude trackers (filled inside run_phase).
-    pitch_sq_sum = [0.0]
-    roll_sq_sum = [0.0]
-    pitch_abs_sum = [0.0]
-    roll_abs_sum = [0.0]
-    tilt_n_steps = [0]
-    max_pitch = [0.0]
-    max_roll = [0.0]
-    # "Nose-down" (forward flop) — specific direction, not abs.
-    # fwd_z = body-x axis's world-z component:
-    #   +1 = nose pointing straight up
-    #    0 = body level
-    #   -1 = nose straight down (forward flop)
-    # nose_down = max(0, -fwd_z) isolates the forward-flop failure mode.
-    nose_down_sum = [0.0]
-    nose_down_sq_sum = [0.0]
-    max_nose_down = [0.0]
-    # Pitch angular velocity — catches the "flop" (fast rotation) even if the
-    # absolute angle hasn't built up yet.
-    pitch_rate_sq_sum = [0.0]
-    max_pitch_rate = [0.0]
-
-    def body_rp():
-        qw, qx, qy, qz = data.qpos[3:7]
-        roll = np.arctan2(2 * (qw * qx + qy * qz),
-                          1 - 2 * (qx * qx + qy * qy))
-        pitch = np.arcsin(np.clip(2 * (qw * qy - qz * qx), -1, 1))
-        return roll, pitch
-
-    def body_fwd_z():
-        """World-z component of body-x axis. <0 = nose pointed down."""
-        mat = data.xmat[base_body_id].reshape(3, 3)
-        return float(mat[2, 0])
-
-    def is_fallen():
-        if data.qpos[2] < FALL_Z:
-            return True
-        roll, pitch = body_rp()
-        if abs(roll) > FALL_TILT or abs(pitch) > FALL_TILT:
-            return True
-        # Hard-kill rollouts that pitch nose-down past the threshold — forward
-        # flop is the specific failure mode we're fighting.
-        if -body_fwd_z() > FALL_NOSE_DOWN:
-            return True
-        return False
-
-    def sample_attitude():
-        roll, pitch = body_rp()
-        pitch_sq_sum[0] += pitch * pitch
-        roll_sq_sum[0] += roll * roll
-        pitch_abs_sum[0] += abs(pitch)
-        roll_abs_sum[0] += abs(roll)
-        if abs(pitch) > max_pitch[0]:
-            max_pitch[0] = abs(pitch)
-        if abs(roll) > max_roll[0]:
-            max_roll[0] = abs(roll)
-
-        # Forward-flop specific: nose-down component only.
-        nd = max(0.0, -body_fwd_z())
-        nose_down_sum[0] += nd
-        nose_down_sq_sum[0] += nd * nd
-        if nd > max_nose_down[0]:
-            max_nose_down[0] = nd
-
-        # Pitch rate (body-frame angular velocity about y).
-        pr = float(data.qvel[4])
-        pitch_rate_sq_sum[0] += pr * pr
-        if abs(pr) > max_pitch_rate[0]:
-            max_pitch_rate[0] = abs(pr)
-
-        tilt_n_steps[0] += 1
-
     def run_phase(from_pose, to_pose, duration):
         steps = max(1, int(duration / dt))
         phase_wall = time.time() if viewer else 0
@@ -353,8 +224,8 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None,
             t = i / steps
             set_ctrl(lerp_pose(from_pose, to_pose, t, interp))
             mujoco.mj_step(model, data)
-            sample_attitude()
-            if is_fallen():
+            acc.sample_step(data, base_body_id)
+            if acc.is_fallen(data, base_body_id):
                 return False
             if viewer:
                 viewer.sync()
@@ -366,8 +237,8 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None,
                     return False
         set_ctrl(to_pose)
         mujoco.mj_step(model, data)
-        sample_attitude()
-        return not is_fallen()
+        acc.sample_step(data, base_body_id)
+        return not acc.is_fallen(data, base_body_id)
 
     # Init at start pose
     start_pose = poses["start"]
@@ -441,69 +312,10 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None,
                 alive = False
                 break
 
-    n_samp = max(1, tilt_n_steps[0])
-    mean_pitch_sq = pitch_sq_sum[0] / n_samp
-    mean_roll_sq = roll_sq_sum[0] / n_samp
-    mean_pitch_abs = pitch_abs_sum[0] / n_samp
-    mean_roll_abs = roll_abs_sum[0] / n_samp
-    mean_nose_down = nose_down_sum[0] / n_samp
-    mean_nose_down_sq = nose_down_sq_sum[0] / n_samp
-    mean_pitch_rate_sq = pitch_rate_sq_sum[0] / n_samp
     mean_z = z_sum / max(1, z_n)
-    survival = phases_completed / max(1, total_phases)
-
-    step_bonus = 0.5 * phases_completed
-    # Distance reward (covers ground) + speed bonus (rewards pace).
-    # Speed is m/s averaged over the whole rollout; elapsed time comes from
-    # the per-physics-step sample count × timestep.
-    elapsed_time = max(dt, tilt_n_steps[0] * dt)
-    speed = max(0, earned_distance) / elapsed_time
-    forward = max(0, earned_distance) * 100.0 + speed * 1000.0
-    backward_penalty = max(0, -earned_distance) * 200.0
-    height_bonus = 5.0 * mean_z if phases_completed > 0 else 0.0
-
-    # Symmetric pitch/roll — keeps the body from hanging at an angle.
-    # Baseline weights doubled from the previous version; `tilt_scale` lets
-    # sweep jobs dial strictness further up (strict) or down (lenient).
-    pitch_penalty = tilt_scale * 60.0 * mean_pitch_sq
-    roll_penalty = tilt_scale * 80.0 * mean_roll_sq
-    peak_penalty = tilt_scale * (16.0 * max_pitch[0] ** 2
-                                 + 16.0 * max_roll[0] ** 2)
-
-    # Directional forward-flop penalty — front-leg collapse is the dominant
-    # failure mode we're fighting. nose-down ranges 0..1; penalize its square
-    # and hammer the worst moment.
-    flop_penalty = tilt_scale * (800.0 * mean_nose_down_sq
-                                 + 250.0 * (max_nose_down[0] ** 2))
-
-    # Pitch-rate penalty catches fast floppy motions that don't linger in the
-    # mean. mean_pitch_rate_sq is in (rad/s)²; typical gentle walking < 2, a
-    # flop spikes to 10+.
-    pitch_rate_penalty = tilt_scale * (8.0 * mean_pitch_rate_sq
-                                       + 3.0 * (max_pitch_rate[0] ** 2))
-
-    reward = (step_bonus + forward - backward_penalty + height_bonus
-              - pitch_penalty - roll_penalty - peak_penalty
-              - flop_penalty - pitch_rate_penalty)
-
-    info = {
-        "earned_dist_m": earned_distance,
-        "elapsed_s": elapsed_time,
-        "speed_mps": speed,
-        "mean_pitch_deg": np.degrees(mean_pitch_abs),
-        "mean_roll_deg": np.degrees(mean_roll_abs),
-        "max_pitch_deg": np.degrees(max_pitch[0]),
-        "max_roll_deg": np.degrees(max_roll[0]),
-        "mean_nose_down_deg": np.degrees(np.arcsin(min(1.0, mean_nose_down))),
-        "max_nose_down_deg": np.degrees(np.arcsin(min(1.0, max_nose_down[0]))),
-        "max_pitch_rate": max_pitch_rate[0],
-        "mean_z": mean_z,
-        "final_z": float(data.qpos[2]),
-        "min_z": min_z,
-        "phases": f"{phases_completed}/{total_phases}",
-        "survival": f"{survival:.0%}",
-    }
-    return reward, info
+    return acc.finalize(earned_distance, phases_completed, total_phases,
+                        mean_z=mean_z, final_z=float(data.qpos[2]),
+                        min_z=min_z)
 
 
 # ---------------------------------------------------------------------------

@@ -45,6 +45,8 @@ INTERPS="${INTERPS:-linear cosine smoothstep}"
 N_TRIALS="${N_TRIALS:-5}"
 TILT_MIN="${TILT_MIN:-0}"
 TILT_MAX="${TILT_MAX:-40}"
+SIGMA_MIN="${SIGMA_MIN:-2}"
+SIGMA_MAX="${SIGMA_MAX:-15}"
 
 echo "=== Run: $TIMESTAMP ==="
 echo "  Results:  $RESULTS_DIR"
@@ -52,7 +54,9 @@ echo "  Logs:     $LOG_DIR"
 echo "  Algos:    $ALGOS"
 echo "  Inits:    $INITS"
 echo "  Interps:  $INTERPS"
-echo "  Trials:   $N_TRIALS per config, tilt ∈ [$TILT_MIN, $TILT_MAX]°"
+echo "  Trials:   $N_TRIALS per config"
+echo "  Tilt:     random in [$TILT_MIN, $TILT_MAX]°"
+echo "  Sigma:    random in [$SIGMA_MIN, $SIGMA_MAX] (CMA only)"
 echo ""
 
 # Draw a random tilt in [TILT_MIN, TILT_MAX]. Derive tilt_scale inversely:
@@ -68,6 +72,11 @@ print(f'{tilt:.2f} {scale:.3f}')
 "
 }
 
+# Draw a random integer sigma_init in [SIGMA_MIN, SIGMA_MAX].
+draw_sigma() {
+    python3 -c "import random; print(random.randint(int($SIGMA_MIN), int($SIGMA_MAX)))"
+}
+
 total=0
 for GENS in "$@"; do
     for INTERP in $INTERPS; do
@@ -75,13 +84,14 @@ for GENS in "$@"; do
             for INIT in $INITS; do
                 for TRIAL in $(seq 1 $N_TRIALS); do
                     read -r FALL_TILT TILT_SCALE <<< "$(draw_tilt)"
-                    JOBNAME="gait_${ALGO}_${INIT}_${INTERP}_t${FALL_TILT}_trial${TRIAL}_g${GENS}"
-                    echo "  $JOBNAME  (tilt=${FALL_TILT}° scale=${TILT_SCALE})"
+                    SIGMA_INIT=$(draw_sigma)
+                    JOBNAME="gait_${ALGO}_${INIT}_${INTERP}_t${FALL_TILT}_s${SIGMA_INIT}_trial${TRIAL}_g${GENS}"
+                    echo "  $JOBNAME  (tilt=${FALL_TILT}° scale=${TILT_SCALE} sigma=${SIGMA_INIT})"
                     sbatch \
                         --job-name="$JOBNAME" \
                         --output="$LOG_DIR/${JOBNAME}_%j.out" \
                         --error="$LOG_DIR/${JOBNAME}_%j.err" \
-                        --export=ALL,ALGO="$ALGO",INIT="$INIT",GENS="$GENS",FALL_TILT="$FALL_TILT",TILT_SCALE="$TILT_SCALE",INTERP="$INTERP",TRIAL="$TRIAL",RESULTS_DIR="$RESULTS_DIR" \
+                        --export=ALL,ALGO="$ALGO",INIT="$INIT",GENS="$GENS",FALL_TILT="$FALL_TILT",TILT_SCALE="$TILT_SCALE",INTERP="$INTERP",SIGMA_INIT="$SIGMA_INIT",TRIAL="$TRIAL",RESULTS_DIR="$RESULTS_DIR" \
                         "$SIMDIR/train_job.sbatch" > /dev/null
                     total=$((total + 1))
                 done
@@ -104,6 +114,7 @@ Seeds: $INITS
 Interpolations: $INTERPS
 Trials per config: $N_TRIALS
 Random tilt range: [$TILT_MIN, $TILT_MAX]°
+Random sigma range: [$SIGMA_MIN, $SIGMA_MAX]
 Jobs: $total
 MANIFEST
 echo "Manifest saved to $RESULTS_DIR/manifest.txt"

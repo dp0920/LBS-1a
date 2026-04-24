@@ -567,7 +567,8 @@ def run_viewer(model, poses, phase_time, n_cycles=5, interp="linear"):
 
 def tune(model, out=None, generations=150, popsize=48,
          n_cycles=5, resume=False, workers=None, init="gait",
-         fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
+         fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear",
+         sigma_init=5.0):
     try:
         import cma
     except ImportError:
@@ -606,7 +607,7 @@ def tune(model, out=None, generations=150, popsize=48,
     print(f"Tuning gait ({n_params} params: {N_ANGLE_PARAMS} angles + 1 timing, "
           f"{n_cycles} cycles/eval)")
 
-    sigma = 5.0
+    sigma = float(sigma_init)
     es = cma.CMAEvolutionStrategy(x0, sigma, {
         "popsize": popsize,
         "bounds": [list(BOUNDS_LO), list(BOUNDS_HI)],
@@ -622,6 +623,7 @@ def tune(model, out=None, generations=150, popsize=48,
 
     cfg = {"algo": "cma", "init": init, "fall_tilt_deg": fall_tilt_deg,
            "tilt_scale": tilt_scale, "interp": interp,
+           "sigma_init": sigma,
            "generations": generations, "popsize": popsize,
            "n_cycles": n_cycles}
 
@@ -958,6 +960,10 @@ def main():
                     help="Joint-angle interpolation between phases. "
                          "'cosine'/'smoothstep' have zero velocity at phase "
                          "boundaries (smoother transitions). Default linear.")
+    ap.add_argument("--sigma-init", type=float, default=5.0,
+                    help="CMA-ES initial step size. Small (~2) = fine-tune "
+                         "near seed, large (~15) = broad exploration. "
+                         "Default 5.0. Ignored by random/de algorithms.")
     args = ap.parse_args()
 
     model = build_model()
@@ -978,7 +984,8 @@ def main():
                       tilt_scale=args.tilt_scale,
                       interp=args.interp)
         if args.algo == "cma":
-            tune(model, resume=args.resume, **common)
+            tune(model, resume=args.resume, sigma_init=args.sigma_init,
+                 **common)
         elif args.algo == "random":
             tune_random(model, **common)
         elif args.algo == "de":

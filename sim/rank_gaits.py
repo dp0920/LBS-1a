@@ -33,7 +33,8 @@ def rollout_distance(model, path, cycles):
     speed = dist / t if t > 0 else 0.0
     reward = float(d.get("reward", 0.0))
     tilt = cfg.get("fall_tilt_deg", float("nan"))
-    return dist, t, speed, reward, interp, tilt
+    sigma = cfg.get("sigma_init", float("nan"))
+    return dist, t, speed, reward, interp, tilt, sigma
 
 
 def main():
@@ -55,18 +56,19 @@ def main():
         return
 
     print(f"Rolling out {len(files)} gaits ({args.cycles} cycles each)...\n")
-    hdr = f"{'dist(m)':>8} {'time(s)':>8} {'m/s':>7} {'reward':>9} {'interp':>12} {'tilt':>6}  file"
+    hdr = (f"{'dist(m)':>8} {'time(s)':>8} {'m/s':>7} {'reward':>9} "
+           f"{'interp':>12} {'tilt':>6} {'sigma':>6}  file")
     print(hdr)
     print("-" * len(hdr))
 
     model = build_model()
     rows = []
     for f in files:
-        dist, t, speed, reward, interp, tilt = rollout_distance(
+        dist, t, speed, reward, interp, tilt, sigma = rollout_distance(
             model, f, args.cycles)
-        rows.append((dist, t, speed, reward, interp, tilt, f))
+        rows.append((dist, t, speed, reward, interp, tilt, sigma, f))
         print(f"{dist:8.2f} {t:8.1f} {speed:7.3f} {reward:+9.2f} "
-              f"{interp:>12} {tilt:6.2f}  {f}")
+              f"{interp:>12} {tilt:6.2f} {sigma:6.2f}  {f}")
 
     sort_idx = {"distance": 0, "speed": 2, "reward": 3}[args.sort]
     rows.sort(key=lambda r: -r[sort_idx])
@@ -74,9 +76,9 @@ def main():
     n = args.top if args.top > 0 else len(rows)
     print(f"\n=== Top {min(n, len(rows))} by {args.sort} ===")
     print(f"{'rank':>4} " + hdr)
-    for i, (dist, t, speed, reward, interp, tilt, f) in enumerate(rows[:n], 1):
+    for i, (dist, t, speed, reward, interp, tilt, sigma, f) in enumerate(rows[:n], 1):
         print(f"{i:4d} {dist:8.2f} {t:8.1f} {speed:7.3f} {reward:+9.2f} "
-              f"{interp:>12} {tilt:6.2f}  {f}")
+              f"{interp:>12} {tilt:6.2f} {sigma:6.2f}  {f}")
 
 
 if __name__ == "__main__":

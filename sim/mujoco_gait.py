@@ -82,8 +82,27 @@ def get_ctrl_idx(model):
     return ctrl
 
 
-def lerp_pose(a, b, t):
-    return {j: a[j] * (1 - t) + b[j] * t for j in a}
+def _ease(t, mode):
+    """Map phase progress t ∈ [0,1] through an easing curve.
+    linear:      t                              (constant velocity)
+    cosine:      0.5 * (1 - cos(pi*t))          (C¹: zero vel at endpoints)
+    smoothstep:  t**2 * (3 - 2*t)               (C¹, cubic polynomial)
+    smootherstep: t**3 * (t*(6*t-15)+10)        (C², zero accel at endpoints)
+    """
+    if mode == "linear":
+        return t
+    if mode == "cosine":
+        return 0.5 * (1.0 - np.cos(np.pi * t))
+    if mode == "smoothstep":
+        return t * t * (3.0 - 2.0 * t)
+    if mode == "smootherstep":
+        return t * t * t * (t * (6.0 * t - 15.0) + 10.0)
+    raise ValueError(f"unknown interp mode: {mode!r}")
+
+
+def lerp_pose(a, b, t, interp="linear"):
+    u = _ease(t, interp)
+    return {j: a[j] * (1 - u) + b[j] * u for j in a}
 
 
 def deg_pose(FL, FR, RL, RR):
@@ -222,8 +241,16 @@ def make_x0(init, rng=None):
 # Rollout
 # ---------------------------------------------------------------------------
 
-def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
-    """Run gait for n_cycles. Returns (reward, info)."""
+def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None,
+            fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
+    """Run gait for n_cycles. Returns (reward, info).
+
+    fall_tilt_deg: kill threshold (pitch/roll); also scales the nose-down kill
+                   threshold proportionally.
+    tilt_scale:    multiplier on soft tilt/flop/pitch-rate penalties.
+    interp:        'linear' | 'cosine' | 'smoothstep' | 'smootherstep' —
+                   controls how joint angles are interpolated between phases.
+    """
     if data is None:
         data = mujoco.MjData(model)
     mujoco.mj_resetData(model, data)
@@ -240,8 +267,9 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
             data.qpos[qadr[name]] = angle
 
     FALL_Z = 0.08
-    FALL_TILT = np.radians(25)
-    FALL_NOSE_DOWN = 0.34   # body-forward world-z < -0.34 ≈ nose-down past ~20°
+    FALL_TILT = np.radians(max(0.1, fall_tilt_deg))
+    # nose-down kill scales with tilt budget: sin(tilt_deg) ≈ forward-z cutoff.
+    FALL_NOSE_DOWN = float(np.sin(FALL_TILT))
 
     base_body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,
                                      "base_link")
@@ -323,7 +351,7 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
         phase_wall = time.time() if viewer else 0
         for i in range(steps):
             t = i / steps
-            set_ctrl(lerp_pose(from_pose, to_pose, t))
+            set_ctrl(lerp_pose(from_pose, to_pose, t, interp))
             mujoco.mj_step(model, data)
             sample_attitude()
             if is_fallen():
@@ -425,28 +453,34 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
     survival = phases_completed / max(1, total_phases)
 
     step_bonus = 0.5 * phases_completed
-    forward = max(0, earned_distance) * 100.0
+    # Distance reward (covers ground) + speed bonus (rewards pace).
+    # Speed is m/s averaged over the whole rollout; elapsed time comes from
+    # the per-physics-step sample count × timestep.
+    elapsed_time = max(dt, tilt_n_steps[0] * dt)
+    speed = max(0, earned_distance) / elapsed_time
+    forward = max(0, earned_distance) * 100.0 + speed * 1000.0
     backward_penalty = max(0, -earned_distance) * 200.0
     height_bonus = 5.0 * mean_z if phases_completed > 0 else 0.0
 
-    # Symmetric pitch/roll (light) — keeps the body from hanging at an angle.
-    pitch_penalty = 30.0 * mean_pitch_sq
-    roll_penalty = 40.0 * mean_roll_sq
-    peak_penalty = 8.0 * max_pitch[0] ** 2 + 8.0 * max_roll[0] ** 2
+    # Symmetric pitch/roll — keeps the body from hanging at an angle.
+    # Baseline weights doubled from the previous version; `tilt_scale` lets
+    # sweep jobs dial strictness further up (strict) or down (lenient).
+    pitch_penalty = tilt_scale * 60.0 * mean_pitch_sq
+    roll_penalty = tilt_scale * 80.0 * mean_roll_sq
+    peak_penalty = tilt_scale * (16.0 * max_pitch[0] ** 2
+                                 + 16.0 * max_roll[0] ** 2)
 
-    # Directional forward-flop penalty — this is the one that matters for
-    # front-leg collapse. nose-down ranges 0..1; we penalize its square and
-    # also hammer the worst moment.
-    # Typical 5° nose-down → nd≈0.09 → 500×0.008 = 3.9 penalty.
-    # 10° nose-down → nd≈0.17 → 500×0.029 = 14.7 penalty.
-    # 15° nose-down → nd≈0.26 → 500×0.067 = 33.7 penalty.
-    # 18° (near kill) → nd≈0.31 → 500×0.095 = 47.6 penalty.
-    flop_penalty = 500.0 * mean_nose_down_sq + 150.0 * (max_nose_down[0] ** 2)
+    # Directional forward-flop penalty — front-leg collapse is the dominant
+    # failure mode we're fighting. nose-down ranges 0..1; penalize its square
+    # and hammer the worst moment.
+    flop_penalty = tilt_scale * (800.0 * mean_nose_down_sq
+                                 + 250.0 * (max_nose_down[0] ** 2))
 
     # Pitch-rate penalty catches fast floppy motions that don't linger in the
     # mean. mean_pitch_rate_sq is in (rad/s)²; typical gentle walking < 2, a
     # flop spikes to 10+.
-    pitch_rate_penalty = 5.0 * mean_pitch_rate_sq + 2.0 * (max_pitch_rate[0] ** 2)
+    pitch_rate_penalty = tilt_scale * (8.0 * mean_pitch_rate_sq
+                                       + 3.0 * (max_pitch_rate[0] ** 2))
 
     reward = (step_bonus + forward - backward_penalty + height_bonus
               - pitch_penalty - roll_penalty - peak_penalty
@@ -454,6 +488,8 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
 
     info = {
         "earned_dist_m": earned_distance,
+        "elapsed_s": elapsed_time,
+        "speed_mps": speed,
         "mean_pitch_deg": np.degrees(mean_pitch_abs),
         "mean_roll_deg": np.degrees(mean_roll_abs),
         "max_pitch_deg": np.degrees(max_pitch[0]),
@@ -477,15 +513,24 @@ def rollout(model, poses, phase_time, n_cycles=5, viewer=None, data=None):
 _worker_model = None
 _worker_data = None
 
-def _worker_init():
+_worker_fall_tilt_deg = 20.0
+_worker_tilt_scale = 1.0
+_worker_interp = "linear"
+
+
+def _worker_init(fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
     """Each worker builds its own MuJoCo model (can't pickle them).
     Also ignore SIGINT so ctrl-C goes only to the parent — otherwise every
     worker dies at once and pool.map hangs inside C code."""
     import signal
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     global _worker_model, _worker_data
+    global _worker_fall_tilt_deg, _worker_tilt_scale, _worker_interp
     _worker_model = build_model()
     _worker_data = mujoco.MjData(_worker_model)
+    _worker_fall_tilt_deg = fall_tilt_deg
+    _worker_tilt_scale = tilt_scale
+    _worker_interp = interp
 
 
 def _worker_eval(args):
@@ -493,19 +538,23 @@ def _worker_eval(args):
     x, n_cycles = args
     poses, phase_time = decode_params(x)
     return rollout(_worker_model, poses, phase_time,
-                   n_cycles=n_cycles, data=_worker_data)
+                   n_cycles=n_cycles, data=_worker_data,
+                   fall_tilt_deg=_worker_fall_tilt_deg,
+                   tilt_scale=_worker_tilt_scale,
+                   interp=_worker_interp)
 
 
 # ---------------------------------------------------------------------------
 # Viewer / demo
 # ---------------------------------------------------------------------------
 
-def run_viewer(model, poses, phase_time, n_cycles=5):
+def run_viewer(model, poses, phase_time, n_cycles=5, interp="linear"):
     import mujoco.viewer
     data = mujoco.MjData(model)
     with mujoco.viewer.launch_passive(model, data) as viewer:
         r, info = rollout(model, poses, phase_time,
-                          n_cycles=n_cycles, viewer=viewer, data=data)
+                          n_cycles=n_cycles, viewer=viewer, data=data,
+                          interp=interp)
         print(f"reward={r:+.4f}  {info}")
         print("Done. Close viewer to exit.")
         while viewer.is_running():
@@ -517,7 +566,8 @@ def run_viewer(model, poses, phase_time, n_cycles=5):
 # ---------------------------------------------------------------------------
 
 def tune(model, out=None, generations=150, popsize=48,
-         n_cycles=5, resume=False, workers=None, init="gait"):
+         n_cycles=5, resume=False, workers=None, init="gait",
+         fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
     try:
         import cma
     except ImportError:
@@ -565,8 +615,15 @@ def tune(model, out=None, generations=150, popsize=48,
         "tolstagnation": 0,
     })
 
-    pool = mp.Pool(workers, initializer=_worker_init)
-    print(f"  workers: {workers}")
+    pool = mp.Pool(workers, initializer=_worker_init,
+                   initargs=(fall_tilt_deg, tilt_scale, interp))
+    print(f"  workers: {workers}  fall_tilt={fall_tilt_deg}°  "
+          f"tilt_scale={tilt_scale}  interp={interp}")
+
+    cfg = {"algo": "cma", "init": init, "fall_tilt_deg": fall_tilt_deg,
+           "tilt_scale": tilt_scale, "interp": interp,
+           "generations": generations, "popsize": popsize,
+           "n_cycles": n_cycles}
 
     try:
       while not es.stop():
@@ -591,6 +648,7 @@ def tune(model, out=None, generations=150, popsize=48,
         status = ""
         if best_info_this_gen:
             status = (f"  dist={best_info_this_gen['earned_dist_m']:+.4f}m "
+                      f"speed={best_info_this_gen['speed_mps']:.3f}m/s "
                       f"phases={best_info_this_gen['phases']} "
                       f"z={best_info_this_gen['mean_z']:.3f} "
                       f"nose_down={best_info_this_gen['mean_nose_down_deg']:.1f}°/"
@@ -622,7 +680,7 @@ def tune(model, out=None, generations=150, popsize=48,
             })
 
         _save_and_log(best_x, best_r, gen, restart, out, log_path,
-                      pop_mean, pop_best)
+                      pop_mean, pop_best, config=cfg)
     except KeyboardInterrupt:
         print("\n>>> Interrupted — saving best and exiting.", flush=True)
     finally:
@@ -648,14 +706,18 @@ def _print_best(best_x, best_r, restart, out):
 
 
 def _save_and_log(best_x, best_r, gen, restart, out, log_path,
-                  pop_mean=None, pop_best=None):
-    """Write best JSON + append to JSONL log — shared by all algorithms."""
+                  pop_mean=None, pop_best=None, config=None):
+    """Write best JSON + append to JSONL log — shared by all algorithms.
+    `config` is an optional dict of training settings (algo, init, fall_tilt,
+    tilt_scale, interp, ...) persisted inside the saved JSON."""
     result = {
         "params": list(best_x),
         "reward": best_r,
         "gen": gen,
         "restart": restart,
     }
+    if config:
+        result["config"] = dict(config)
     with open(out, "w") as f:
         json.dump(result, f, indent=2)
     entry = {"gen": gen, "best": best_r}
@@ -672,7 +734,8 @@ def _save_and_log(best_x, best_r, gen, restart, out, log_path,
 # ---------------------------------------------------------------------------
 
 def tune_random(model, out=None, generations=150, popsize=48,
-                n_cycles=5, workers=None, init="gait"):
+                n_cycles=5, workers=None, init="gait",
+                fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
     """Baseline: sample popsize candidates per generation, keep the best.
     No learning, no covariance adaptation — just random sampling + elitism."""
     if workers is None:
@@ -691,8 +754,15 @@ def tune_random(model, out=None, generations=150, popsize=48,
     print(f"Random search ({len(x0)} params, popsize={popsize}, "
           f"gens={generations}, {n_cycles} cycles/eval)")
 
-    pool = mp.Pool(workers, initializer=_worker_init)
-    print(f"  workers: {workers}")
+    pool = mp.Pool(workers, initializer=_worker_init,
+                   initargs=(fall_tilt_deg, tilt_scale, interp))
+    print(f"  workers: {workers}  fall_tilt={fall_tilt_deg}°  "
+          f"tilt_scale={tilt_scale}  interp={interp}")
+
+    cfg = {"algo": "random", "init": init, "fall_tilt_deg": fall_tilt_deg,
+           "tilt_scale": tilt_scale, "interp": interp,
+           "generations": generations, "popsize": popsize,
+           "n_cycles": n_cycles}
 
     try:
         for gen in range(1, generations + 1):
@@ -727,7 +797,7 @@ def tune_random(model, out=None, generations=150, popsize=48,
                   f"pop_best={pop_best:+.4f}{status}", flush=True)
 
             _save_and_log(best_x, best_r, gen, 0, out, log_path,
-                          pop_mean, pop_best)
+                          pop_mean, pop_best, config=cfg)
     except KeyboardInterrupt:
         print("\n>>> Interrupted — saving best and exiting.", flush=True)
     finally:
@@ -742,7 +812,8 @@ def tune_random(model, out=None, generations=150, popsize=48,
 # ---------------------------------------------------------------------------
 
 def tune_de(model, out=None, generations=150, popsize=48,
-            n_cycles=5, workers=None, init="gait"):
+            n_cycles=5, workers=None, init="gait",
+            fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
     """Differential Evolution via scipy — population-based, mutation by
     combining existing solutions. No covariance learning."""
     from scipy.optimize import differential_evolution
@@ -761,8 +832,15 @@ def tune_de(model, out=None, generations=150, popsize=48,
     print(f"Differential Evolution ({len(x0)} params, popsize={popsize}, "
           f"maxiter={generations}, {n_cycles} cycles/eval)")
 
-    pool = mp.Pool(workers, initializer=_worker_init)
-    print(f"  workers: {workers}")
+    pool = mp.Pool(workers, initializer=_worker_init,
+                   initargs=(fall_tilt_deg, tilt_scale, interp))
+    print(f"  workers: {workers}  fall_tilt={fall_tilt_deg}°  "
+          f"tilt_scale={tilt_scale}  interp={interp}")
+
+    cfg = {"algo": "de", "init": init, "fall_tilt_deg": fall_tilt_deg,
+           "tilt_scale": tilt_scale, "interp": interp,
+           "generations": generations, "popsize": popsize,
+           "n_cycles": n_cycles}
 
     gen_counter = [0]
     best_r = [-1e9]
@@ -771,7 +849,10 @@ def tune_de(model, out=None, generations=150, popsize=48,
     def callback(xk, convergence=0):
         """Called after each DE generation."""
         gen_counter[0] += 1
-        r, info = rollout(model, *decode_params(xk), n_cycles=n_cycles)
+        r, info = rollout(model, *decode_params(xk), n_cycles=n_cycles,
+                          fall_tilt_deg=fall_tilt_deg,
+                          tilt_scale=tilt_scale,
+                          interp=interp)
         if r > best_r[0]:
             best_r[0] = r
             best_x[0] = xk.copy()
@@ -781,13 +862,16 @@ def tune_de(model, out=None, generations=150, popsize=48,
         print(f"gen {gen_counter[0]:3d}  best={best_r[0]:+.4f}  "
               f"conv={convergence:.4f}{status}", flush=True)
         _save_and_log(best_x[0], best_r[0], gen_counter[0], 0, out,
-                      log_path)
+                      log_path, config=cfg)
 
     def objective(x):
         """Evaluate a single candidate (called by DE vectorized=False)."""
         poses, phase_time = decode_params(x)
         r, _ = rollout(_worker_model, poses, phase_time,
-                       n_cycles=n_cycles, data=_worker_data)
+                       n_cycles=n_cycles, data=_worker_data,
+                       fall_tilt_deg=_worker_fall_tilt_deg,
+                       tilt_scale=_worker_tilt_scale,
+                       interp=_worker_interp)
         if r > best_r[0]:
             best_r[0] = r
             best_x[0] = x.copy()
@@ -817,11 +901,15 @@ def tune_de(model, out=None, generations=150, popsize=48,
             updating="deferred",  # required for workers=-1
         )
         # Final best from scipy
-        r, info = rollout(model, *decode_params(result.x), n_cycles=n_cycles)
+        r, info = rollout(model, *decode_params(result.x), n_cycles=n_cycles,
+                          fall_tilt_deg=fall_tilt_deg,
+                          tilt_scale=tilt_scale,
+                          interp=interp)
         if r > best_r[0]:
             best_r[0] = r
             best_x[0] = result.x.copy()
-        _save_and_log(best_x[0], best_r[0], gen_counter[0], 0, out, log_path)
+        _save_and_log(best_x[0], best_r[0], gen_counter[0], 0, out, log_path,
+                      config=cfg)
     except KeyboardInterrupt:
         print("\n>>> Interrupted — saving best and exiting.", flush=True)
     finally:
@@ -858,6 +946,18 @@ def main():
                     help="Optimization algorithm: 'cma' (CMA-ES, default), "
                          "'random' (random search baseline), "
                          "'de' (Differential Evolution)")
+    ap.add_argument("--fall-tilt", type=float, default=20.0,
+                    help="Tilt kill threshold in degrees (pitch/roll/nose-down "
+                         "scaled from this). Lower = stricter. Default 20.")
+    ap.add_argument("--tilt-scale", type=float, default=1.0,
+                    help="Multiplier on soft tilt/flop/pitch-rate penalties. "
+                         "Higher = stricter stability. Default 1.0.")
+    ap.add_argument("--interp",
+                    choices=["linear", "cosine", "smoothstep", "smootherstep"],
+                    default="linear",
+                    help="Joint-angle interpolation between phases. "
+                         "'cosine'/'smoothstep' have zero velocity at phase "
+                         "boundaries (smoother transitions). Default linear.")
     args = ap.parse_args()
 
     model = build_model()
@@ -866,11 +966,17 @@ def main():
         with open(args.replay) as f:
             d = json.load(f)
         poses, phase_time = decode_params(np.array(d["params"]))
-        run_viewer(model, poses, phase_time, n_cycles=args.cycles)
+        # Use the interp from the saved config if it was recorded; else CLI.
+        replay_interp = d.get("config", {}).get("interp", args.interp)
+        run_viewer(model, poses, phase_time, n_cycles=args.cycles,
+                   interp=replay_interp)
     elif args.tune or args.resume:
         common = dict(generations=args.generations, popsize=args.popsize,
                       n_cycles=args.cycles, workers=args.workers,
-                      init=args.init)
+                      init=args.init,
+                      fall_tilt_deg=args.fall_tilt,
+                      tilt_scale=args.tilt_scale,
+                      interp=args.interp)
         if args.algo == "cma":
             tune(model, resume=args.resume, **common)
         elif args.algo == "random":
@@ -879,7 +985,8 @@ def main():
             tune_de(model, **common)
     elif args.demo:
         poses, phase_time = decode_params(X0)
-        run_viewer(model, poses, phase_time, n_cycles=args.cycles)
+        run_viewer(model, poses, phase_time, n_cycles=args.cycles,
+                   interp=args.interp)
     else:
         ap.print_help()
 

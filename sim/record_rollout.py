@@ -23,7 +23,7 @@ from mujoco_gait import (
 )
 
 
-def record_rollout(model, poses, phase_time, n_cycles=5):
+def record_rollout(model, poses, phase_time, n_cycles=5, interp="linear"):
     """Run a rollout and record per-step telemetry."""
     data = mujoco.MjData(model)
     mujoco.mj_resetData(model, data)
@@ -89,7 +89,7 @@ def record_rollout(model, poses, phase_time, n_cycles=5):
         steps = max(1, int(duration / dt))
         for i in range(steps):
             t = i / steps
-            set_ctrl(lerp_pose(from_pose, to_pose, t))
+            set_ctrl(lerp_pose(from_pose, to_pose, t, interp))
             mujoco.mj_step(model, data)
             step[0] += 1
             if step[0] % 5 == 0:  # sample every 5th step to keep data manageable
@@ -327,9 +327,12 @@ def main():
         if parent and parent not in ("sim", "."):
             name = parent
 
+        interp = d.get("config", {}).get("interp", "linear")
         print(f"\nRecording {name} (reward={reward:.1f}, "
-              f"phase_time={pt:.3f}s, {args.cycles} cycles)...")
-        rec = record_rollout(model, poses, pt, n_cycles=args.cycles)
+              f"phase_time={pt:.3f}s, interp={interp}, "
+              f"{args.cycles} cycles)...")
+        rec = record_rollout(model, poses, pt, n_cycles=args.cycles,
+                             interp=interp)
 
         final_x = rec["x"][-1] if len(rec["x"]) > 0 else 0
         final_t = rec["time"][-1] if len(rec["time"]) > 0 else 0

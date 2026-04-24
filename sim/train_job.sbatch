@@ -22,9 +22,16 @@ ALGO="${ALGO:-cma}"
 INIT="${INIT:-gait}"
 GENS="${GENS:-150}"
 POPSIZE="${POPSIZE:-48}"
+FALL_TILT="${FALL_TILT:-20}"
+TILT_SCALE="${TILT_SCALE:-1.0}"
+INTERP="${INTERP:-linear}"
+TRIAL="${TRIAL:-0}"
 RESULTS_DIR="${RESULTS_DIR:-$SIMDIR/results/manual}"
 
-OUTDIR="$RESULTS_DIR/${ALGO}_${INIT}/${GENS}"
+# Include tilt/interp/trial in the path so sweep runs don't clobber each other.
+TILT_FMT=$(python3 -c "print(f'{float(\"$FALL_TILT\"):05.2f}')")
+RUN_TAG="${INTERP}/t${TILT_FMT}_trial${TRIAL}"
+OUTDIR="$RESULTS_DIR/${ALGO}_${INIT}/${RUN_TAG}/${GENS}"
 mkdir -p "$OUTDIR"
 
 # Run training from a temp working directory so output files don't collide
@@ -37,6 +44,7 @@ cd "$WORKDIR"
 
 echo "=== Training config ==="
 echo "  algo=$ALGO  init=$INIT  gens=$GENS  popsize=$POPSIZE"
+echo "  fall_tilt=${FALL_TILT}°  tilt_scale=${TILT_SCALE}  interp=${INTERP}  trial=${TRIAL}"
 echo "  cpus=$SLURM_CPUS_PER_TASK  node=$(hostname)"
 echo "  outdir=$OUTDIR"
 echo "  workdir=$WORKDIR"
@@ -49,6 +57,9 @@ python3 mujoco_gait.py \
     --init "$INIT" \
     --generations "$GENS" \
     --popsize "$POPSIZE" \
+    --fall-tilt "$FALL_TILT" \
+    --tilt-scale "$TILT_SCALE" \
+    --interp "$INTERP" \
     --workers "$((SLURM_CPUS_PER_TASK - 1))"
 
 # Move results to the output directory

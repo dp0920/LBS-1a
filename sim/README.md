@@ -4,9 +4,7 @@
 
 ### Prerequisites
 - Python 3.10+
-- MuJoCo (`pip install mujoco`)
-- CMA-ES (`pip install cma`)
-- scipy, numpy
+- `pip install "mujoco>=3.2" cma scipy numpy matplotlib`
 
 ### Quick Start
 
@@ -18,10 +16,10 @@ mjpython mujoco_gait.py --demo
 mjpython mujoco_gait.py --replay best_gait.json
 
 # Train locally with CMA-ES (default)
-python mujoco_gait.py --tune --generations 150
+python3 mujoco_gait.py --tune --generations 150
 
 # Train with different algorithm or seed
-python mujoco_gait.py --tune --algo de --init random --generations 200
+python3 mujoco_gait.py --tune --algo de --init random --generations 200
 ```
 
 ### Training Options
@@ -44,7 +42,7 @@ mjpython mujoco_balance.py --tune --lift FL
 mjpython mujoco_balance.py --replay best_balance_FL.json
 
 # Center of mass calculator (for body layout)
-python com_calculator.py
+python3 com_calculator.py
 ```
 
 ## Cluster (Slurm)
@@ -52,18 +50,11 @@ python com_calculator.py
 ### First-Time Setup
 
 ```bash
-module load python/3.10.4
-python3 -m venv ~/LBS-1a/sim/venv_cluster
-source ~/LBS-1a/sim/venv_cluster/bin/activate
-pip install --upgrade pip
-pip install mujoco==3.1.6 --only-binary=:all:
-pip install cma scipy numpy
-```
-
-Or just run:
-```bash
 bash slurm_setup.sh
 ```
+
+This creates a venv at `/cluster/home/$USER/robotics/LBS-1a/venv` and installs
+`mujoco>=3.2`, `cma`, `scipy`, `numpy`, `matplotlib`.
 
 ### Launch Training Jobs
 
@@ -72,29 +63,100 @@ bash slurm_setup.sh
 bash launch_all.sh 50 200 1000 2500
 ```
 
-This submits jobs to the `batch` partition (16 cores, 24hr limit each).
-Each job writes results to `results/<algo>_<init>/`.
+Each invocation creates a timestamped run:
+- Results: `results/<timestamp>/<algo>_<init>/<gens>/`
+- Logs:    `logs/<timestamp>/`
+- Manifest: `results/<timestamp>/manifest.txt`
+
+Each job runs from a temp working directory so parallel jobs don't clobber
+each other's intermediate files.
 
 ### Monitor
 
 ```bash
 squeue -u $USER
+tail -f logs/<timestamp>/gait_cma_gait_200_*.out
 ```
 
 ### Collect Results
 
 ```bash
-# Summary table of best rewards
+# Summary table of rewards for latest run
 bash collect_results.sh
 
-# Generate convergence plots
+# Specific run or all runs
+bash collect_results.sh 20260422_005700
+bash collect_results.sh all
+
+# Find best reward in a directory (one-liner)
+python3 -c "import json,glob;files=glob.glob('results/<timestamp>/**/best_gait*.json',recursive=True);s=sorted((json.load(open(f))['reward'],f) for f in files);[print(f'  {r:+8.2f}  {f}') for r,f in s];print(f'Best: {s[-1][0]:+.2f}  {s[-1][1]}')"
+```
+
+## Analysis & Visualization
+
+These run locally after pulling results back from the cluster.
+
+### Convergence plots (reward vs generation)
+
+```bash
 python3 plot_results.py
 ```
 
-Plots are saved as PNG files:
+Outputs:
 - `convergence_all.png` — all runs on one chart
 - `convergence_seed_<init>.png` — per seed, comparing algorithms
 - `convergence_algo_<algo>.png` — per algorithm, comparing seeds
+
+### Rank gaits by walking distance
+
+Reward is what the optimizer scored; distance walked is what you actually
+care about. `rank_gaits.py` runs a fresh rollout for every `best_gait*.json`
+and prints them sorted.
+
+```bash
+# Rank everything under results/ by distance (default)
+python3 rank_gaits.py
+
+# Rank one specific run
+python3 rank_gaits.py results/20260422_005700
+
+# Top 5 by speed (m/s) instead of total distance
+python3 rank_gaits.py --sort speed --top 5
+
+# Sort by the training reward stored in each JSON
+python3 rank_gaits.py --sort reward
+
+# Longer rollouts (default is 10 cycles)
+python3 rank_gaits.py --cycles 15
+```
+
+### Per-gait rollout plots
+
+```bash
+# Full telemetry for one gait (trajectory, orientation, joints, distance)
+python3 record_rollout.py results/20260422_005700/cma_gait/1000/best_gait.json
+
+# Overlay distance + pitch for multiple gaits
+python3 record_rollout.py --compare \
+    results/.../cma_gait/1000/best_gait.json \
+    results/.../cma_gait/2500/best_gait.json \
+    results/.../random_gait/2500/best_gait_rand.json
+```
+
+Outputs per gait: `rollout_<name>_trajectory.png`, `_orientation.png`,
+`_joints.png`, `_distance.png`. Compare mode saves `rollout_comparison.png`.
+
+### Static gait visualization
+
+```bash
+# Heatmap + per-leg trajectory of the angles in a best_gait JSON
+python3 plot_gaits.py results/20260422_005700/cma_gait/1000/best_gait.json
+
+# Side-by-side heatmap comparison
+python3 plot_gaits.py --compare \
+    results/.../cma_gait/1000/best_gait.json \
+    results/.../cma_gait/2500/best_gait.json
+```
 
 ## Loading a Gait onto the Robot
 
@@ -121,7 +183,10 @@ python gait_controller.py --gait best_gait.json --n=10
 | `launch_all.sh` | Submit all training jobs to slurm |
 | `train_job.sbatch` | Single slurm job template |
 | `slurm_setup.sh` | One-time cluster venv setup |
-| `collect_results.sh` | Summarize training results |
-| `plot_results.py` | Generate convergence plots |
+| `collect_results.sh` | Summarize training rewards |
+| `plot_results.py` | Convergence plots from tune_gait*.jsonl logs |
+| `rank_gaits.py` | Rank trained gaits by rollout distance/speed |
+| `record_rollout.py` | Per-step telemetry + plots for one or more gaits |
+| `plot_gaits.py` | Static heatmap/trajectory plots of a gait JSON |
 | `slides.tex` | Beamer presentation |
 | `slides.md` | Slide content (markdown version) |

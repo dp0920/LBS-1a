@@ -42,14 +42,24 @@ ACTION_HIGH = np.array([
     np.radians(55), np.radians(-25),
 ], dtype=np.float32)
 
+# Midpoint + half-range used by the action-extension bonus. Normalizing by
+# half-range means "distance from midpoint" is in [0, 1] per joint regardless
+# of whether it's a hip (range 50°) or knee (range 75°).
+ACTION_MIDPOINT = 0.5 * (ACTION_LOW + ACTION_HIGH)
+ACTION_HALF_RANGE = 0.5 * (ACTION_HIGH - ACTION_LOW)
+
 
 LEG_ORDER = ["FR", "RL", "FL", "RR"]   # crawl gait stride order
 FOOT_BODY_NAMES = {
     "FL": "foot_fl", "FR": "foot_fr",
     "RL": "foot_rl", "RR": "foot_rr",
 }
-# "Lifted" threshold — foot z above this counts as in swing.
+# "Lifted" threshold — target-leg foot z above this counts as in swing.
 FOOT_LIFT_Z = 0.015
+# Non-target feet may drift up to this height without penalty — gives the
+# policy room to briefly unload a leg for rebalancing without being scored
+# as "wrong leg in swing". Penalty only triggers above this.
+FOOT_PLANT_TOLERANCE = 0.03
 
 
 class OptimusPrimalEnv(gym.Env):
@@ -82,7 +92,8 @@ class OptimusPrimalEnv(gym.Env):
 
     def __init__(self, max_steps=2000, fall_tilt_deg=20.0, tilt_scale=1.0,
                  ctrl_repeat=4, render_mode=None,
-                 phase_period=2.0, gait_reward_scale=1.0):
+                 phase_period=4.0, gait_reward_scale=0.25,
+                 velocity_bonus=5.0, extension_bonus=3.0):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
@@ -102,10 +113,13 @@ class OptimusPrimalEnv(gym.Env):
         self.max_steps = max_steps
 
         # Gait cycle: phase_period seconds per full FR→RL→FL→RR cycle.
-        # With default 2.0s and ctrl_repeat=4 (env step = 20ms), a cycle is
-        # 100 env steps, each leg gets ~25 steps of swing.
+        # Default 4.0s with ctrl_repeat=4 (env step = 20ms) = 200 env steps/
+        # cycle, 50 steps per leg swing — long enough for the policy to pre-
+        # shift weight before each commit swing.
         self.phase_period = phase_period
         self.gait_reward_scale = gait_reward_scale
+        self.velocity_bonus = velocity_bonus
+        self.extension_bonus = extension_bonus
 
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
@@ -165,16 +179,23 @@ class OptimusPrimalEnv(gym.Env):
 
     def _gait_reward(self):
         """Per-step reward for matching the expected contact pattern.
-        +1 per correct leg (up-when-should-be-up, down-when-should-be-down),
-        -1 per wrong leg. Max +4 / min -4 per step, times gait_reward_scale.
+
+        Target leg: +1 if foot z > FOOT_LIFT_Z (in swing), -1 otherwise.
+        Non-target legs: +1 if foot z < FOOT_PLANT_TOLERANCE (planted or
+        barely unloading), -1 only if lifted above the tolerance.
+
+        The gap between FOOT_LIFT_Z and FOOT_PLANT_TOLERANCE is a "free zone"
+        where non-target legs can briefly lift for weight-shifting without
+        penalty.
         """
         target = self._target_swing_leg()
         score = 0.0
         for leg in LEG_ORDER:
-            foot_id = self.foot_body_ids[leg]
-            is_lifted = self.data.xpos[foot_id][2] > FOOT_LIFT_Z
-            should_lift = (leg == target)
-            score += 1.0 if (is_lifted == should_lift) else -1.0
+            z = self.data.xpos[self.foot_body_ids[leg]][2]
+            if leg == target:
+                score += 1.0 if z > FOOT_LIFT_Z else -1.0
+            else:
+                score += 1.0 if z < FOOT_PLANT_TOLERANCE else -1.0
         return self.gait_reward_scale * score
 
     def reset(self, seed=None, options=None):
@@ -246,11 +267,27 @@ class OptimusPrimalEnv(gym.Env):
         # This fires regardless of fall so the policy gets signal early.
         gait_reward = self._gait_reward()
 
+        # Speed bonus: explicit positive signal for forward velocity on top of
+        # step_reward(dx). dx is noisy per-step; a direct velocity term gives
+        # a cleaner gradient toward "move faster" without the asymmetric
+        # backward punishment mixed in.
+        vel_reward = self.velocity_bonus * max(0.0, float(self.data.qvel[0]))
+
+        # Action extension bonus: reward commanded joint angles that sit far
+        # from the midpoint of their bound. Normalized per-joint so hip
+        # (range 50°) and knee (range 75°) contribute equally. Value ∈ [0, 1]
+        # per joint: 0 = dead center, 1 = commanded at a bound. Counters the
+        # "jitter at stance" local optimum by explicitly paying the policy
+        # to commit to full-stretch leg poses (either flexed or extended).
+        a_extension = float(np.mean(
+            np.abs((action - ACTION_MIDPOINT) / ACTION_HALF_RANGE)))
+        extension_reward = self.extension_bonus * a_extension
+
         # Alive bonus tuned so stable-standing ≈ 0 per step (slightly positive).
         # Falling ends the episode AND loses future +alive, so sustained
         # walking easily beats any "fall fast" strategy.
         if not fell:
-            reward += (2.0 + gait_reward
+            reward += (2.0 + gait_reward + vel_reward + extension_reward
                        - posture_penalty - smoothness_penalty)
         else:
             reward -= 20.0    # one-shot fall penalty

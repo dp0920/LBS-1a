@@ -95,6 +95,51 @@ reward = +100 * forward_distance
 
 Attitude (`pitch`, `roll`, `nose_down`, `pitch_rate`) is sampled per **physics step**, not per phase, so penalties integrate over the whole trajectory. `pitch_rate` is taken from `data.qvel` directly (body frame).
 
+### 4.4 RL dense reward (`gym_env.py`)
+
+The RL environment (`OptimusPrimalEnv`) uses a **dense per-step** reward rather than the one-shot rollout reward of §4.1. PPO needs a signal every physics step, not once per rollout, or the advantage estimator has nothing to work with.
+
+```
+reward = step_reward(dx)            # forward progress + attitude cost, per step
+         + 2.0                       # alive bonus (every step, only if not fallen)
+         + gait_reward               # contact-pattern match, scaled ±1/step (v4)
+         + 5.0 · max(0, qvel[0])    # speed bonus — forward velocity (v4)
+         + extension_reward          # 3.0 · mean(|a − midpoint| / half_range) (v5)
+         - posture_penalty           # linear outside z ∈ [0.12, 0.18]
+         - smoothness_penalty        # 0.1 · ‖Δaction‖²
+         - 20.0 · is_fallen          # one-shot at episode end
+```
+
+- **`step_reward(dx)`** (`reward.py::RewardAccumulator.step_reward`): a rescaled version of §4.1 — forward distance with asymmetric backward punishment, plus attitude penalties ~10× smaller because they fire every physics step. Calibrated with `tune_step_reward.py`, which overlays per-step reward against attitude/distance to check that "standing still" ≈ 0 and "walking" is clearly positive.
+- **Alive bonus `+2`/step.** Stable-standing nets ≈ 0 after §4.1 penalties; falling forfeits both this bonus for the remainder of the episode and a one-shot `-20` at termination. This makes "stay alive" always dominate "fall fast".
+- **Posture penalty.** `10 · max(0, |z − 0.15| − 0.03)` — zero cost inside a 6 cm band around target body height; linear outside. Stops the policy from converging to a fully-extended "giraffe" stance (high z) or a collapsed belly-scoot (low z). Softened from the original `30 ·` multiplier and `±0.02` band once PPO was refusing to leave the band at all in early exploration.
+- **Action smoothness.** `0.1 · ‖aₜ − aₜ₋₁‖²`. LX-16A servos have finite bandwidth and a high-frequency wiggle in sim won't transfer. Originally `1.0 ·`, which deterred *any* motion; softened to `0.1 ·` on 2026-04-23.
+- **Gait-contact-pattern reward.** Each physics step scores `+1` per leg whose current contact state matches the expected pattern, `-1` per mismatch; max `+4`, min `-4`, scaled by `gait_reward_scale` (**v4 default 0.25**, was 1.0). "Expected" follows `FR → RL → FL → RR` at cadence `phase_period` (**v4 default 4.0 s** → 1 s per leg swing, was 2.0 s / 0.5 s). Two thresholds score contact state: the target leg earns `+1` when foot z > `FOOT_LIFT_Z = 0.015 m`; non-target legs earn `+1` when foot z < `FOOT_PLANT_TOLERANCE = 0.03 m`. The 1.5–3 cm gap is a "free zone" where a non-target leg can briefly unload for weight-shifting without penalty (new in v4). The policy observes `(sin(2πφ), cos(2πφ))` in its state, so it can anticipate which leg *should* be swinging.
+- **Speed bonus (v4).** `5.0 · max(0, qvel[0])` — explicit per-step positive for forward velocity on top of `step_reward(dx)`. `step_reward` mixes a positive `+500 · max(0, dx)` gain with a harsher `-1000 · max(0, −dx)` backward penalty, so early in training the net signal from noisy per-step dx is often negative. The velocity term is unambiguously positive and gives PPO a clean gradient toward "move faster".
+- **Action extension bonus (v5).** `3.0 · mean(|action − midpoint| / half_range)` — rewards commanded joint angles sitting far from the midpoint of their bound. Normalized per-joint so hip (50° range) and knee (75° range) contribute equally: each joint contributes 0 at dead center, 1 when pinned to a bound. Direction-agnostic — rewards either flex or extend, whichever the policy commits to — so it doesn't fight the posture term. Counters the "jitter at stance" local optimum where the policy hugs the midpoint and makes small oscillations instead of committing to big leg-sweep angles. Watching the v4 replay, the robot was taking tiny steps; v5 visibly swings its legs through full arcs.
+
+**Why a forced contact-pattern reward?** Without it, PPO rapidly finds a local optimum where the robot just stands still (the alive bonus is "free" once posture is satisfied). Shaping the stride order into the reward converts the coordination problem ("discover that legs must alternate") into a tracking problem ("lift this leg at this phase"). The chosen `FR → RL → FL → RR` order matches the hand-coded `stance.py` seed and the CMA-ES gait structure (§3), and it rides the rear-biased CoM on the real robot — lifting a front leg first with rear legs planted is the most stable option.
+
+**Why not let PPO discover the order?** Same reason as §3: with an 8-dim continuous action space, 24-dim observation space, and sparse fall signals, gait emergence is extremely slow. Forced ordering is the RL analogue of CMA's fixed 13-phase structure — both commit to the crawl as the gait family and optimize within it.
+
+### 4.5 RL reward evolution
+
+Five configurations trained at 1 M timesteps, 4 parallel envs, default PPO hyperparameters. Each row's entry was measured by `ppo_stats.py --episodes 50` (stochastic) *except* v1 and v2 where the old obs shape (22-dim) no longer loads — those numbers are from TensorBoard at end of training. The max episode length is 2000 steps (~40 s sim), so "survived" means the policy walked for the full cap without a fall.
+
+| Ver. | Change | ep_len (TB) | ep_rew (TB) | Mean dist | Max dist | Survived |
+|---|---|---|---|---|---|---|
+| v1 | `step_reward + alive + fall penalty` (reward-only baseline, ran only ~508k steps) | ~1373 | ~4145 | — | — | — |
+| v2 | + posture + action-smoothness penalties | ~698 | ~2323 | — | — | — |
+| v3 | + forced gait-order reward (phase=2 s, scale=1.0) | 379 | 943 | 2.93 m | 6.01 m | 1/50 (stood still, 0.63 m) |
+| v4 | phase=4 s, scale=0.25, free-zone 1.5–3 cm for non-target feet, `+5·qvel[0]` speed bonus | 461 | 4,010 | 4.28 m | 14.55 m | 0/50 (every episode a genuine walk) |
+| **v5** | + action-extension bonus `3.0 · mean(|a−mid|/half_range)` | **1,896** | **23,700** | **27.87 m** | **31.19 m** | **44/50** |
+
+**Story in one sentence:** each shaping step was principled — v2 added the penalties needed to eliminate v1's degenerate collapse-and-scoot, v3 added gait order to escape the "stand still" local optimum, v4 relaxed v3's over-constraint to unlock genuine walking, and v5's action-extension bonus pushed the policy past low-amplitude jitter into full-stride leg swings — at which point it sustains ~0.7 m/s walking for the entire 40-second episode in 88% of rollouts.
+
+**What each version taught the next:**
+- **v3 → v4:** `phase_period = 2.0 s` (0.5 s per leg) was too fast — no time to pre-shift weight before a commit swing. `gait_reward_scale = 1.0` (±4/step) dwarfed the +2 alive bonus. The single `FOOT_LIFT_Z = 0.015 m` threshold penalized weight-shifting micro-lifts. And "move forward" was only signalled through `step_reward(dx)`'s noisy per-step term.
+- **v4 → v5:** v4 walked but in tiny, jittery steps — watching the replay showed the policy hugging the midpoint of its action range and making small oscillations rather than sweeping leg arcs. An action-extension bonus (reward being far from midpoint, direction-agnostic) pushed the policy to commit to full-stride poses. That single term produced a 6.5× increase in mean walking distance and a 45× jump in full-episode survival rate.
+
 ---
 
 ## 5. Optimization algorithms
@@ -210,6 +255,11 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 
 | Date | Change |
 |---|---|
+| 2026-04-24 | RL reward v5: added action-extension bonus `3.0 · mean(|a−mid|/half_range)` to escape v4's "jitter-at-stance" mode; 50-ep mean walking distance 4.28 m → 27.87 m, full-episode survival 0/50 → 44/50 (§4.4, §4.5) |
+| 2026-04-24 | RL reward v4: lengthened `phase_period` 2→4 s, dropped `gait_reward_scale` 1.0→0.25, added `FOOT_PLANT_TOLERANCE=0.03` free-zone for non-target feet, added `+5·max(0, qvel[0])` speed bonus; 50-ep mean walking distance +46% over v3, max 14.55 m (§4.4, §4.5) |
+| 2026-04-23 | RL reward: added forced gait-order (`FR → RL → FL → RR`) contact-pattern reward with `phase_period`/`gait_reward_scale` knobs and phase clock in observation (§4.4) |
+| 2026-04-23 | RL reward: softened posture/smoothness penalties (band widened to ±0.03 m, smoothness coeff 1.0 → 0.1) so early PPO exploration isn't punished into standing still |
+| 2026-04-23 | RL reward: added posture (z-band) + action-smoothness penalties + alive bonus + one-shot fall penalty on top of `step_reward` |
 | 2026-04-23 | Refactored: `sim_core.py` (shared plumbing) + `reward.py` (`RewardAccumulator`) + `gym_env.py` (RL skeleton) |
 | 2026-04-23 | URDF mass updated to 1.292 kg / centered CoM after robot reprint |
 | 2026-04-23 | Added `sigma_init` sweep `[2, 15]` (int) |

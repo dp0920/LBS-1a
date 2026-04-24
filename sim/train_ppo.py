@@ -34,7 +34,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0):
     return _init
 
 
-def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale):
+def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
+          tb_name=None):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale)
@@ -57,7 +58,10 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale):
         policy_kwargs=dict(net_arch=[128, 128]),
     )
 
-    model.learn(total_timesteps=timesteps, progress_bar=False)
+    learn_kwargs = {"total_timesteps": timesteps, "progress_bar": False}
+    if tb_name:
+        learn_kwargs["tb_log_name"] = tb_name
+    model.learn(**learn_kwargs)
     model.save(out_path)
     # Save the vec-normalize stats alongside the policy.
     envs.save(out_path.replace(".zip", "_vecnormalize.pkl"))
@@ -127,6 +131,9 @@ def main():
     ap.add_argument("--deterministic", action="store_true",
                     help="Use mean action in replay (default: stochastic, "
                          "which matches training-time behavior)")
+    ap.add_argument("--tb-name", type=str, default=None,
+                    help="TensorBoard sub-run name (e.g. 'v3'). Default: "
+                         "auto-increments as PPO_N")
     args = ap.parse_args()
 
     if args.replay:
@@ -136,7 +143,8 @@ def main():
                args=args)
     else:
         train(args.timesteps, args.n_envs, args.out, args.log_dir,
-              args.fall_tilt, args.tilt_scale)
+              args.fall_tilt, args.tilt_scale,
+              tb_name=args.tb_name)
 
 
 if __name__ == "__main__":

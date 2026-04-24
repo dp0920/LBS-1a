@@ -1,0 +1,5 @@
+Run: 20260422_202013
+Generations: 200 1000
+Algorithms: cma random de
+Seeds: gait stand random
+Jobs: 18

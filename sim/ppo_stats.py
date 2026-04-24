@@ -25,9 +25,20 @@ def main():
     ap.add_argument("--episodes", type=int, default=20)
     ap.add_argument("--max-steps", type=int, default=2000)
     ap.add_argument("--deterministic", action="store_true")
+    ap.add_argument("--fall-tilt", type=float, default=20.0,
+                    help="Fall-termination tilt threshold in degrees. "
+                         "Default 20.0 matches training; try 30–35 if you're "
+                         "seeing false FELL calls on a policy that visually "
+                         "isn't falling.")
+    ap.add_argument("--ctrl-repeat", type=int, default=8,
+                    help="Physics substeps per env step (v5 was trained at 4, "
+                         "v6/v7 at 8). Must match training — mismatch breaks "
+                         "the policy's timing.")
     args = ap.parse_args()
 
-    env = OptimusPrimalEnv(max_steps=args.max_steps)
+    env = OptimusPrimalEnv(max_steps=args.max_steps,
+                           fall_tilt_deg=args.fall_tilt,
+                           ctrl_repeat=args.ctrl_repeat)
     vn_path = args.policy.replace(".zip", "_vecnormalize.pkl")
     dv = VecNormalize.load(vn_path, DummyVecEnv([lambda: env]))
     dv.training = False

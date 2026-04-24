@@ -23,13 +23,21 @@ from gym_env import OptimusPrimalEnv
 
 
 def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
-             velocity_shape="quadratic", velocity_bonus=5.0):
+             velocity_shape="quadratic", velocity_bonus=5.0,
+             gait_reward_scale=0.25, stride_bonus=10.0,
+             randomize_init=False, dynamic_posture_target=False,
+             weight_transfer_bonus=0.0):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
             tilt_scale=tilt_scale,
             velocity_shape=velocity_shape,
             velocity_bonus=velocity_bonus,
+            gait_reward_scale=gait_reward_scale,
+            stride_bonus=stride_bonus,
+            randomize_init=randomize_init,
+            dynamic_posture_target=dynamic_posture_target,
+            weight_transfer_bonus=weight_transfer_bonus,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -37,16 +45,42 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
     return _init
 
 
+def linear_lr_schedule(initial=3e-4, final=1e-5):
+    """Linear decay from `initial` to `final` over the training run.
+
+    SB3 passes `progress_remaining` ∈ [1.0, 0.0] (1 at start, 0 at end),
+    so we lerp accordingly. Late-training refinement with a smaller LR
+    reduces policy oscillation after the value function has settled.
+    """
+    def schedule(progress_remaining):
+        return final + progress_remaining * (initial - final)
+    return schedule
+
+
 def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
-          tb_name=None, velocity_shape="quadratic", velocity_bonus=5.0):
+          tb_name=None, velocity_shape="quadratic", velocity_bonus=5.0,
+          lr_schedule="linear", ent_coef=0.0,
+          gait_reward_scale=0.25, stride_bonus=10.0,
+          randomize_init=False, dynamic_posture_target=False,
+          weight_transfer_bonus=0.0):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale,
                                    velocity_shape=velocity_shape,
-                                   velocity_bonus=velocity_bonus)
+                                   velocity_bonus=velocity_bonus,
+                                   gait_reward_scale=gait_reward_scale,
+                                   stride_bonus=stride_bonus,
+                                   randomize_init=randomize_init,
+                                   dynamic_posture_target=dynamic_posture_target,
+                                   weight_transfer_bonus=weight_transfer_bonus)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
     envs = VecNormalize(envs, norm_obs=True, norm_reward=True, clip_obs=10.0)
+
+    if lr_schedule == "linear":
+        lr = linear_lr_schedule(3e-4, 1e-5)
+    else:
+        lr = 3e-4
 
     model = PPO(
         "MlpPolicy",
@@ -58,8 +92,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
         batch_size=256,
         gae_lambda=0.95,
         gamma=0.99,
-        learning_rate=3e-4,
-        ent_coef=0.0,
+        learning_rate=lr,
+        ent_coef=ent_coef,
         policy_kwargs=dict(net_arch=[128, 128]),
     )
 
@@ -146,6 +180,34 @@ def main():
     ap.add_argument("--velocity-bonus", type=float, default=5.0,
                     help="Scalar coefficient on the velocity bonus term "
                          "(default 5.0)")
+    ap.add_argument("--lr-schedule", type=str, default="linear",
+                    choices=["linear", "constant"],
+                    help="linear: decay 3e-4 → 1e-5 over training. "
+                         "constant: 3e-4 throughout.")
+    ap.add_argument("--ent-coef", type=float, default=0.0,
+                    help="PPO entropy coefficient. Default 0.0 (SB3 default). "
+                         "Try 0.01 if policy is collapsing to deterministic "
+                         "before exploring the observation space.")
+    ap.add_argument("--gait-reward-scale", type=float, default=0.25,
+                    help="Scales the forced FR→RL→FL→RR contact-pattern "
+                         "reward. 0.0 disables it entirely (lets PPO find "
+                         "its own gait). Default 0.25.")
+    ap.add_argument("--stride-bonus", type=float, default=10.0,
+                    help="Bonus per plant event, times world-frame forward "
+                         "foot displacement during swing. Encourages fewer, "
+                         "larger strides (v8).")
+    ap.add_argument("--randomize-init", action="store_true",
+                    help="Per-episode random initial body-z + ±5° joint "
+                         "jitter (v9 domain randomization).")
+    ap.add_argument("--dynamic-posture-target", action="store_true",
+                    help="Posture band targets the per-episode starting z "
+                         "instead of a fixed 0.15 m — policy learns to "
+                         "maintain whatever height it was placed at (v9).")
+    ap.add_argument("--weight-transfer-bonus", type=float, default=0.0,
+                    help="Bonus for target swing leg having low ground-"
+                         "contact force (v10). Rewards 'shift weight off "
+                         "this leg before lifting' pre-stride behavior. "
+                         "Try 2.0 to start.")
     args = ap.parse_args()
 
     if args.replay:
@@ -158,7 +220,14 @@ def main():
               args.fall_tilt, args.tilt_scale,
               tb_name=args.tb_name,
               velocity_shape=args.velocity_shape,
-              velocity_bonus=args.velocity_bonus)
+              velocity_bonus=args.velocity_bonus,
+              lr_schedule=args.lr_schedule,
+              ent_coef=args.ent_coef,
+              gait_reward_scale=args.gait_reward_scale,
+              stride_bonus=args.stride_bonus,
+              randomize_init=args.randomize_init,
+              dynamic_posture_target=args.dynamic_posture_target,
+              weight_transfer_bonus=args.weight_transfer_bonus)
 
 
 if __name__ == "__main__":

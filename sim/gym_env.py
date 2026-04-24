@@ -50,16 +50,29 @@ ACTION_HALF_RANGE = 0.5 * (ACTION_HIGH - ACTION_LOW)
 
 
 LEG_ORDER = ["FR", "RL", "FL", "RR"]   # crawl gait stride order
+# The URDF defines `foot_*` links, but MuJoCo's URDF loader merges fixed-
+# joint children into their parent, so the foot sphere geom ends up attached
+# to `lower_link_*`. That's the body the contact solver sees — use those
+# names for body lookups. (The earlier `foot_*` names returned -1 from
+# mj_name2id, silently disabling gait/stride/weight_transfer rewards from
+# v3 through v18.)
 FOOT_BODY_NAMES = {
-    "FL": "foot_fl", "FR": "foot_fr",
-    "RL": "foot_rl", "RR": "foot_rr",
+    "FL": "lower_link_fl", "FR": "lower_link_fr",
+    "RL": "lower_link_rl", "RR": "lower_link_rr",
 }
-# "Lifted" threshold — target-leg foot z above this counts as in swing.
-FOOT_LIFT_Z = 0.015
-# Non-target feet may drift up to this height without penalty — gives the
-# policy room to briefly unload a leg for rebalancing without being scored
-# as "wrong leg in swing". Penalty only triggers above this.
-FOOT_PLANT_TOLERANCE = 0.03
+# Contact-force threshold (Newtons). A foot is considered "planted" if the
+# z-component of its ground contact force exceeds this; "lifted" otherwise.
+# Body mass 1.292 kg → total weight 12.67 N → per-foot fair share ≈ 3.17 N
+# when balanced. 0.5 N (~15% of fair share) is well above sensor noise but
+# well below normal stance loading, so genuine lifts are detected cleanly.
+#
+# Earlier versions used world-frame foot-body z thresholds here (FOOT_LIFT_Z
+# = 0.015, FOOT_PLANT_TOLERANCE = 0.03). That was a bug: the foot body's
+# world-z sits around 0.1 m (the body frame is at leg-tip anatomical height,
+# not at ground contact), so the thresholds never fired — gait_reward was
+# effectively a constant −0.5 and stride_reward was always 0 for v3+
+# through v18. Switched to contact-force detection on 2026-04-24.
+FOOT_CONTACT_THRESHOLD = 0.5
 
 
 class OptimusPrimalEnv(gym.Env):
@@ -94,7 +107,10 @@ class OptimusPrimalEnv(gym.Env):
                  ctrl_repeat=8, render_mode=None,
                  phase_period=4.0, gait_reward_scale=0.25,
                  velocity_bonus=5.0, extension_bonus=3.0,
-                 velocity_shape="quadratic"):
+                 velocity_shape="quadratic", stride_bonus=10.0,
+                 randomize_init=False, dynamic_posture_target=False,
+                 z_init_range=(0.13, 0.18), dynamic_z_tolerance=0.015,
+                 weight_transfer_bonus=0.0):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
@@ -134,6 +150,32 @@ class OptimusPrimalEnv(gym.Env):
             raise ValueError(
                 f"velocity_shape={velocity_shape!r} not in {valid}")
         self.velocity_shape = velocity_shape
+        # v8: stride-length bonus. On each plant event (foot transitions from
+        # lifted to planted), award stride_bonus · max(0, world-frame
+        # x-displacement of that foot between liftoff and plant). Encourages
+        # the policy to take fewer, larger strides instead of many tiny ones.
+        # Linear in displacement, so a 10 cm stride is worth 10× a 1 cm stride.
+        self.stride_bonus = stride_bonus
+        self._foot_x_at_lift = {leg: None for leg in LEG_ORDER}
+        self._foot_lifted = {leg: False for leg in LEG_ORDER}
+        # v9: domain randomization of the starting pose. When on, each reset
+        # samples an initial body-z and mildly perturbs joint angles, and the
+        # posture penalty targets that per-episode starting z (tight band).
+        # Teaches the policy to maintain whatever height it was placed at,
+        # which is more robust for real-robot deployment.
+        self.randomize_init = randomize_init
+        self.dynamic_posture_target = dynamic_posture_target
+        self.z_init_range = z_init_range
+        self.dynamic_z_tolerance = dynamic_z_tolerance
+        self._z_at_reset = 0.15    # set in reset()
+        # v10: weight-transfer bonus. Rewards the target swing leg being
+        # UNLOADED (low ground-contact z-force) — captures the "shift weight
+        # off this leg before lifting it" pre-condition that the gait-contact
+        # reward alone doesn't signal. 0 disables the term.
+        self.weight_transfer_bonus = weight_transfer_bonus
+        # Body weight / 4 = fair share carried by each foot at perfect balance.
+        # Used to normalize the contact-force reward.
+        self._fair_share_N = float(self.model.body_mass.sum() * 9.81) / 4.0
 
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
@@ -157,10 +199,6 @@ class OptimusPrimalEnv(gym.Env):
     def _get_obs(self):
         q = np.array([self.data.qpos[self.qadr[j]] for j in JOINTS],
                      dtype=np.float32)
-        # joint velocities — the free-joint takes qvel[0:6], then joints follow.
-        # Map the joint qposadr → qveladr; for 1-DoF hinge joints the offset
-        # from free-joint is qposadr - 7 + 6 = qposadr - 1 (approx), but safer
-        # to pull by jnt_dofadr:
         qd = np.zeros(len(JOINTS), dtype=np.float32)
         for i, j in enumerate(JOINTS):
             jid = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, j)
@@ -181,6 +219,33 @@ class OptimusPrimalEnv(gym.Env):
         ]).astype(np.float32)
         return obs
 
+    def _foot_contact_forces(self):
+        """Return a dict mapping leg → summed normal contact-force magnitude
+        (Newtons) on that foot body this physics step.
+
+        Iterates MuJoCo's active-contact list, calls mj_contactForce to get
+        each contact's 6-D wrench in its contact frame (the first component
+        is the normal force). Sums contributions per foot body.
+
+        Note: `data.cfrc_ext` does NOT contain ground contact forces — it's
+        only populated by user-applied `mj_applyFT` calls. That was the root
+        cause of the silent-zero bug that made gait_reward constant and
+        stride/weight_transfer rewards effectively disabled from v8 through
+        v18.
+        """
+        forces = {leg: 0.0 for leg in LEG_ORDER}
+        cf = np.zeros(6)
+        for i in range(self.data.ncon):
+            contact = self.data.contact[i]
+            body1 = int(self.model.geom_bodyid[contact.geom1])
+            body2 = int(self.model.geom_bodyid[contact.geom2])
+            for leg, foot_id in self.foot_body_ids.items():
+                if body1 == foot_id or body2 == foot_id:
+                    mujoco.mj_contactForce(self.model, self.data, i, cf)
+                    forces[leg] += abs(float(cf[0]))
+                    break
+        return forces
+
     def _phase(self):
         """Current gait phase in [0, 1). 0.0-0.25 = FR swing, etc."""
         t = self._step_count * self.dt * self.ctrl_repeat
@@ -191,25 +256,26 @@ class OptimusPrimalEnv(gym.Env):
         phase = self._phase()
         return LEG_ORDER[int(phase * len(LEG_ORDER)) % len(LEG_ORDER)]
 
-    def _gait_reward(self):
+    def _gait_reward(self, foot_forces):
         """Per-step reward for matching the expected contact pattern.
 
-        Target leg: +1 if foot z > FOOT_LIFT_Z (in swing), -1 otherwise.
-        Non-target legs: +1 if foot z < FOOT_PLANT_TOLERANCE (planted or
-        barely unloading), -1 only if lifted above the tolerance.
+        A foot is "planted" when its ground contact force exceeds
+        FOOT_CONTACT_THRESHOLD, "lifted" otherwise.
 
-        The gap between FOOT_LIFT_Z and FOOT_PLANT_TOLERANCE is a "free zone"
-        where non-target legs can briefly lift for weight-shifting without
-        penalty.
+        Target leg should be LIFTED: +1 if airborne, -1 if planted.
+        Non-target legs should be PLANTED: +1 if planted, -1 if airborne.
+        Max +4 / min -4 per step, scaled by gait_reward_scale.
+
+        `foot_forces` is the dict returned by `_foot_contact_forces()`.
         """
         target = self._target_swing_leg()
         score = 0.0
         for leg in LEG_ORDER:
-            z = self.data.xpos[self.foot_body_ids[leg]][2]
+            planted = foot_forces[leg] > FOOT_CONTACT_THRESHOLD
             if leg == target:
-                score += 1.0 if z > FOOT_LIFT_Z else -1.0
+                score += 1.0 if not planted else -1.0
             else:
-                score += 1.0 if z < FOOT_PLANT_TOLERANCE else -1.0
+                score += 1.0 if planted else -1.0
         return self.gait_reward_scale * score
 
     def reset(self, seed=None, options=None):
@@ -222,11 +288,22 @@ class OptimusPrimalEnv(gym.Env):
             "hip_rl": np.radians(35), "knee_rl": np.radians(-50),
             "hip_rr": np.radians(35), "knee_rr": np.radians(-50),
         }
+        if self.randomize_init:
+            # ±5° jitter on every hip/knee joint so the policy sees a spread
+            # of initial stances each episode (domain randomization).
+            for name in default_q:
+                default_q[name] += self.np_random.uniform(
+                    -np.radians(5), np.radians(5))
+            # Sample initial body-z from the configured range.
+            z0 = float(self.np_random.uniform(*self.z_init_range))
+        else:
+            z0 = 0.16
         for name, angle in default_q.items():
             self.data.qpos[self.qadr[name]] = angle
             self.data.ctrl[self.ctrl_idx[name]] = angle
-        self.data.qpos[2] = 0.16
+        self.data.qpos[2] = z0
         self.data.qpos[3] = 1.0   # qw
+        self._z_at_reset = z0
         mujoco.mj_forward(self.model, self.data)
         # Brief settle so the robot isn't freefalling on step 0.
         for _ in range(int(0.5 / self.dt)):
@@ -239,6 +316,9 @@ class OptimusPrimalEnv(gym.Env):
         self._step_count = 0
         self._last_x = float(self.data.qpos[0])
         self._prev_action = None
+        # Reset per-foot stride-tracking state. All feet start planted.
+        self._foot_x_at_lift = {leg: None for leg in LEG_ORDER}
+        self._foot_lifted = {leg: False for leg in LEG_ORDER}
         return self._get_obs(), {}
 
     def step(self, action):
@@ -261,10 +341,17 @@ class OptimusPrimalEnv(gym.Env):
         self._step_count += 1
         reward = self.acc.step_reward(dx_total)
 
-        # Posture: penalty grows linearly outside the [z_target ± tolerance]
-        # band. Prevents the policy from standing on fully-extended legs.
+        # Posture: penalty grows linearly outside an allowed z-band. By
+        # default the band is fixed (z_target ± z_tolerance). With
+        # dynamic_posture_target, the band is centered on whatever z the
+        # episode *started* at, with a tighter tolerance — so the policy
+        # learns to maintain its initial height, not a hardcoded one.
         z = float(self.data.qpos[2])
-        z_dev = max(0.0, abs(z - self._z_target) - self._z_tolerance)
+        if self.dynamic_posture_target:
+            z_dev = max(0.0, abs(z - self._z_at_reset)
+                        - self.dynamic_z_tolerance)
+        else:
+            z_dev = max(0.0, abs(z - self._z_target) - self._z_tolerance)
         posture_penalty = 10.0 * z_dev
 
         # Action smoothness: penalize jerky motor commands step-to-step so
@@ -277,9 +364,47 @@ class OptimusPrimalEnv(gym.Env):
             smoothness_penalty = 0.0
         self._prev_action = action.copy()
 
+        # Compute ground-contact forces for all feet once (used by gait,
+        # weight-transfer, and stride-detection logic below).
+        foot_forces = self._foot_contact_forces()
+
         # Gait-pattern reward: encourages the FR → RL → FL → RR crawl cycle.
         # This fires regardless of fall so the policy gets signal early.
-        gait_reward = self._gait_reward()
+        gait_reward = self._gait_reward(foot_forces)
+
+        # Weight-transfer bonus (v10): reward low ground-contact force on
+        # the target swing leg. Captures the "shift weight off this leg
+        # before lifting" pre-stride behavior that real quadrupeds use.
+        # max(0, 1 - fz/fair_share): 1 when fully unloaded, 0 at fair share,
+        # clipped so there's no penalty for carrying extra weight.
+        if self.weight_transfer_bonus > 0.0:
+            target_leg = self._target_swing_leg()
+            fz = foot_forces[target_leg]
+            unload_frac = max(0.0, 1.0 - fz / self._fair_share_N)
+            weight_transfer_reward = self.weight_transfer_bonus * unload_frac
+        else:
+            weight_transfer_reward = 0.0
+
+        # Stride-length bonus: on each plant event (foot transitions lifted
+        # → planted), reward the world-frame forward displacement of that
+        # foot between liftoff and plant. Encourages committing to larger
+        # strides rather than taking many tiny high-cadence steps.
+        stride_reward = 0.0
+        for leg in LEG_ORDER:
+            foot_id = self.foot_body_ids[leg]
+            foot_x = float(self.data.xpos[foot_id][0])
+            currently_lifted = foot_forces[leg] < FOOT_CONTACT_THRESHOLD
+            was_lifted = self._foot_lifted[leg]
+            if not was_lifted and currently_lifted:
+                # lift event — anchor the stride's starting x
+                self._foot_x_at_lift[leg] = foot_x
+            elif was_lifted and not currently_lifted:
+                # plant event — reward forward displacement since liftoff
+                if self._foot_x_at_lift[leg] is not None:
+                    disp = foot_x - self._foot_x_at_lift[leg]
+                    stride_reward += self.stride_bonus * max(0.0, disp)
+                self._foot_x_at_lift[leg] = None
+            self._foot_lifted[leg] = currently_lifted
 
         # Speed bonus — shape controls how strongly fast is rewarded.
         # See self.velocity_shape docstring for the options and their gradients.
@@ -309,6 +434,7 @@ class OptimusPrimalEnv(gym.Env):
         # walking easily beats any "fall fast" strategy.
         if not fell:
             reward += (2.0 + gait_reward + vel_reward + extension_reward
+                       + stride_reward + weight_transfer_reward
                        - posture_penalty - smoothness_penalty)
         else:
             reward -= 20.0    # one-shot fall penalty
@@ -316,7 +442,27 @@ class OptimusPrimalEnv(gym.Env):
         terminated = fell
         truncated = self._step_count >= self.max_steps
         obs = self._get_obs()
-        info = {"dx": dx_total, "fell": fell, "x": self._last_x}
+        # Reward-component breakdown for post-hoc correlation / PCA analysis.
+        # Every term is reported as its *contribution to the scalar reward*
+        # at this step (penalties are negative). See reward_pca.py for
+        # how this matrix is consumed.
+        info = {
+            "dx": dx_total,
+            "fell": fell,
+            "x": self._last_x,
+            "reward_components": {
+                "alive": 2.0 if not fell else 0.0,
+                "step_reward": self.acc.step_reward(dx_total),
+                "gait": gait_reward if not fell else 0.0,
+                "velocity": vel_reward if not fell else 0.0,
+                "extension": extension_reward if not fell else 0.0,
+                "stride": stride_reward if not fell else 0.0,
+                "weight_transfer": weight_transfer_reward if not fell else 0.0,
+                "posture": -posture_penalty if not fell else 0.0,
+                "smoothness": -smoothness_penalty if not fell else 0.0,
+                "fall": -20.0 if fell else 0.0,
+            },
+        }
         return obs, float(reward), terminated, truncated, info
 
     def render(self):

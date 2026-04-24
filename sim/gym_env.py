@@ -91,9 +91,10 @@ class OptimusPrimalEnv(gym.Env):
     metadata = {"render_modes": ["human"]}
 
     def __init__(self, max_steps=2000, fall_tilt_deg=20.0, tilt_scale=1.0,
-                 ctrl_repeat=4, render_mode=None,
+                 ctrl_repeat=8, render_mode=None,
                  phase_period=4.0, gait_reward_scale=0.25,
-                 velocity_bonus=5.0, extension_bonus=3.0):
+                 velocity_bonus=5.0, extension_bonus=3.0,
+                 velocity_shape="quadratic"):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
@@ -120,6 +121,19 @@ class OptimusPrimalEnv(gym.Env):
         self.gait_reward_scale = gait_reward_scale
         self.velocity_bonus = velocity_bonus
         self.extension_bonus = extension_bonus
+        # Velocity-reward shape: how the qvel[0] bonus scales with speed.
+        #   "linear"    — k·v           (constant gradient, v5 baseline)
+        #   "quadratic" — k·v²          (gradient grows linearly with v)
+        #   "cubic"     — k·v³          (gradient grows quadratically; nearly
+        #                                zero reward at slow speed, explodes
+        #                                when fast — strongest "go big" signal)
+        #   "trig"      — k·(sin(v) + 1 - cos(v))  (Taylor-like combination,
+        #                                monotonic, grows super-linearly)
+        valid = {"linear", "quadratic", "cubic", "trig"}
+        if velocity_shape not in valid:
+            raise ValueError(
+                f"velocity_shape={velocity_shape!r} not in {valid}")
+        self.velocity_shape = velocity_shape
 
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
@@ -267,11 +281,18 @@ class OptimusPrimalEnv(gym.Env):
         # This fires regardless of fall so the policy gets signal early.
         gait_reward = self._gait_reward()
 
-        # Speed bonus: explicit positive signal for forward velocity on top of
-        # step_reward(dx). dx is noisy per-step; a direct velocity term gives
-        # a cleaner gradient toward "move faster" without the asymmetric
-        # backward punishment mixed in.
-        vel_reward = self.velocity_bonus * max(0.0, float(self.data.qvel[0]))
+        # Speed bonus — shape controls how strongly fast is rewarded.
+        # See self.velocity_shape docstring for the options and their gradients.
+        fwd_vel = max(0.0, float(self.data.qvel[0]))
+        if self.velocity_shape == "linear":
+            v_shape = fwd_vel
+        elif self.velocity_shape == "quadratic":
+            v_shape = fwd_vel * fwd_vel
+        elif self.velocity_shape == "cubic":
+            v_shape = fwd_vel * fwd_vel * fwd_vel
+        else:  # "trig"
+            v_shape = np.sin(fwd_vel) + 1.0 - np.cos(fwd_vel)
+        vel_reward = self.velocity_bonus * float(v_shape)
 
         # Action extension bonus: reward commanded joint angles that sit far
         # from the midpoint of their bound. Normalized per-joint so hip

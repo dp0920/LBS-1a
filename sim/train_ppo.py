@@ -22,11 +22,14 @@ from stable_baselines3.common.monitor import Monitor
 from gym_env import OptimusPrimalEnv
 
 
-def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0):
+def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
+             velocity_shape="quadratic", velocity_bonus=5.0):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
             tilt_scale=tilt_scale,
+            velocity_shape=velocity_shape,
+            velocity_bonus=velocity_bonus,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -35,10 +38,12 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0):
 
 
 def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
-          tb_name=None):
+          tb_name=None, velocity_shape="quadratic", velocity_bonus=5.0):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
-                                   tilt_scale=tilt_scale)
+                                   tilt_scale=tilt_scale,
+                                   velocity_shape=velocity_shape,
+                                   velocity_bonus=velocity_bonus)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
     envs = VecNormalize(envs, norm_obs=True, norm_reward=True, clip_obs=10.0)
@@ -134,6 +139,13 @@ def main():
     ap.add_argument("--tb-name", type=str, default=None,
                     help="TensorBoard sub-run name (e.g. 'v3'). Default: "
                          "auto-increments as PPO_N")
+    ap.add_argument("--velocity-shape", type=str, default="quadratic",
+                    choices=["linear", "quadratic", "cubic", "trig"],
+                    help="Shape of the velocity bonus term. See "
+                         "OptimusPrimalEnv.velocity_shape docstring.")
+    ap.add_argument("--velocity-bonus", type=float, default=5.0,
+                    help="Scalar coefficient on the velocity bonus term "
+                         "(default 5.0)")
     args = ap.parse_args()
 
     if args.replay:
@@ -144,7 +156,9 @@ def main():
     else:
         train(args.timesteps, args.n_envs, args.out, args.log_dir,
               args.fall_tilt, args.tilt_scale,
-              tb_name=args.tb_name)
+              tb_name=args.tb_name,
+              velocity_shape=args.velocity_shape,
+              velocity_bonus=args.velocity_bonus)
 
 
 if __name__ == "__main__":

@@ -115,7 +115,7 @@ reward = step_reward(dx)            # forward progress + attitude cost, per step
 - **Posture penalty.** `10 · max(0, |z − 0.15| − 0.03)` — zero cost inside a 6 cm band around target body height; linear outside. Stops the policy from converging to a fully-extended "giraffe" stance (high z) or a collapsed belly-scoot (low z). Softened from the original `30 ·` multiplier and `±0.02` band once PPO was refusing to leave the band at all in early exploration.
 - **Action smoothness.** `0.1 · ‖aₜ − aₜ₋₁‖²`. LX-16A servos have finite bandwidth and a high-frequency wiggle in sim won't transfer. Originally `1.0 ·`, which deterred *any* motion; softened to `0.1 ·` on 2026-04-23.
 - **Gait-contact-pattern reward.** Each physics step scores `+1` per leg whose current contact state matches the expected pattern, `-1` per mismatch; max `+4`, min `-4`, scaled by `gait_reward_scale` (**v4 default 0.25**, was 1.0). "Expected" follows `FR → RL → FL → RR` at cadence `phase_period` (**v4 default 4.0 s** → 1 s per leg swing, was 2.0 s / 0.5 s). Two thresholds score contact state: the target leg earns `+1` when foot z > `FOOT_LIFT_Z = 0.015 m`; non-target legs earn `+1` when foot z < `FOOT_PLANT_TOLERANCE = 0.03 m`. The 1.5–3 cm gap is a "free zone" where a non-target leg can briefly unload for weight-shifting without penalty (new in v4). The policy observes `(sin(2πφ), cos(2πφ))` in its state, so it can anticipate which leg *should* be swinging.
-- **Speed bonus (v4).** `5.0 · max(0, qvel[0])` — explicit per-step positive for forward velocity on top of `step_reward(dx)`. `step_reward` mixes a positive `+500 · max(0, dx)` gain with a harsher `-1000 · max(0, −dx)` backward penalty, so early in training the net signal from noisy per-step dx is often negative. The velocity term is unambiguously positive and gives PPO a clean gradient toward "move faster".
+- **Speed bonus (v4, parameterized in v6).** `velocity_bonus · f(max(0, qvel[0]))` — explicit per-step positive for forward velocity on top of `step_reward(dx)`. `step_reward` mixes a positive `+500 · max(0, dx)` gain with a harsher `-1000 · max(0, −dx)` backward penalty, so early in training the net signal from noisy per-step dx is often negative. The velocity term is unambiguously positive and gives PPO a clean gradient toward "move faster". v6 parameterizes the shape `f`: `linear` (`v`, v4/v5 default), `quadratic` (`v²`), `cubic` (`v³`, steepest "go big" signal), or `trig` (`sin(v) + 1 − cos(v)`, smooth monotonic super-linear curve). Scalar `velocity_bonus` is tunable via `--velocity-bonus` on `train_ppo.py`.
 - **Action extension bonus (v5).** `3.0 · mean(|action − midpoint| / half_range)` — rewards commanded joint angles sitting far from the midpoint of their bound. Normalized per-joint so hip (50° range) and knee (75° range) contribute equally: each joint contributes 0 at dead center, 1 when pinned to a bound. Direction-agnostic — rewards either flex or extend, whichever the policy commits to — so it doesn't fight the posture term. Counters the "jitter at stance" local optimum where the policy hugs the midpoint and makes small oscillations instead of committing to big leg-sweep angles. Watching the v4 replay, the robot was taking tiny steps; v5 visibly swings its legs through full arcs.
 
 **Why a forced contact-pattern reward?** Without it, PPO rapidly finds a local optimum where the robot just stands still (the alive bonus is "free" once posture is satisfied). Shaping the stride order into the reward converts the coordination problem ("discover that legs must alternate") into a tracking problem ("lift this leg at this phase"). The chosen `FR → RL → FL → RR` order matches the hand-coded `stance.py` seed and the CMA-ES gait structure (§3), and it rides the rear-biased CoM on the real robot — lifting a front leg first with rear legs planted is the most stable option.
@@ -124,7 +124,9 @@ reward = step_reward(dx)            # forward progress + attitude cost, per step
 
 ### 4.5 RL reward evolution
 
-Five configurations trained at 1 M timesteps, 4 parallel envs, default PPO hyperparameters. Each row's entry was measured by `ppo_stats.py --episodes 50` (stochastic) *except* v1 and v2 where the old obs shape (22-dim) no longer loads — those numbers are from TensorBoard at end of training. The max episode length is 2000 steps (~40 s sim), so "survived" means the policy walked for the full cap without a fall.
+Configurations trained at 1 M timesteps, 4 parallel envs, default PPO hyperparameters. Each row's behavior stats come from `ppo_stats.py --episodes 50` (stochastic) *except* v1 and v2 where the old obs shape (22-dim) no longer loads — those numbers are from TensorBoard at end of training.
+
+**Note on episode length across versions:** v1–v5 ran with `ctrl_repeat=4` (50 Hz control, 2000-step cap ≈ 40 s sim). v6 switched to `ctrl_repeat=8` (25 Hz, closer to real LX-16A command rate; 2000-step cap ≈ 80 s sim). Absolute distance numbers are therefore not directly comparable across the v5 / v6 boundary — use "Survived", which is a fraction of full-episode completions, as the consistency metric.
 
 | Ver. | Change | ep_len (TB) | ep_rew (TB) | Mean dist | Max dist | Survived |
 |---|---|---|---|---|---|---|
@@ -133,12 +135,28 @@ Five configurations trained at 1 M timesteps, 4 parallel envs, default PPO hyper
 | v3 | + forced gait-order reward (phase=2 s, scale=1.0) | 379 | 943 | 2.93 m | 6.01 m | 1/50 (stood still, 0.63 m) |
 | v4 | phase=4 s, scale=0.25, free-zone 1.5–3 cm for non-target feet, `+5·qvel[0]` speed bonus | 461 | 4,010 | 4.28 m | 14.55 m | 0/50 (every episode a genuine walk) |
 | **v5** | + action-extension bonus `3.0 · mean(|a−mid|/half_range)` | **1,896** | **23,700** | **27.87 m** | **31.19 m** | **44/50** |
+| v6_linear | ctrl_repeat 4→8, parameterized velocity shape (coef=5) | 1,589 | 34,885 | 38.99 m | 55.97 m | 27/50 |
+| v6_quadratic | velocity `5·v²` | 1,128 | 22,942 | 23.12 m | 55.18 m | 12/50 |
+| v6_cubic | velocity `5·v³` | 1,490 | 45,212 | 38.58 m | **66.33 m** | 22/50 |
+| **v6_trig** | velocity `5·(sin(v) + 1 − cos(v))` | 1,542 | 38,217 | **39.31 m** | 59.13 m | **29/50** |
 
-**Story in one sentence:** each shaping step was principled — v2 added the penalties needed to eliminate v1's degenerate collapse-and-scoot, v3 added gait order to escape the "stand still" local optimum, v4 relaxed v3's over-constraint to unlock genuine walking, and v5's action-extension bonus pushed the policy past low-amplitude jitter into full-stride leg swings — at which point it sustains ~0.7 m/s walking for the entire 40-second episode in 88% of rollouts.
+**Story in one sentence:** each shaping step was principled — v2 added the penalties needed to eliminate v1's degenerate collapse-and-scoot, v3 added gait order to escape the "stand still" local optimum, v4 relaxed v3's over-constraint to unlock genuine walking, v5's action-extension bonus pushed the policy past low-amplitude jitter into full-stride leg swings, and v6's velocity-shape sweep tested how strongly to pull for speed — finding that the *least extreme* shapes (linear, trig) outperform the steeper ones (quadratic, cubic) on consistency, with trig a hair ahead on survival.
 
 **What each version taught the next:**
 - **v3 → v4:** `phase_period = 2.0 s` (0.5 s per leg) was too fast — no time to pre-shift weight before a commit swing. `gait_reward_scale = 1.0` (±4/step) dwarfed the +2 alive bonus. The single `FOOT_LIFT_Z = 0.015 m` threshold penalized weight-shifting micro-lifts. And "move forward" was only signalled through `step_reward(dx)`'s noisy per-step term.
 - **v4 → v5:** v4 walked but in tiny, jittery steps — watching the replay showed the policy hugging the midpoint of its action range and making small oscillations rather than sweeping leg arcs. An action-extension bonus (reward being far from midpoint, direction-agnostic) pushed the policy to commit to full-stride poses. That single term produced a 6.5× increase in mean walking distance and a 45× jump in full-episode survival rate.
+- **v5 → v6:** v5 walked but at 50 Hz control, which is above the LX-16A servo's reliable command rate. Doubling `ctrl_repeat` (50 Hz → 25 Hz) halves the number of motor commands per meter, closer to real-hardware constraints. The velocity-shape sweep tested how hard to pull for speed — turns out gently. Steeper shapes (cubic) gave higher peaks but more catastrophic failures (one run did a −3.73 m backwards faceplant); quadratic sat in an unstable valley between linear and cubic; trig's smooth super-linear curve edged linear on survival.
+
+**Velocity-coefficient sweep (v6_linear family, 4 points):** separately testing whether the `velocity_bonus` scalar itself matters, independent of shape. All runs use `velocity_shape=linear`, 1 M timesteps, otherwise-identical v6 config.
+
+| coef | Min dist | Mean dist | Max dist | Survived |
+|---|---|---|---|---|
+| 0.1 | 5.54 m | 33.77 m | 56.78 m | 20/50 |
+| 1.0 | 0.73 m | 35.73 m | 58.10 m | 22/50 |
+| **5.0** | 4.64 m | **38.99 m** | 55.97 m | **27/50** |
+| 10.0 | 1.81 m | 29.06 m | **60.28 m** | 11/50 |
+
+Peaked curve around **coef=5**. Below 5, the policy still walks — because `step_reward(dx)`'s `+500·dx` term is already doing most of the forward-drive work — but slightly less consistently. Above 5, the same dynamic as the cubic-shape run: the velocity term becomes dominant enough that the policy over-commits to peak speed (max distance climbs to 60.28 m) but survival collapses to 11/50. **Shape matters more than magnitude, but within the linear shape there's still a clean optimum at coef ≈ 5.**
 
 ---
 
@@ -255,6 +273,8 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 
 | Date | Change |
 |---|---|
+| 2026-04-24 | RL v6 coefficient sweep (linear shape, `velocity_bonus` ∈ {0.1, 1.0, 5.0, 10.0}): peaked curve around coef=5, with coef=10 over-committing and dropping survival to 11/50. Below 5 still walks — most forward-drive comes from `step_reward(dx)`, not the velocity bonus (§4.5) |
+| 2026-04-24 | RL v6: `ctrl_repeat` 4→8 (50 Hz → 25 Hz, matching LX-16A command rate), parameterized velocity-reward shape (`linear` / `quadratic` / `cubic` / `trig`) with `--velocity-shape` and scalar `--velocity-bonus` CLI flags. Shape sweep at coef=5 showed trig (29/50) and linear (27/50) beat quadratic (12/50) and cubic (22/50) on consistency (§4.4, §4.5) |
 | 2026-04-24 | RL reward v5: added action-extension bonus `3.0 · mean(|a−mid|/half_range)` to escape v4's "jitter-at-stance" mode; 50-ep mean walking distance 4.28 m → 27.87 m, full-episode survival 0/50 → 44/50 (§4.4, §4.5) |
 | 2026-04-24 | RL reward v4: lengthened `phase_period` 2→4 s, dropped `gait_reward_scale` 1.0→0.25, added `FOOT_PLANT_TOLERANCE=0.03` free-zone for non-target feet, added `+5·max(0, qvel[0])` speed bonus; 50-ep mean walking distance +46% over v3, max 14.55 m (§4.4, §4.5) |
 | 2026-04-23 | RL reward: added forced gait-order (`FR → RL → FL → RR`) contact-pattern reward with `phase_period`/`gait_reward_scale` knobs and phase clock in observation (§4.4) |

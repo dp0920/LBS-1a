@@ -344,6 +344,14 @@ Real principal components of the 10-dim reward, finally with working signals:
 - **PCA on broken instrumentation gives misleading conclusions.** Our first PCA (§4.7) ran on a policy where 3 of 10 reward terms were silently disabled. It "correctly" flagged velocity as redundant (r=0.93 in that data) — but that conclusion was an artifact of the broken stride/WT signals leaving step_reward and velocity as the only forward-drive terms. With fixed signals, dropping velocity costs 17 m mean. **Always re-validate PCA findings with ablation runs.**
 - **Correlated values can be non-redundant gradients.** Even after fixing signals, step_reward ↔ velocity remains 0.97 correlated, but velocity's trig shape provides distinct curvature in the gradient that step_reward's linear `dx` doesn't. PCA on values alone can't tell you this — only an ablation experiment can.
 
+**v22 — confirms stride=5 is near-optimal.** Bumping `stride_bonus` from 5 → 20 (4×) regressed across every metric: mean 64 → 50 m, max 81 → 76 m, survived 33 → 27. Higher coefficient ≠ better. The reward-coefficient landscape is non-monotonic — tiny stride (1.5) is too weak, huge stride (20) destabilizes, sweet spot was 5. This kind of one-axis test is the cheap way to bound a coefficient before doing a full random search.
+
+| stride_bonus | Run | Mean | Survived |
+|---|---|---|---|
+| 1.5 | v12_3M_fixed | 49.3 m | 24/50 |
+| **5** | **v20** | **63.9 m** | **33/50** |
+| 20 | v22 | 50.5 m | 27/50 |
+
 ---
 
 ## 5. Optimization algorithms

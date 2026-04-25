@@ -287,8 +287,62 @@ While running the v16/v17/v18 ablation follow-ups, the correlation PCA showed `s
 >
 > The PCA analysis (§4.7) found this bug because it surfaced exactly this `std ≈ 0` anomaly. Had we not instrumented per-component rewards, we would have shipped a "winning" policy built on signals that never fired and drawn incorrect conclusions about which reward terms matter.
 
-**Relaunched experiments post-fix:**
-- `v12_3M_fixed`, `v16_3M_fixed`, `v6_trig_3M_fixed` — 3 M timesteps each, now with working stride/weight-transfer/gait signals. Results populate §4.9 once they complete.
+**Relaunched experiments post-fix:** see §4.9 below.
+
+### 4.9 Post-fix sweep — what the rewards actually do
+
+After the silent-signal fix, every reward shaping experiment from v3 onwards needed re-validation since stride / weight_transfer / gait had been disabled or constant. Re-trained the most-cited configurations at 3 M timesteps each with the working signals.
+
+**Apples-to-apples comparison at fall_tilt=30, ctrl_repeat=8, 50-episode stochastic:**
+
+| Run | Config | Mean | Max | Survived | Combined |
+|---|---|---|---|---|---|
+| **v20** | trig vel=5 + stride=**5** + WT=2 + gait=0.25 | **63.92 m** | **80.84 m** | 33/50 | **42.2** |
+| **v21** | trig vel=5 + stride=**5** + WT=2 + gait=**0** | 50.39 m | 70.09 m | **36/50** | 36.3 |
+| v19 | trig vel=5 + stride=1.5 + WT=2 + gait=**0** | 52.14 | 76.80 | 26/50 | 27.1 |
+| v12_3M_fixed | trig vel=5 + stride=1.5 + WT=2 + gait=0.25 | 49.26 | 68.57 | 24/50 | 23.6 |
+| v16_3M_fixed | trig vel=**0** + stride=1.5 + WT=2 + gait=0.25 | 32.28 | 63.64 | 13/50 | 8.4 |
+| v6_trig_3M_fixed | trig vel=5 only, no stride/WT | 25.06 | 67.06 | 20/50 | 10.0 |
+
+**Findings that revise §4.6's "v6_trig is the plateau" claim:**
+
+1. **The plateau wasn't real.** v6_trig was hitting 43 m mean / 32 survived at 1 M (in §4.6) entirely on the working terms (alive, step_reward, posture, smoothness, extension, velocity). At 3 M with the *fixed* gait-reward firing, v6_trig actually **regressed** to 25 m / 20 — because the previously-constant gait_reward now imposes a real coordination penalty without complementary stride/WT signals to balance it.
+
+2. **Once stride and weight_transfer actually fire, they help substantially.** v12 vs v6_trig (both with same vel + gait, only stride+WT differing): 49 m vs 25 m mean, 24 vs 20 survived. The "synergy" we thought we saw at 1M was random-seed noise; the real synergy emerges with working signals at 3M.
+
+3. **`stride_bonus = 1.5` was too conservative.** Bumping to 5 (v20) gave +14 m mean and +9 survivals over v12. v12's 1.5 was a defensive response to v8's apparent "reward hacking" — but v8 didn't actually have stride firing, so the hacking was random-seed variance.
+
+4. **Forced `gait_reward_scale=0.25` is now an aggression switch, not a stability shaper.** v20 vs v21 differ only here:
+   - **Gait ON (0.25)**: policy commits to FR→RL→FL→RR pattern more rigidly → bigger strides (mean 64 m, max 81 m), but more falls (33/50 survived).
+   - **Gait OFF (0.0)**: policy free-style → smaller strides (mean 50 m), but stays upright more (36/50).
+   - The forced cadence rewards aggressive committing-to-step behavior; remove it and the policy hedges.
+
+5. **`velocity_bonus` is load-bearing despite being 0.97-correlated with step_reward.** v12 vs v16 (only difference is velocity_bonus 5 vs 0): 49 vs 32 m mean. PCA's "redundant by correlation" reading didn't capture that velocity's `trig` shape gives the gradient distinct curvature even when the values track step_reward.
+
+**Two policies worth showcasing on slides / deployment:**
+
+| Use case | Pick | Reasoning |
+|---|---|---|
+| **"Watch the robot walk far"** demo footage | **v20** | Distance champion: 64 m mean, 81 m peak, 1.0 m/s sustained. Aggressive committed-stride gait. |
+| **Sim-to-real deployment candidate** | **v21** | Survival champion: 36/50 full-episode (72% survival). 50 m mean still strong. Less fall-prone makes it safer for hardware deployment. |
+
+**Calibrated PCA on v12_3M_fixed (first trustworthy correlation analysis):**
+
+Real principal components of the 10-dim reward, finally with working signals:
+
+| PC | Variance | Dominant terms | Interpretation |
+|---|---|---|---|
+| PC1 | 25% | velocity, step_reward, extension, posture | "walking forward with form" |
+| PC2 | 21% | fall, alive, posture | "stability axis" |
+| PC3 | 16% | gait + weight_transfer (r=0.64) | "contact pattern coordination" |
+| PC4 | 12% | stride + velocity + step_reward | "big strides axis" |
+| PC5 | 10% | smoothness alone | independent regularizer |
+| PC6 | 8% | extension + posture | "stance commitment" |
+| PC7–10 | <8% each | mostly noise | redundant directions |
+
+**Methodology lesson — for the slide deck:**
+- **PCA on broken instrumentation gives misleading conclusions.** Our first PCA (§4.7) ran on a policy where 3 of 10 reward terms were silently disabled. It "correctly" flagged velocity as redundant (r=0.93 in that data) — but that conclusion was an artifact of the broken stride/WT signals leaving step_reward and velocity as the only forward-drive terms. With fixed signals, dropping velocity costs 17 m mean. **Always re-validate PCA findings with ablation runs.**
+- **Correlated values can be non-redundant gradients.** Even after fixing signals, step_reward ↔ velocity remains 0.97 correlated, but velocity's trig shape provides distinct curvature in the gradient that step_reward's linear `dx` doesn't. PCA on values alone can't tell you this — only an ablation experiment can.
 
 ---
 
@@ -405,6 +459,7 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 
 | Date | Change |
 |---|---|
+| 2026-04-24 | **Post-fix re-sweep (§4.9)**: trained v12/v16/v6_trig at 3M timesteps + v19 (drop gait) + v20 (stride=5) + v21 (drop gait & stride=5). New distance champion **v20** at 63.92 m mean / 33-of-50 survived. New survival champion **v21** at 50.39 m / 36-of-50 (72% full-episode). With working signals, `stride_bonus=5` ≫ `1.5`, and `gait_reward` acts as an aggression switch (on = bigger strides + more falls, off = conservative gait + better survival). PCA on fixed v12 confirms 6 meaningful base axes including a coupled gait+WT contact-pattern axis (PC3, r=0.64). |
 | 2026-04-24 | **Silent-signal bug discovered and fixed (§4.8)**: `FOOT_BODY_NAMES` referenced URDF link names that MuJoCo had merged away (mj_name2id → −1), and `cfrc_ext` is for user-applied forces, not ground contacts. Result: gait_reward was constant −0.5, stride_bonus and weight_transfer_bonus were effectively 0 for every v3–v18 training run. Fix: look up `lower_link_*` bodies (the merged parents), iterate MuJoCo contacts via `mj_contactForce`, use `FOOT_CONTACT_THRESHOLD=0.5 N` for lifted/planted distinction. All v8–v18 experiments that nominally tested stride/WT are now re-attributed to random-seed variance. v3–v7 results stand (didn't use the broken signals). |
 | 2026-04-24 | `reward_pca.py` + `info["reward_components"]`: correlation + eigendecomposition diagnostic for the per-step reward components. On v12, finds that `step_reward` ↔ `velocity_bonus` are 0.93 correlated (redundant) and `gait_reward` has near-zero variance (dead weight). The near-zero variance was what uncovered the silent-signal bug (§4.8). |
 | 2026-04-24 | **v12 becomes new champion** via synergy: weight_transfer=2.0 + stride_bonus=1.5 COMBINED beats v6_trig (45.48 m mean / 39/50 survived vs. 43.4 m / 32/50). Both terms regress individually (v10, v11) but together they interact positively. Key learning for ablation design: terms can be drowned in isolation but become load-bearing when paired with a complementary signal. |

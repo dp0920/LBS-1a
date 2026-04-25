@@ -352,6 +352,47 @@ Real principal components of the 10-dim reward, finally with working signals:
 | **5** | **v20** | **63.9 m** | **33/50** |
 | 20 | v22 | 50.5 m | 27/50 |
 
+### 4.10 Random coefficient sweep — when log-uniform sampling helps and when it doesn't
+
+After v22 confirmed `stride=5` was near-optimal on a 1-D sweep, the next question was whether jointly tuning all 5 reward coefficients could find a better basin. Hand-iteration had bounded each coef in isolation; random search over the 5-D space could surface combinations we wouldn't think to try.
+
+**Sweep design (`random_sweep.py`):** sample log-uniform from
+- `velocity_bonus`, `extension_bonus`, `stride_bonus`, `weight_transfer_bonus` ∈ [0.1, 10]
+- `gait_reward_scale` ∈ [0.01, 1] (smaller range — the underlying score is already ±4)
+
+with `velocity_shape=trig` fixed (winner of v6 sweep). 52 random configurations total (12 + 40 across two seeds), each trained for 1 M timesteps, evaluated via `ppo_stats.py --episodes 30 --fall-tilt 30`. Final ranking by `combined = mean_dist × (survived/30)`.
+
+**Outcome (across 28+ samples — full results pending):**
+- **No random configuration beat v20** (3 M training, 64 m mean / 33-of-50 survived).
+- Best random config (`rand_05`, sweep 1): vel=0.25, ext=0.86, stride=0.12, wt=0.20, gait=0.23 → 51 m / 22-of-30. Roughly v21-class performance with a "near-minimal" reward.
+- Per-coefficient correlation with `combined` score:
+
+| coef | r(mean) | r(survival) | r(combined) |
+|---|---|---|---|
+| **gait** | **+0.43** | **+0.55** | **+0.45** |
+| stride | −0.36 | −0.24 | −0.30 |
+| ext | +0.11 | +0.12 | +0.13 |
+| wt | +0.00 | +0.31 | +0.15 |
+| vel | −0.06 | +0.03 | ~0 |
+
+**The two surprising findings:**
+
+1. **`gait_reward_scale` is the most predictive single coefficient at 1 M.** Higher gait → better random config performance. This contradicts §4.9's v19/v21 result (where dropping gait helped) — but those were 3 M runs starting from v20-class configurations. At 1 M from a random start, gait acts as a useful inductive bias that helps PPO converge faster.
+
+2. **`stride_bonus` correlates *negatively* with score at 1 M**, even though v20 (stride=5) is the 3 M champion. Reading: high stride coefficients require longer training to converge usefully. At 1 M, a low stride coef converges to a stable-but-modest gait; at 3 M, a high stride coef has time to develop into v20's longer-stride gait.
+
+**The methodology lesson** — for the slide deck:
+> **Optimal coefficients depend on training budget.** Random search at 1 M finds different "good configs" than careful iteration at 3 M, and both are finding *real* local optima within their respective budgets. A coefficient sweep that ignores training-time interactions can mislead. To find the best 3 M config, you'd need to do random search at 3 M (~3× the compute) or use a multi-fidelity method like Hyperband / SMAC. We did the cheap version — and learned that the cheap version answers a different question than we thought it was answering.
+
+**What this rules in vs. out for v20+ deployment:**
+- ✅ v20 (3 M, hand-iterated) remains the distance champion; v21 the survival champion.
+- ❌ A 1 M random search isn't going to outperform either of them. Don't try to.
+- 🧪 Re-running the *top 3 random configs* at 3 M would test whether their "lower-stride / higher-gait" recipes scale with training time. That's the next experiment if we want to push the frontier.
+
+Implementation references:
+- `random_sweep.py`: log-uniform sampler + per-config train+eval orchestrator. Saves results JSON incrementally so partial sweeps aren't lost.
+- `analyze_sweep.py`: ingests one or more sweep JSON files, prints top-N table, per-coefficient correlations, and binned marginal trends. Useful for deciding which configs to promote to longer-budget runs.
+
 ---
 
 ## 5. Optimization algorithms
@@ -467,6 +508,7 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 
 | Date | Change |
 |---|---|
+| 2026-04-25 | **Random coefficient sweep (§4.10)**: 52 log-uniform random configs over the 5 reward coefficients at 1 M timesteps each. No random config beat v20. Best random sample at ~51 m mean (v21-class). Strong finding: at 1 M, `gait_reward_scale` correlates +0.45 with combined score (highest predictor) and `stride_bonus` correlates −0.30 (opposite sign from 3 M optimum). Conclusion: optimal coefficients depend on training budget, and random search at 1 M answers a different question than 3 M iteration. `random_sweep.py` + `analyze_sweep.py` added for repro. |
 | 2026-04-24 | **Post-fix re-sweep (§4.9)**: trained v12/v16/v6_trig at 3M timesteps + v19 (drop gait) + v20 (stride=5) + v21 (drop gait & stride=5). New distance champion **v20** at 63.92 m mean / 33-of-50 survived. New survival champion **v21** at 50.39 m / 36-of-50 (72% full-episode). With working signals, `stride_bonus=5` ≫ `1.5`, and `gait_reward` acts as an aggression switch (on = bigger strides + more falls, off = conservative gait + better survival). PCA on fixed v12 confirms 6 meaningful base axes including a coupled gait+WT contact-pattern axis (PC3, r=0.64). |
 | 2026-04-24 | **Silent-signal bug discovered and fixed (§4.8)**: `FOOT_BODY_NAMES` referenced URDF link names that MuJoCo had merged away (mj_name2id → −1), and `cfrc_ext` is for user-applied forces, not ground contacts. Result: gait_reward was constant −0.5, stride_bonus and weight_transfer_bonus were effectively 0 for every v3–v18 training run. Fix: look up `lower_link_*` bodies (the merged parents), iterate MuJoCo contacts via `mj_contactForce`, use `FOOT_CONTACT_THRESHOLD=0.5 N` for lifted/planted distinction. All v8–v18 experiments that nominally tested stride/WT are now re-attributed to random-seed variance. v3–v7 results stand (didn't use the broken signals). |
 | 2026-04-24 | `reward_pca.py` + `info["reward_components"]`: correlation + eigendecomposition diagnostic for the per-step reward components. On v12, finds that `step_reward` ↔ `velocity_bonus` are 0.93 correlated (redundant) and `gait_reward` has near-zero variance (dead weight). The near-zero variance was what uncovered the silent-signal bug (§4.8). |

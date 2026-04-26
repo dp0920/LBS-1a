@@ -1,0 +1,9 @@
+Run: 20260423_221949
+Generations: 200 1000 2500
+Algorithms: cma de
+Seeds: gait stand random
+Interpolations: linear cosine smoothstep
+Trials per config: 15
+Random tilt range: [0, 40]°
+Random sigma range: [2, 15]
+Jobs: 810

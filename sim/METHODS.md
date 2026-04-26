@@ -478,15 +478,37 @@ After §4.11 we ran a clean coefficient-isolation ablation: starting from v20's 
 
 **The v20 mystery is real:** v20 has stride=5, vel=5, ext=3, wt=2, gait=0.25 (much higher than 1.0 each) and gets 64 m / 33-of-50. base has all those at 0 and gets 68 m / 44-of-50. So the *coefficient = 1.0* version of every term regresses, but at *much higher coefficients combined*, v20 is competitive (though still beaten by base). Likely because the higher coefs carve a non-trivial reward landscape that PPO can navigate with care — but the simpler landscape of base is even better.
 
-**Updated next steps (v25, currently training):**
-- `v25_base_seed2`: re-run base with a different random seed to confirm 68 m / 44 isn't a lucky outlier (~5/50 survival noise has been observed).
-- `v25_base_vel_0p5` / `v25_base_vel_0p1`: try smaller velocity_bonus on top of base — see if mild shaping helps where coef=1 hurts.
-- `v25_base_ext_0p5`: same test for extension_bonus, the second-best single feature.
+**v25 follow-up — the seed-variance correction:**
 
-**Methodology lesson — for the slide deck:**
-> Always include a **base / no-shaping ablation** in your reward sweeps. Until we ran this, we assumed our incremental shaping work (v3→v20) was monotonically improving — but the shape of "shaping helps" depends on the coefficient values, and at the wrong values shaping can be net-negative. The minimal reward provides a critical baseline for telling "shaping wins" from "shaping happens to win at one coefficient combination."
+Trained 7 follow-up configs to test whether v23_base's 60.3 combined was real or seed luck, plus smaller and higher coefficients of single features on top of base:
 
-The user-facing deployment recommendation may flip from v20 to base (or one of the v25 variants if they outperform). Decision pending v25 + viewer comparison of v20 vs. base.
+| Run | Mean | Max | Survived | Combined |
+|---|---|---|---|---|
+| v23_base (original, seed 1) | 68.49 | 76.65 | 44/50 | **60.3** |
+| v25_base_seed2 (same config, seed 2) | 51.01 | 70.57 | 28/50 | **28.6** |
+| v25_base_vel_5 | 55.33 | 75.99 | 31/50 | 34.3 |
+| **v25_base_stride_5** | **60.73** | 76.71 | 31/50 | **37.7** |
+| v25_base_ext_5 | 46.52 | 63.26 | 29/50 | 27.0 |
+| v25_base_ext_0p5 | 54.12 | 77.78 | 21/50 | 22.7 |
+| v25_base_vel_0p1 | 40.35 | 63.94 | 25/50 | 20.2 |
+| v25_base_vel_0p5 | 38.98 | 72.82 | 13/50 | 10.1 |
+
+**The §4.12 "base wins" finding was largely seed luck.**
+- Same exact reward config, different random seed: combined dropped from 60.3 to 28.6 — a **~50% regression from seed alone.**
+- Across the 8 v23/v25 base-or-near-base variants, combined ranges from 10.1 to 60.3 — over a 6× spread.
+- v20 (full reward, hand-iterated) at 42.2 is statistically indistinguishable from this distribution at single-seed resolution, but it's been **replicated** across multiple post-fix 3M runs (v20, v12_3M_fixed, v6_trig_3M_fixed all in the 42–50 range).
+
+**Refined conclusion:** at single-seed N=1 evaluation, our 3M-timestep training has ~±15-30 combined-units of seed noise. To distinguish reward-shaping effects from noise, you'd need 3+ seeds per config — 3× the compute we've actually run. The clean comparisons we thought we had (e.g. v20 vs v23_base) sit inside that noise band.
+
+**What does survive the noise:**
+- Adding *high-coef single features* on top of base (stride=5, vel=5) reaches 34–38 combined — comparable to v20 with simpler reward.
+- v23_base/v25_base seed2 average ~44 combined, similar to v20's 42 → no clear winner.
+- The buggy-era policies (v8–v18) genuinely were worse — their combined scores (5–25) sit *below* the base/v20 noise band.
+
+**Methodology lesson — for the slide deck (revised):**
+> Single-seed RL benchmarks are essentially anecdotal at the noise levels we observed. **Always run 3+ seeds before claiming one configuration beats another by a few percent on a composite metric.** Our "base wins" claim from v23_base was empirically a seed outlier; with a second seed it dropped from 60 to 29 combined. The higher-confidence findings in this work are the directional ones: forced-gait reward acts as an aggression switch (§4.9), velocity_bonus gives non-redundant gradient curvature (§4.9), the silent-signal bug invalidated v8-v18 results (§4.8). Single-config win/loss claims need replication.
+
+**Deployment recommendation:** v20 remains the most-replicated champion. v23_base is a lucky outlier worth replaying once for visual quality but not the new "default." The high-coef single-feature variants (stride=5, vel=5) are interesting but unproven beyond their one-seed result.
 
 ---
 
@@ -604,7 +626,8 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 | Date | Change |
 |---|---|
 | 2026-04-25 | **Repo reorg**: 94 PPO `.zip` files moved from `sim/`'s root into `sim/models/{champions, ablations, random_sweep, hybrid, legacy}/`. Random-sweep result JSONs moved to `models/random_sweep/`. `sim/models/README.md` documents the layout + lists champions for replay. `.gitignore` updated. METHODS.md command examples were already path-agnostic so nothing to fix. |
-| 2026-04-25 | **Base-reward ablation surprise (§4.12)**: 7 single-feature ablations at coef=1 (each adds one of velocity/extension/stride/weight_transfer/gait to the base 5 terms). The **base alone** (no extra shaping) won at 68.49 m / 44-of-50 survived — beating v20's 49 m / 33-of-50, v6_trig's 25 m / 20, and every single-feature addition. v24 BC+PPO hybrid also regressed (17.66 m / 6 survived). Open question: is base genuinely best, or a lucky seed? v25 confirmation runs in flight. |
+| 2026-04-25 | **§4.12 correction — the base-wins finding was seed luck.** Ran 7 v25 confirmation/sweep configs. base_seed2 (same config, different seed): 51 m / 28-of-50 / combined 28.6 — vs original v23_base's 68 m / 44 / 60.3. ~50% regression from seed alone. Real conclusion: at our N=1 evaluation, seed variance dominates the differences we'd been attributing to reward shaping. Multi-seed evaluation needed to make defensible claims. v20 (combined ~42) remains the most-replicated champion. |
+| 2026-04-25 | **Base-reward ablation surprise (§4.12)**: 7 single-feature ablations at coef=1 (each adds one of velocity/extension/stride/weight_transfer/gait to the base 5 terms). The **base alone** (no extra shaping) won at 68.49 m / 44-of-50 survived — beating v20's 49 m / 33-of-50, v6_trig's 25 m / 20, and every single-feature addition. v24 BC+PPO hybrid also regressed (17.66 m / 6 survived). Initial conclusion superseded by v25 seed-variance findings (above). |
 | 2026-04-25 | **CMA vs RL + hybrid (§4.11)**: evaluated cluster's top-5 CMA gaits at 50 episodes via new `cma_stats.py` (with init-pose noise for stochasticity). Best CMA: 0.479 m/s / 90% survival. v20 (RL) beats best CMA by 1.7× on speed and 22% on the `speed × survival_rate` composite. Both methods sit on a Pareto frontier; RL's is uniformly faster. Started hybrid: BC pretrain (`bc_pretrain.py`) imitates CMA gait into PPO's actor, then `train_ppo.py --init-from` fine-tunes with closed-loop PPO. v24 result regressed (17.66 m / 6 survived). |
 | 2026-04-25 | **Random coefficient sweep (§4.10)**: 52 log-uniform random configs over the 5 reward coefficients at 1 M timesteps each. No random config beat v20. Best random sample at ~51 m mean (v21-class). Strong finding: at 1 M, `gait_reward_scale` correlates +0.45 with combined score (highest predictor) and `stride_bonus` correlates −0.30 (opposite sign from 3 M optimum). Conclusion: optimal coefficients depend on training budget, and random search at 1 M answers a different question than 3 M iteration. `random_sweep.py` + `analyze_sweep.py` added for repro. |
 | 2026-04-24 | **Post-fix re-sweep (§4.9)**: trained v12/v16/v6_trig at 3M timesteps + v19 (drop gait) + v20 (stride=5) + v21 (drop gait & stride=5). New distance champion **v20** at 63.92 m mean / 33-of-50 survived. New survival champion **v21** at 50.39 m / 36-of-50 (72% full-episode). With working signals, `stride_bonus=5` ≫ `1.5`, and `gait_reward` acts as an aggression switch (on = bigger strides + more falls, off = conservative gait + better survival). PCA on fixed v12 confirms 6 meaningful base axes including a coupled gait+WT contact-pattern axis (PC3, r=0.64). |

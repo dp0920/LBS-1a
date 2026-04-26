@@ -1,0 +1,206 @@
+[
+  {
+    "tag": "rand_00",
+    "out_path": "ppo_rand_rand_00.zip",
+    "config": {
+      "vel": 3.53111691382141,
+      "ext": 0.7546696410796927,
+      "stride": 5.214297905300546,
+      "wt": 2.481624443014985,
+      "gait": 0.015429601005519728
+    },
+    "mean_dist": 22.24,
+    "max_dist": 50.65,
+    "min_dist": -1.38,
+    "survived": 6,
+    "n_episodes": 30,
+    "elapsed_sec": 267.2212247848511
+  },
+  {
+    "tag": "rand_01",
+    "out_path": "ppo_rand_rand_01.zip",
+    "config": {
+      "vel": 8.938089586343596,
+      "ext": 3.3287363915578387,
+      "stride": 3.7336070725030317,
+      "wt": 0.18039615030067863,
+      "gait": 0.07957412573105523
+    },
+    "mean_dist": 27.42,
+    "max_dist": 51.11,
+    "min_dist": 3.4,
+    "survived": 10,
+    "n_episodes": 30,
+    "elapsed_sec": 267.092502117157
+  },
+  {
+    "tag": "rand_02",
+    "out_path": "ppo_rand_rand_02.zip",
+    "config": {
+      "vel": 0.5515641726960965,
+      "ext": 7.137234690401974,
+      "stride": 1.9396806804067663,
+      "wt": 4.421027603802799,
+      "gait": 0.07705989229173009
+    },
+    "mean_dist": 34.41,
+    "max_dist": 54.03,
+    "min_dist": 3.03,
+    "survived": 14,
+    "n_episodes": 30,
+    "elapsed_sec": 271.64817905426025
+  },
+  {
+    "tag": "rand_03",
+    "out_path": "ppo_rand_rand_03.zip",
+    "config": {
+      "vel": 0.2847589897922607,
+      "ext": 1.2857886092104662,
+      "stride": 0.13416354101688913,
+      "wt": 4.521289791589672,
+      "gait": 0.18337021671045922
+    },
+    "mean_dist": 29.19,
+    "max_dist": 51.9,
+    "min_dist": 2.48,
+    "survived": 13,
+    "n_episodes": 30,
+    "elapsed_sec": 268.9299521446228
+  },
+  {
+    "tag": "rand_04",
+    "out_path": "ppo_rand_rand_04.zip",
+    "config": {
+      "vel": 3.28227889435858,
+      "ext": 0.5117430300313626,
+      "stride": 8.737678255441983,
+      "wt": 6.112828938332491,
+      "gait": 0.3603852387684784
+    },
+    "mean_dist": 39.1,
+    "max_dist": 55.49,
+    "min_dist": 12.83,
+    "survived": 19,
+    "n_episodes": 30,
+    "elapsed_sec": 270.8086497783661
+  },
+  {
+    "tag": "rand_05",
+    "out_path": "ppo_rand_rand_05.zip",
+    "config": {
+      "vel": 0.24506281377201802,
+      "ext": 0.8579105479001714,
+      "stride": 0.12235100233650854,
+      "wt": 0.20350682753671462,
+      "gait": 0.23232604885522545
+    },
+    "mean_dist": 50.97,
+    "max_dist": 63.13,
+    "min_dist": 9.42,
+    "survived": 22,
+    "n_episodes": 30,
+    "elapsed_sec": 273.9783298969269
+  },
+  {
+    "tag": "rand_06",
+    "out_path": "ppo_rand_rand_06.zip",
+    "config": {
+      "vel": 3.0869124462807647,
+      "ext": 8.610323423725232,
+      "stride": 0.4483846290786351,
+      "wt": 0.5507054976993253,
+      "gait": 0.08691837985677524
+    },
+    "mean_dist": 36.37,
+    "max_dist": 62.36,
+    "min_dist": 7.02,
+    "survived": 13,
+    "n_episodes": 30,
+    "elapsed_sec": 265.06414103507996
+  },
+  {
+    "tag": "rand_07",
+    "out_path": "ppo_rand_rand_07.zip",
+    "config": {
+      "vel": 0.23930001077504753,
+      "ext": 0.18190431896729695,
+      "stride": 0.8941489120323659,
+      "wt": 0.2843273897868821,
+      "gait": 0.21858884200540862
+    },
+    "mean_dist": 38.78,
+    "max_dist": 53.13,
+    "min_dist": 5.31,
+    "survived": 19,
+    "n_episodes": 30,
+    "elapsed_sec": 271.94740772247314
+  },
+  {
+    "tag": "rand_08",
+    "out_path": "ppo_rand_rand_08.zip",
+    "config": {
+      "vel": 0.7486931122086518,
+      "ext": 4.627606177115524,
+      "stride": 2.5149549152136492,
+      "wt": 0.4214376026129215,
+      "gait": 0.4618698388866127
+    },
+    "mean_dist": 38.83,
+    "max_dist": 61.07,
+    "min_dist": 7.07,
+    "survived": 15,
+    "n_episodes": 30,
+    "elapsed_sec": 266.43548798561096
+  },
+  {
+    "tag": "rand_09",
+    "out_path": "ppo_rand_rand_09.zip",
+    "config": {
+      "vel": 4.0693843916689,
+      "ext": 0.5956028374469398,
+      "stride": 0.37727341902695954,
+      "wt": 2.3173466689007483,
+      "gait": 0.019032900062238612
+    },
+    "mean_dist": 42.8,
+    "max_dist": 57.0,
+    "min_dist": 5.7,
+    "survived": 20,
+    "n_episodes": 30,
+    "elapsed_sec": 274.8273010253906
+  },
+  {
+    "tag": "rand_10",
+    "out_path": "ppo_rand_rand_10.zip",
+    "config": {
+      "vel": 0.2510824772959536,
+      "ext": 0.1034485813952289,
+      "stride": 3.7484243895631324,
+      "wt": 2.136494175503607,
+      "gait": 0.25723541334066274
+    },
+    "mean_dist": 33.51,
+    "max_dist": 56.06,
+    "min_dist": 2.57,
+    "survived": 18,
+    "n_episodes": 30,
+    "elapsed_sec": 265.3534460067749
+  },
+  {
+    "tag": "rand_11",
+    "out_path": "ppo_rand_rand_11.zip",
+    "config": {
+      "vel": 3.642990695707061,
+      "ext": 0.8276210937283388,
+      "stride": 1.3724053168927628,
+      "wt": 0.19036802148316656,
+      "gait": 0.0169457247189509
+    },
+    "mean_dist": 20.26,
+    "max_dist": 53.72,
+    "min_dist": 0.99,
+    "survived": 7,
+    "n_episodes": 30,
+    "elapsed_sec": 265.7380380630493
+  }
+]

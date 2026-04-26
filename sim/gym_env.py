@@ -110,7 +110,8 @@ class OptimusPrimalEnv(gym.Env):
                  velocity_shape="quadratic", stride_bonus=10.0,
                  randomize_init=False, dynamic_posture_target=False,
                  z_init_range=(0.13, 0.18), dynamic_z_tolerance=0.015,
-                 weight_transfer_bonus=0.0, start_pose_json=None):
+                 weight_transfer_bonus=0.0, start_pose_json=None,
+                 body_smoothness_penalty=0.0, foot_drift_penalty=0.0):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
@@ -188,6 +189,20 @@ class OptimusPrimalEnv(gym.Env):
                 _d = _json.load(_f)
             _poses, _ = _decode_params(np.array(_d["params"]))
             self._start_pose = dict(_poses["start"])
+
+        # v26 difference-based reward terms (default 0 = disabled):
+        # - body_smoothness_penalty: penalty on |Δroll| + |Δpitch| step-to-step.
+        #   Targets "rocking before stride" failure mode where the policy
+        #   builds up body sway to launch a leg, oscillating rather than
+        #   smoothly walking.
+        # - foot_drift_penalty: penalty on Σ |Δfoot_y| step-to-step across
+        #   all 4 feet. Targets "waddly" gaits where feet drift laterally
+        #   instead of staying under the body.
+        self.body_smoothness_penalty = body_smoothness_penalty
+        self.foot_drift_penalty = foot_drift_penalty
+        self._prev_roll = 0.0
+        self._prev_pitch = 0.0
+        self._prev_foot_y = {leg: 0.0 for leg in LEG_ORDER}
 
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
@@ -336,6 +351,13 @@ class OptimusPrimalEnv(gym.Env):
         # Reset per-foot stride-tracking state. All feet start planted.
         self._foot_x_at_lift = {leg: None for leg in LEG_ORDER}
         self._foot_lifted = {leg: False for leg in LEG_ORDER}
+        # Reset v26 difference-tracking state.
+        roll0, pitch0 = body_rp(self.data)
+        self._prev_roll = float(roll0)
+        self._prev_pitch = float(pitch0)
+        for leg in LEG_ORDER:
+            self._prev_foot_y[leg] = float(
+                self.data.xpos[self.foot_body_ids[leg]][1])
         return self._get_obs(), {}
 
     def step(self, action):
@@ -381,9 +403,41 @@ class OptimusPrimalEnv(gym.Env):
             smoothness_penalty = 0.0
         self._prev_action = action.copy()
 
+        # v26 — body-angle smoothness penalty: |Δroll| + |Δpitch| step-to-step.
+        # Discourages "rocking" gaits where the policy builds up body sway
+        # before each stride.
+        roll_now, pitch_now = body_rp(self.data)
+        if self.body_smoothness_penalty > 0.0:
+            d_roll = abs(float(roll_now) - self._prev_roll)
+            d_pitch = abs(float(pitch_now) - self._prev_pitch)
+            body_smooth_pen = self.body_smoothness_penalty * (d_roll + d_pitch)
+        else:
+            body_smooth_pen = 0.0
+        self._prev_roll = float(roll_now)
+        self._prev_pitch = float(pitch_now)
+
         # Compute ground-contact forces for all feet once (used by gait,
         # weight-transfer, and stride-detection logic below).
         foot_forces = self._foot_contact_forces()
+
+        # v26 — foot lateral drift penalty: Σ |Δfoot_y| across all 4 feet.
+        # Targets "waddly" gaits where feet drift sideways instead of
+        # staying under the body. World-frame foot_y deltas catch lateral
+        # motion that contributes nothing to forward locomotion.
+        if self.foot_drift_penalty > 0.0:
+            drift = 0.0
+            for leg in LEG_ORDER:
+                fy = float(self.data.xpos[self.foot_body_ids[leg]][1])
+                drift += abs(fy - self._prev_foot_y[leg])
+                self._prev_foot_y[leg] = fy
+            foot_drift_pen = self.foot_drift_penalty * drift
+        else:
+            foot_drift_pen = 0.0
+            # Still update tracking state so toggling this on doesn't
+            # produce a huge first-step delta.
+            for leg in LEG_ORDER:
+                self._prev_foot_y[leg] = float(
+                    self.data.xpos[self.foot_body_ids[leg]][1])
 
         # Gait-pattern reward: encourages the FR → RL → FL → RR crawl cycle.
         # This fires regardless of fall so the policy gets signal early.
@@ -452,7 +506,8 @@ class OptimusPrimalEnv(gym.Env):
         if not fell:
             reward += (2.0 + gait_reward + vel_reward + extension_reward
                        + stride_reward + weight_transfer_reward
-                       - posture_penalty - smoothness_penalty)
+                       - posture_penalty - smoothness_penalty
+                       - body_smooth_pen - foot_drift_pen)
         else:
             reward -= 20.0    # one-shot fall penalty
 
@@ -477,6 +532,8 @@ class OptimusPrimalEnv(gym.Env):
                 "weight_transfer": weight_transfer_reward if not fell else 0.0,
                 "posture": -posture_penalty if not fell else 0.0,
                 "smoothness": -smoothness_penalty if not fell else 0.0,
+                "body_smooth": -body_smooth_pen if not fell else 0.0,
+                "foot_drift": -foot_drift_pen if not fell else 0.0,
                 "fall": -20.0 if fell else 0.0,
             },
         }

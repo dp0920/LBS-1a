@@ -446,7 +446,47 @@ What the hybrid is supposed to fix:
 - **Convergence speed**: PPO from random init takes 3 M timesteps to reach v20-level. PPO from CMA seed should converge much faster because it starts on the reward landscape's good basin instead of in random territory.
 - **Worst-case failure mode**: if PPO's exploration finds a regression, the BC-cloned baseline still encodes "fall back to CMA-like behavior."
 
-Results pending — `ppo_v24_bc.zip` is the BC checkpoint; `ppo_v24_bc_ppo.zip` is the fine-tuned policy (currently training).
+**v24 result (1M PPO fine-tune from BC seed):** 17.66 m mean, 6/50 survived. **The hybrid regressed** — substantially worse than v20 (49 m / 33 survived) and even base (68 m / 44 survived; see §4.12). Likely causes: BC trained on only 4844 (obs, action) pairs from short demo episodes; the obs distribution at fine-tune time drifted from the BC training distribution; the extension bonus pushed the policy away from CMA-like actions early in fine-tuning. Worth re-running with more BC demos and a softer fine-tune learning rate, but the result is honest data: simple BC + PPO at 1M doesn't beat well-tuned end-to-end PPO at 3M.
+
+### 4.12 The ablation that re-wrote the playbook — "base reward wins"
+
+After §4.11 we ran a clean coefficient-isolation ablation: starting from v20's recipe (`velocity_shape=trig`, all 5 reward terms), train 7 policies at 3 M timesteps each, all reward terms at exactly the same scaling (each set to 0 or to 1.0):
+
+| Tag | Active terms (all at coef=1, except `gait` at scale=1) | Mean | Survived | Combined |
+|---|---|---|---|---|
+| **base** | none — `step_reward + alive + posture + smoothness + fall` only | **68.49 m** | **44/50** | **60.3** |
+| base_vel | + velocity_bonus = 1.0 | 62.51 | 33/50 | 41.3 |
+| base_ext | + extension_bonus = 1.0 | 52.38 | 35/50 | 36.7 |
+| base_stride | + stride_bonus = 1.0 | 48.62 | 24/50 | 23.3 |
+| base_wt | + weight_transfer = 1.0 | 47.03 | 22/50 | 20.7 |
+| base_gait | + gait_reward_scale = 1.0 | 30.64 | 11/50 | 6.7 |
+| rand28_3M | rand_28's coefs (vel=0.96, ext=1.90, stride=0.12, wt=0.18, gait=0.83) | 27.56 | 12/50 | 6.6 |
+
+**Comparison to prior champions (also 3M, fall_tilt=30 eval):**
+- **base: 68.49 m / 44-of-50** ← new best
+- v20 (full reward, hand-iterated): 49 m / 24-33
+- v21 (full minus gait): 50 m / 36
+- v6_trig (no stride/WT): 25 m / 20
+
+**The reward-shaping work has been net-negative beyond the base 5 terms.** Every additional shaping bonus regressed mean distance and survival when added at coef=1. The minimal reward — `+forward_dx (via step_reward) + alive bonus − posture penalty − smoothness penalty − fall penalty` — is the strongest configuration we've trained.
+
+**Why this is plausible (not just noise):**
+- Multiple shaping terms produce a noisier optimization gradient. PPO's advantage estimator has to attribute returns to many partially-overlapping signals.
+- `step_reward(dx)` already encodes most of "walk forward without flopping" — its internal coefficients (`+500·dx`, `−1000·-dx`, attitude penalties) were carefully tuned for the CMA pipeline and are doing the heavy lifting.
+- Each extra bonus introduces an attractor for reward-hacking that takes training cycles to escape.
+- v20's win at 3 M was likely a coefficient-interaction pocket that happened to work — multiple high coefs canceling each other's pathologies.
+
+**The v20 mystery is real:** v20 has stride=5, vel=5, ext=3, wt=2, gait=0.25 (much higher than 1.0 each) and gets 64 m / 33-of-50. base has all those at 0 and gets 68 m / 44-of-50. So the *coefficient = 1.0* version of every term regresses, but at *much higher coefficients combined*, v20 is competitive (though still beaten by base). Likely because the higher coefs carve a non-trivial reward landscape that PPO can navigate with care — but the simpler landscape of base is even better.
+
+**Updated next steps (v25, currently training):**
+- `v25_base_seed2`: re-run base with a different random seed to confirm 68 m / 44 isn't a lucky outlier (~5/50 survival noise has been observed).
+- `v25_base_vel_0p5` / `v25_base_vel_0p1`: try smaller velocity_bonus on top of base — see if mild shaping helps where coef=1 hurts.
+- `v25_base_ext_0p5`: same test for extension_bonus, the second-best single feature.
+
+**Methodology lesson — for the slide deck:**
+> Always include a **base / no-shaping ablation** in your reward sweeps. Until we ran this, we assumed our incremental shaping work (v3→v20) was monotonically improving — but the shape of "shaping helps" depends on the coefficient values, and at the wrong values shaping can be net-negative. The minimal reward provides a critical baseline for telling "shaping wins" from "shaping happens to win at one coefficient combination."
+
+The user-facing deployment recommendation may flip from v20 to base (or one of the v25 variants if they outperform). Decision pending v25 + viewer comparison of v20 vs. base.
 
 ---
 
@@ -563,7 +603,8 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 
 | Date | Change |
 |---|---|
-| 2026-04-25 | **CMA vs RL + hybrid (§4.11)**: evaluated cluster's top-5 CMA gaits at 50 episodes via new `cma_stats.py` (with init-pose noise for stochasticity). Best CMA: 0.479 m/s / 90% survival. v20 (RL) beats best CMA by 1.7× on speed and 22% on the `speed × survival_rate` composite. Both methods sit on a Pareto frontier; RL's is uniformly faster. Started hybrid: BC pretrain (`bc_pretrain.py`) imitates CMA gait into PPO's actor, then `train_ppo.py --init-from` fine-tunes with closed-loop PPO. Pending v24_bc_ppo result. |
+| 2026-04-25 | **Base-reward ablation surprise (§4.12)**: 7 single-feature ablations at coef=1 (each adds one of velocity/extension/stride/weight_transfer/gait to the base 5 terms). The **base alone** (no extra shaping) won at 68.49 m / 44-of-50 survived — beating v20's 49 m / 33-of-50, v6_trig's 25 m / 20, and every single-feature addition. v24 BC+PPO hybrid also regressed (17.66 m / 6 survived). Open question: is base genuinely best, or a lucky seed? v25 confirmation runs in flight. |
+| 2026-04-25 | **CMA vs RL + hybrid (§4.11)**: evaluated cluster's top-5 CMA gaits at 50 episodes via new `cma_stats.py` (with init-pose noise for stochasticity). Best CMA: 0.479 m/s / 90% survival. v20 (RL) beats best CMA by 1.7× on speed and 22% on the `speed × survival_rate` composite. Both methods sit on a Pareto frontier; RL's is uniformly faster. Started hybrid: BC pretrain (`bc_pretrain.py`) imitates CMA gait into PPO's actor, then `train_ppo.py --init-from` fine-tunes with closed-loop PPO. v24 result regressed (17.66 m / 6 survived). |
 | 2026-04-25 | **Random coefficient sweep (§4.10)**: 52 log-uniform random configs over the 5 reward coefficients at 1 M timesteps each. No random config beat v20. Best random sample at ~51 m mean (v21-class). Strong finding: at 1 M, `gait_reward_scale` correlates +0.45 with combined score (highest predictor) and `stride_bonus` correlates −0.30 (opposite sign from 3 M optimum). Conclusion: optimal coefficients depend on training budget, and random search at 1 M answers a different question than 3 M iteration. `random_sweep.py` + `analyze_sweep.py` added for repro. |
 | 2026-04-24 | **Post-fix re-sweep (§4.9)**: trained v12/v16/v6_trig at 3M timesteps + v19 (drop gait) + v20 (stride=5) + v21 (drop gait & stride=5). New distance champion **v20** at 63.92 m mean / 33-of-50 survived. New survival champion **v21** at 50.39 m / 36-of-50 (72% full-episode). With working signals, `stride_bonus=5` ≫ `1.5`, and `gait_reward` acts as an aggression switch (on = bigger strides + more falls, off = conservative gait + better survival). PCA on fixed v12 confirms 6 meaningful base axes including a coupled gait+WT contact-pattern axis (PC3, r=0.64). |
 | 2026-04-24 | **Silent-signal bug discovered and fixed (§4.8)**: `FOOT_BODY_NAMES` referenced URDF link names that MuJoCo had merged away (mj_name2id → −1), and `cfrc_ext` is for user-applied forces, not ground contacts. Result: gait_reward was constant −0.5, stride_bonus and weight_transfer_bonus were effectively 0 for every v3–v18 training run. Fix: look up `lower_link_*` bodies (the merged parents), iterate MuJoCo contacts via `mj_contactForce`, use `FOOT_CONTACT_THRESHOLD=0.5 N` for lifted/planted distinction. All v8–v18 experiments that nominally tested stride/WT are now re-attributed to random-seed variance. v3–v7 results stand (didn't use the broken signals). |

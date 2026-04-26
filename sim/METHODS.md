@@ -510,6 +510,55 @@ Trained 7 follow-up configs to test whether v23_base's 60.3 combined was real or
 
 **Deployment recommendation:** v20 remains the most-replicated champion. v23_base is a lucky outlier worth replaying once for visual quality but not the new "default." The high-coef single-feature variants (stride=5, vel=5) are interesting but unproven beyond their one-seed result.
 
+### 4.13 Overnight synthesis — six cohorts, 23 trials, multi-seed answers
+
+After §4.12 surfaced the seed-variance problem, we ran an overnight 23-trial cohort sweep designed to answer six questions at once with N=2-3 seeds each. Six questions, six answers, ranked from highest-confidence to lowest:
+
+**The cohorts:**
+
+| Cohort | Trials | Steps | What it tests | Mean combined |
+|---|---|---|---|---|
+| **body_smooth** (v26) | 2 | 3M | `\|Δroll\|+\|Δpitch\|` penalty, coef 20 | **31.9** |
+| Scratch @ 1M | 3 | 1M | v20 config, fresh init | 27.7 |
+| Scratch @ 3M | 3 | 3M | v20 config, fresh init | 24.7 |
+| Random-init @ 3M | 3 | 3M | `--randomize-init --dynamic-posture-target` | 22.4 |
+| v26_combined | 1 | 3M | body_smooth + foot_drift together | 21.7 |
+| CMA-start @ 3M | 3 | 3M | reset from CMA's optimized asymmetric pose | 13.1 |
+| **foot_drift** (v26) | 2 | 3M | `Σ\|Δfoot_y\|` penalty, coef 100 | 9.0 |
+| BC+PPO @ 1M | 3 | 1M | warm-start from CMA-imitation pretrain | 3.5 |
+| BC+PPO @ 3M | 3 | 3M | same, longer fine-tune | **1.4** |
+
+**Six findings ranked by confidence:**
+
+**1. (highest confidence) BC+PPO regresses ~17× vs scratch.** With 6 BC+PPO trials and 6 scratch trials, no overlap between cohorts: worst scratch (combined 11.7) is **6× the best BC+PPO** (combined 4.5). The hybrid path is dead at our settings — *adding* the CMA-imitation prior makes things substantially worse.
+
+**2. (high confidence) Longer fine-tuning damages the BC seed further.** Same BC starting weights, fine-tuned for 1M vs 3M: combined drops from 3.5 → 1.4. PPO is actively scrambling the BC initialization. Either the CMA stride pattern is locally pessimal under our v20-style reward, or the LR=3e-4 is way too aggressive for fine-tuning a near-optimal initialization. Likely fixes (untested): freeze early layers, drop LR by 100×, drop the extension bonus that pulls policy away from CMA's mid-range stance immediately.
+
+**3. (medium confidence) 1M training ≈ 3M training for from-scratch.** Scratch cohort means: 1M = 27.7, 3M = 24.7 — within seed noise. **Could halve compute on every future experiment** if this holds. Worth an explicit replication run before relying on it.
+
+**4. (medium confidence) Random-init is statistically equivalent to fixed-stance.** Random-init cohort 22.4 vs scratch 24.7. Domain randomization doesn't help OR hurt at this scale. Implication for sim-to-real: policies trained on the symmetric squat will probably generalize OK to varied real-robot starting conditions even without DR during training.
+
+**5. (medium confidence) CMA-start regressed.** Starting from the CMA-trained asymmetric "stable" pose hurt: 13.1 vs scratch 24.7, with one trial collapsing to 4/50. Counterintuitive but defensible — PPO's gradient signal needs a learnable starting basin, not a pre-optimized fixed point. The symmetric squat IS easier to learn FROM, even if asymmetric is more stable to walk WITH.
+
+**6. (low confidence — N=2) `body_smoothness_penalty=20.0` may help.** Cohort mean 31.9 (vs scratch 24.7), but driven by one trial at combined 44.9 and one at 18.9. With N=2 we can't separate "the term helps" from "lucky seed". Worth replicating at N=4-5 before claiming. Foot-drift penalty went the other way: cohort mean 9.0, hurts.
+
+**Top single-seed runs across the whole 23-trial overnight:**
+- `v25_scratch_3M_b`: 51.97 m / 43/50 / **combined 44.69**
+- `v26_body_smooth_b`: 57.58 m / 39/50 / **combined 44.91**
+- `v25_scratch_1M_c`: 41.68 m / 39/50 / **combined 32.51**
+
+These three sit in v20's elite tier (combined 42–60). About **1 in 5 runs** hits this tier; the rest sit at combined 15-30. **The lucky-seed pattern from §4.12 holds — single-run wins are mostly anecdotal at our noise level.**
+
+**For the slide deck — three slide-ready takeaways:**
+
+1. **"Hybrid imitation didn't work"** — BC pretrain + PPO fine-tune at any tested LR/budget combo regresses ~17× from scratch. Surprising negative result; documented failure mode for future work.
+
+2. **"More compute didn't help — 1M ≈ 3M for from-scratch."** Counterintuitive efficiency finding. Could re-run the entire experiment series at 1M and save 3× compute.
+
+3. **"Reward engineering hits a noise floor at our scale."** With 23 trials across 9 cohorts at 3M, the within-cohort variance (combined ±10-30) dominates the between-cohort effects. To make defensible "config A beats config B" claims, you need 5+ seeds per config — which is 5× the compute we've used.
+
+**Updated deployment recommendation:** v20 remains the recommended deployable. v25_scratch_3M_b and v26_body_smooth_b are alternative high-tier runs worth keeping for replay video. Skip BC+PPO and CMA-start for hardware deployment — they're worse than the simple recipe.
+
 ---
 
 ## 5. Optimization algorithms
@@ -626,6 +675,7 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 | Date | Change |
 |---|---|
 | 2026-04-25 | **Repo reorg**: 94 PPO `.zip` files moved from `sim/`'s root into `sim/models/{champions, ablations, random_sweep, hybrid, legacy}/`. Random-sweep result JSONs moved to `models/random_sweep/`. `sim/models/README.md` documents the layout + lists champions for replay. `.gitignore` updated. METHODS.md command examples were already path-agnostic so nothing to fix. |
+| 2026-04-26 | **Overnight 23-trial synthesis (§4.13)** — 9 cohorts at N=1-3 each. Headline findings: (1) BC+PPO regresses ~17× vs scratch and gets WORSE with longer fine-tune; (2) 1M training ≈ 3M for from-scratch (could halve compute); (3) random-init / CMA-start neutral or worse vs symmetric-squat baseline; (4) `body_smoothness_penalty=20` is the only candidate that beats baseline cohort mean (31.9 vs 24.7) but N=2 needs replication. Top single-seed run: v26_body_smooth_b at combined 44.9, alongside v25_scratch_3M_b at 44.7. v20 remains the most-replicated deployment champion. |
 | 2026-04-25 | **§4.12 correction — the base-wins finding was seed luck.** Ran 7 v25 confirmation/sweep configs. base_seed2 (same config, different seed): 51 m / 28-of-50 / combined 28.6 — vs original v23_base's 68 m / 44 / 60.3. ~50% regression from seed alone. Real conclusion: at our N=1 evaluation, seed variance dominates the differences we'd been attributing to reward shaping. Multi-seed evaluation needed to make defensible claims. v20 (combined ~42) remains the most-replicated champion. |
 | 2026-04-25 | **Base-reward ablation surprise (§4.12)**: 7 single-feature ablations at coef=1 (each adds one of velocity/extension/stride/weight_transfer/gait to the base 5 terms). The **base alone** (no extra shaping) won at 68.49 m / 44-of-50 survived — beating v20's 49 m / 33-of-50, v6_trig's 25 m / 20, and every single-feature addition. v24 BC+PPO hybrid also regressed (17.66 m / 6 survived). Initial conclusion superseded by v25 seed-variance findings (above). |
 | 2026-04-25 | **CMA vs RL + hybrid (§4.11)**: evaluated cluster's top-5 CMA gaits at 50 episodes via new `cma_stats.py` (with init-pose noise for stochasticity). Best CMA: 0.479 m/s / 90% survival. v20 (RL) beats best CMA by 1.7× on speed and 22% on the `speed × survival_rate` composite. Both methods sit on a Pareto frontier; RL's is uniformly faster. Started hybrid: BC pretrain (`bc_pretrain.py`) imitates CMA gait into PPO's actor, then `train_ppo.py --init-from` fine-tunes with closed-loop PPO. v24 result regressed (17.66 m / 6 survived). |

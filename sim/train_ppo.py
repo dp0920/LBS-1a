@@ -28,7 +28,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
              randomize_init=False, dynamic_posture_target=False,
              weight_transfer_bonus=0.0, extension_bonus=3.0,
              start_pose_json=None,
-             body_smoothness_penalty=0.0, foot_drift_penalty=0.0):
+             body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
+             fall_penalty=20.0, survival_bonus=0.0):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
@@ -44,6 +45,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
             start_pose_json=start_pose_json,
             body_smoothness_penalty=body_smoothness_penalty,
             foot_drift_penalty=foot_drift_penalty,
+            fall_penalty=fall_penalty,
+            survival_bonus=survival_bonus,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -70,7 +73,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
           randomize_init=False, dynamic_posture_target=False,
           weight_transfer_bonus=0.0, extension_bonus=3.0,
           init_from=None, start_pose_json=None,
-          body_smoothness_penalty=0.0, foot_drift_penalty=0.0):
+          body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
+          fall_penalty=20.0, survival_bonus=0.0):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale,
@@ -84,7 +88,9 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
                                    extension_bonus=extension_bonus,
                                    start_pose_json=start_pose_json,
                                    body_smoothness_penalty=body_smoothness_penalty,
-                                   foot_drift_penalty=foot_drift_penalty)
+                                   foot_drift_penalty=foot_drift_penalty,
+                                   fall_penalty=fall_penalty,
+                                   survival_bonus=survival_bonus)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
     if init_from is not None:
@@ -255,6 +261,14 @@ def main():
                     help="Penalty coef on Σ|Δfoot_y| across all 4 feet "
                          "step-to-step (v26). Targets 'waddly' gaits. "
                          "Try ~50-200.")
+    ap.add_argument("--fall-penalty", type=float, default=20.0,
+                    help="One-shot magnitude on episode-ending fall (v27). "
+                         "Default 20.0; bump to 200+ to make falls "
+                         "catastrophic.")
+    ap.add_argument("--survival-bonus", type=float, default=0.0,
+                    help="One-shot bonus if episode reaches max_steps "
+                         "without falling (v27). Try 500+ for survival-"
+                         "priority training.")
     args = ap.parse_args()
 
     if args.replay:
@@ -279,7 +293,9 @@ def main():
               init_from=args.init_from,
               start_pose_json=args.start_from_gait,
               body_smoothness_penalty=args.body_smoothness_penalty,
-              foot_drift_penalty=args.foot_drift_penalty)
+              foot_drift_penalty=args.foot_drift_penalty,
+              fall_penalty=args.fall_penalty,
+              survival_bonus=args.survival_bonus)
 
 
 if __name__ == "__main__":

@@ -111,7 +111,8 @@ class OptimusPrimalEnv(gym.Env):
                  randomize_init=False, dynamic_posture_target=False,
                  z_init_range=(0.13, 0.18), dynamic_z_tolerance=0.015,
                  weight_transfer_bonus=0.0, start_pose_json=None,
-                 body_smoothness_penalty=0.0, foot_drift_penalty=0.0):
+                 body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
+                 fall_penalty=20.0, survival_bonus=0.0):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
@@ -203,6 +204,16 @@ class OptimusPrimalEnv(gym.Env):
         self._prev_roll = 0.0
         self._prev_pitch = 0.0
         self._prev_foot_y = {leg: 0.0 for leg in LEG_ORDER}
+
+        # v27 survival-priority knobs (default keeps prior behavior):
+        # - fall_penalty: one-shot magnitude on episode-ending fall.
+        #   Default 20.0 was the long-standing v3+ value. Bump to 200+ for
+        #   "falling is catastrophic" experiments.
+        # - survival_bonus: one-shot bonus paid only if episode reaches
+        #   max_steps without a fall. Default 0 = disabled. Try 500+ to
+        #   directly reward full-episode survival.
+        self.fall_penalty = fall_penalty
+        self.survival_bonus = survival_bonus
 
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
@@ -509,7 +520,15 @@ class OptimusPrimalEnv(gym.Env):
                        - posture_penalty - smoothness_penalty
                        - body_smooth_pen - foot_drift_pen)
         else:
-            reward -= 20.0    # one-shot fall penalty
+            reward -= self.fall_penalty    # one-shot fall penalty (v27 tunable)
+
+        # v27 — survival completion bonus paid once at episode end if
+        # the agent walked the full max_steps without falling. Directly
+        # rewards "got through a full rollout" rather than "walked far".
+        truncated_full_episode = (not fell
+                                   and self._step_count >= self.max_steps)
+        if truncated_full_episode and self.survival_bonus > 0.0:
+            reward += self.survival_bonus
 
         terminated = fell
         truncated = self._step_count >= self.max_steps
@@ -534,7 +553,9 @@ class OptimusPrimalEnv(gym.Env):
                 "smoothness": -smoothness_penalty if not fell else 0.0,
                 "body_smooth": -body_smooth_pen if not fell else 0.0,
                 "foot_drift": -foot_drift_pen if not fell else 0.0,
-                "fall": -20.0 if fell else 0.0,
+                "fall": -self.fall_penalty if fell else 0.0,
+                "survival_bonus": (self.survival_bonus
+                                    if truncated_full_episode else 0.0),
             },
         }
         return obs, float(reward), terminated, truncated, info

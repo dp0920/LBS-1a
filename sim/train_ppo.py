@@ -26,7 +26,7 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
              velocity_shape="quadratic", velocity_bonus=5.0,
              gait_reward_scale=0.25, stride_bonus=10.0,
              randomize_init=False, dynamic_posture_target=False,
-             weight_transfer_bonus=0.0):
+             weight_transfer_bonus=0.0, extension_bonus=3.0):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
@@ -38,6 +38,7 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
             randomize_init=randomize_init,
             dynamic_posture_target=dynamic_posture_target,
             weight_transfer_bonus=weight_transfer_bonus,
+            extension_bonus=extension_bonus,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -62,7 +63,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
           lr_schedule="linear", ent_coef=0.0,
           gait_reward_scale=0.25, stride_bonus=10.0,
           randomize_init=False, dynamic_posture_target=False,
-          weight_transfer_bonus=0.0):
+          weight_transfer_bonus=0.0, extension_bonus=3.0,
+          init_from=None):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale,
@@ -72,30 +74,46 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
                                    stride_bonus=stride_bonus,
                                    randomize_init=randomize_init,
                                    dynamic_posture_target=dynamic_posture_target,
-                                   weight_transfer_bonus=weight_transfer_bonus)
+                                   weight_transfer_bonus=weight_transfer_bonus,
+                                   extension_bonus=extension_bonus)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
-    envs = VecNormalize(envs, norm_obs=True, norm_reward=True, clip_obs=10.0)
+    if init_from is not None:
+        # Warm-start: load VecNormalize stats from BC pretrain so the policy
+        # sees obs in the same scale it was trained on. Stats keep updating
+        # during PPO learning (training=True is the default).
+        vn_path = init_from.replace(".zip", "_vecnormalize.pkl")
+        envs = VecNormalize.load(vn_path, envs)
+    else:
+        envs = VecNormalize(envs, norm_obs=True, norm_reward=True,
+                             clip_obs=10.0)
 
     if lr_schedule == "linear":
         lr = linear_lr_schedule(3e-4, 1e-5)
     else:
         lr = 3e-4
 
-    model = PPO(
-        "MlpPolicy",
-        envs,
-        verbose=1,
-        tensorboard_log=log_dir,
-        # Reasonable defaults for continuous control; tweak later.
-        n_steps=1024,
-        batch_size=256,
-        gae_lambda=0.95,
-        gamma=0.99,
-        learning_rate=lr,
-        ent_coef=ent_coef,
-        policy_kwargs=dict(net_arch=[128, 128]),
-    )
+    if init_from is not None:
+        # Load BC-pretrained policy + value weights, then continue training.
+        model = PPO.load(init_from, env=envs,
+                         tensorboard_log=log_dir,
+                         learning_rate=lr,
+                         ent_coef=ent_coef)
+    else:
+        model = PPO(
+            "MlpPolicy",
+            envs,
+            verbose=1,
+            tensorboard_log=log_dir,
+            # Reasonable defaults for continuous control; tweak later.
+            n_steps=1024,
+            batch_size=256,
+            gae_lambda=0.95,
+            gamma=0.99,
+            learning_rate=lr,
+            ent_coef=ent_coef,
+            policy_kwargs=dict(net_arch=[128, 128]),
+        )
 
     learn_kwargs = {"total_timesteps": timesteps, "progress_bar": False}
     if tb_name:
@@ -208,6 +226,15 @@ def main():
                          "contact force (v10). Rewards 'shift weight off "
                          "this leg before lifting' pre-stride behavior. "
                          "Try 2.0 to start.")
+    ap.add_argument("--extension-bonus", type=float, default=3.0,
+                    help="Bonus on action distance from joint-bound midpoint "
+                         "(v5). Default 3.0 was the v5 unlock; ablate by "
+                         "setting to 0.")
+    ap.add_argument("--init-from", type=str, default=None,
+                    help="Path to a saved PPO .zip to warm-start from "
+                         "(e.g. a BC-pretrained policy). Loads policy+value "
+                         "weights and the saved VecNormalize stats, then "
+                         "continues training with normal PPO learning.")
     args = ap.parse_args()
 
     if args.replay:
@@ -227,7 +254,9 @@ def main():
               stride_bonus=args.stride_bonus,
               randomize_init=args.randomize_init,
               dynamic_posture_target=args.dynamic_posture_target,
-              weight_transfer_bonus=args.weight_transfer_bonus)
+              weight_transfer_bonus=args.weight_transfer_bonus,
+              extension_bonus=args.extension_bonus,
+              init_from=args.init_from)
 
 
 if __name__ == "__main__":

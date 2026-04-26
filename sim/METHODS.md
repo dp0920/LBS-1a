@@ -393,6 +393,61 @@ Implementation references:
 - `random_sweep.py`: log-uniform sampler + per-config train+eval orchestrator. Saves results JSON incrementally so partial sweeps aren't lost.
 - `analyze_sweep.py`: ingests one or more sweep JSON files, prints top-N table, per-coefficient correlations, and binned marginal trends. Useful for deciding which configs to promote to longer-budget runs.
 
+### 4.11 CMA vs. RL head-to-head — and the hybrid path
+
+The cluster sweep (`results/20260423_221949/`) trained **90 CMA / DE gaits** across `{cma, de}` × `{gait, stand, random}` × `{linear, cosine, smoothstep}` interpolation × randomized tilt/sigma. Selected the top-5 by walking distance via `rank_gaits.py --sort speed`.
+
+**`cma_stats.py`** — apples-to-apples evaluator for CMA gaits matching the RL eval protocol: 50 stochastic episodes, ±2° initial joint noise, ±5 mm body-z noise, fall_tilt=30°. The init-pose noise is what gives CMA gaits a stochastic distribution to compare against (otherwise open-loop replay is exactly deterministic).
+
+**Top 5 CMA gaits, 50-episode evaluation:**
+
+| Rank | Mean dist | Speed | Survived | Combined |
+|---|---|---|---|---|
+| 1 | 8.78 m / 18.7 s | **0.479 m/s** | 45/50 (90%) | 7.90 |
+| 2 | 7.29 m | 0.391 m/s | 50/50 (100%) | 7.29 |
+| 3 | 7.28 m | 0.385 m/s | 50/50 (100%) | 7.28 |
+| 4 | 7.68 m | 0.352 m/s | 50/50 (100%) | 7.68 |
+| 5 | 8.07 m | 0.343 m/s | 50/50 (100%) | 8.07 |
+
+**Direct head-to-head with our RL champions** (composite metric `speed × survival_rate` since rollout durations differ):
+
+| Policy | Speed (m/s) | Survival | speed × surv |
+|---|---|---|---|
+| **v20 (RL)** | **0.80** | 66% | **0.528** |
+| v21 (RL) | 0.63 | 72% | 0.453 |
+| CMA #1 (best) | 0.48 | 90% | 0.431 |
+| CMA #5 (most reliable) | 0.34 | 100% | 0.343 |
+
+**RL wins by 22% on the composite.** v20 is 1.7× faster than the best CMA, and 2.3× faster than the most reliable CMA gait. RL's headroom comes entirely from speed; CMA's strength is reliability.
+
+**The CMA frontier shows the same internal trade-off as RL:**
+- CMA #1 trades survival (90%) for speed (0.48 m/s)
+- CMA #5 trades speed (0.34 m/s) for full survival (100%)
+- v20 trades survival (66%) for speed (0.80 m/s)
+- v21 trades speed (0.63 m/s) for survival (72%)
+
+So both methods sit on a Pareto frontier; the question is whose frontier is further out. **RL's frontier is uniformly faster.**
+
+**Why CMA loses speed but wins reliability:**
+- **CMA is open-loop deterministic** — same trajectory every time, no closed-loop adjustment to perturbation.
+- **RL is closed-loop stochastic** — observation-conditioned policy that *can* react to disturbance, but introduces variance that occasionally pushes it past the stability margin.
+- For nominal-condition demos in sim, CMA is a perfectly tuned trajectory that hits the floor every time. For real-world deployment with sensor noise + ground variations, this brittleness becomes a liability — the user's instinct.
+
+**The hybrid path — BC + PPO fine-tune (`bc_pretrain.py`):**
+
+Goal: get RL's adaptive closed-loop control with CMA's reliable trajectory as a baseline.
+
+Pipeline:
+1. **Behavioral cloning (`bc_pretrain.py`)** — roll out the best CMA gait in the RL env (with init-pose noise for diversity), record (obs, action) pairs at each control step. Train PPO's actor network via supervised MSE to predict CMA's action given the RL obs. This embeds CMA's stride pattern into the policy.
+2. **PPO fine-tune (`train_ppo.py --init-from`)** — load the BC-pretrained policy and continue with normal PPO learning. The policy starts at "CMA's trajectory" and is free to adjust based on closed-loop feedback (roll, pitch, body velocity, pitch rate, body_fwd_z — all IMU-derivable signals already in the 24-dim obs).
+
+What the hybrid is supposed to fix:
+- **Brittleness**: when sim physics drift (sim-to-real, terrain change), the closed-loop part of the policy compensates. Open-loop CMA cannot.
+- **Convergence speed**: PPO from random init takes 3 M timesteps to reach v20-level. PPO from CMA seed should converge much faster because it starts on the reward landscape's good basin instead of in random territory.
+- **Worst-case failure mode**: if PPO's exploration finds a regression, the BC-cloned baseline still encodes "fall back to CMA-like behavior."
+
+Results pending — `ppo_v24_bc.zip` is the BC checkpoint; `ppo_v24_bc_ppo.zip` is the fine-tuned policy (currently training).
+
 ---
 
 ## 5. Optimization algorithms
@@ -508,6 +563,7 @@ cd LBS-1a/robot && python gait_controller.py --gait best_gait.json --n=3 --slow
 
 | Date | Change |
 |---|---|
+| 2026-04-25 | **CMA vs RL + hybrid (§4.11)**: evaluated cluster's top-5 CMA gaits at 50 episodes via new `cma_stats.py` (with init-pose noise for stochasticity). Best CMA: 0.479 m/s / 90% survival. v20 (RL) beats best CMA by 1.7× on speed and 22% on the `speed × survival_rate` composite. Both methods sit on a Pareto frontier; RL's is uniformly faster. Started hybrid: BC pretrain (`bc_pretrain.py`) imitates CMA gait into PPO's actor, then `train_ppo.py --init-from` fine-tunes with closed-loop PPO. Pending v24_bc_ppo result. |
 | 2026-04-25 | **Random coefficient sweep (§4.10)**: 52 log-uniform random configs over the 5 reward coefficients at 1 M timesteps each. No random config beat v20. Best random sample at ~51 m mean (v21-class). Strong finding: at 1 M, `gait_reward_scale` correlates +0.45 with combined score (highest predictor) and `stride_bonus` correlates −0.30 (opposite sign from 3 M optimum). Conclusion: optimal coefficients depend on training budget, and random search at 1 M answers a different question than 3 M iteration. `random_sweep.py` + `analyze_sweep.py` added for repro. |
 | 2026-04-24 | **Post-fix re-sweep (§4.9)**: trained v12/v16/v6_trig at 3M timesteps + v19 (drop gait) + v20 (stride=5) + v21 (drop gait & stride=5). New distance champion **v20** at 63.92 m mean / 33-of-50 survived. New survival champion **v21** at 50.39 m / 36-of-50 (72% full-episode). With working signals, `stride_bonus=5` ≫ `1.5`, and `gait_reward` acts as an aggression switch (on = bigger strides + more falls, off = conservative gait + better survival). PCA on fixed v12 confirms 6 meaningful base axes including a coupled gait+WT contact-pattern axis (PC3, r=0.64). |
 | 2026-04-24 | **Silent-signal bug discovered and fixed (§4.8)**: `FOOT_BODY_NAMES` referenced URDF link names that MuJoCo had merged away (mj_name2id → −1), and `cfrc_ext` is for user-applied forces, not ground contacts. Result: gait_reward was constant −0.5, stride_bonus and weight_transfer_bonus were effectively 0 for every v3–v18 training run. Fix: look up `lower_link_*` bodies (the merged parents), iterate MuJoCo contacts via `mj_contactForce`, use `FOOT_CONTACT_THRESHOLD=0.5 N` for lifted/planted distinction. All v8–v18 experiments that nominally tested stride/WT are now re-attributed to random-seed variance. v3–v7 results stand (didn't use the broken signals). |

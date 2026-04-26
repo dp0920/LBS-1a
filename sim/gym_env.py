@@ -110,7 +110,7 @@ class OptimusPrimalEnv(gym.Env):
                  velocity_shape="quadratic", stride_bonus=10.0,
                  randomize_init=False, dynamic_posture_target=False,
                  z_init_range=(0.13, 0.18), dynamic_z_tolerance=0.015,
-                 weight_transfer_bonus=0.0):
+                 weight_transfer_bonus=0.0, start_pose_json=None):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
@@ -176,6 +176,18 @@ class OptimusPrimalEnv(gym.Env):
         # Body weight / 4 = fair share carried by each foot at perfect balance.
         # Used to normalize the contact-force reward.
         self._fair_share_N = float(self.model.body_mass.sum() * 9.81) / 4.0
+        # Optional: replace the hardcoded squatted-stance reset pose with
+        # the "start" phase of a CMA-trained gait JSON. Lets RL training
+        # begin from a verified-stable asymmetric pose instead of the
+        # symmetric default.
+        self._start_pose = None
+        if start_pose_json is not None:
+            import json as _json
+            from mujoco_gait import decode_params as _decode_params
+            with open(start_pose_json) as _f:
+                _d = _json.load(_f)
+            _poses, _ = _decode_params(np.array(_d["params"]))
+            self._start_pose = dict(_poses["start"])
 
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
@@ -281,13 +293,18 @@ class OptimusPrimalEnv(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         mujoco.mj_resetData(self.model, self.data)
-        # Start pose: mid-range hip/knee — policy learns stance from here.
-        default_q = {
-            "hip_fl": np.radians(35), "knee_fl": np.radians(-80),
-            "hip_fr": np.radians(35), "knee_fr": np.radians(-80),
-            "hip_rl": np.radians(35), "knee_rl": np.radians(-50),
-            "hip_rr": np.radians(35), "knee_rr": np.radians(-50),
-        }
+        # Start pose: by default, mid-range hip/knee — policy learns stance
+        # from here. If a CMA gait was passed via start_pose_json, use its
+        # "start" phase pose instead (verified-stable asymmetric stance).
+        if self._start_pose is not None:
+            default_q = dict(self._start_pose)
+        else:
+            default_q = {
+                "hip_fl": np.radians(35), "knee_fl": np.radians(-80),
+                "hip_fr": np.radians(35), "knee_fr": np.radians(-80),
+                "hip_rl": np.radians(35), "knee_rl": np.radians(-50),
+                "hip_rr": np.radians(35), "knee_rr": np.radians(-50),
+            }
         if self.randomize_init:
             # ±5° jitter on every hip/knee joint so the policy sees a spread
             # of initial stances each episode (domain randomization).

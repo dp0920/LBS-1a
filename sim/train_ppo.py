@@ -26,7 +26,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
              velocity_shape="quadratic", velocity_bonus=5.0,
              gait_reward_scale=0.25, stride_bonus=10.0,
              randomize_init=False, dynamic_posture_target=False,
-             weight_transfer_bonus=0.0, extension_bonus=3.0):
+             weight_transfer_bonus=0.0, extension_bonus=3.0,
+             start_pose_json=None):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
@@ -39,6 +40,7 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
             dynamic_posture_target=dynamic_posture_target,
             weight_transfer_bonus=weight_transfer_bonus,
             extension_bonus=extension_bonus,
+            start_pose_json=start_pose_json,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -64,7 +66,7 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
           gait_reward_scale=0.25, stride_bonus=10.0,
           randomize_init=False, dynamic_posture_target=False,
           weight_transfer_bonus=0.0, extension_bonus=3.0,
-          init_from=None):
+          init_from=None, start_pose_json=None):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale,
@@ -75,7 +77,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
                                    randomize_init=randomize_init,
                                    dynamic_posture_target=dynamic_posture_target,
                                    weight_transfer_bonus=weight_transfer_bonus,
-                                   extension_bonus=extension_bonus)
+                                   extension_bonus=extension_bonus,
+                                   start_pose_json=start_pose_json)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
     if init_from is not None:
@@ -235,6 +238,10 @@ def main():
                          "(e.g. a BC-pretrained policy). Loads policy+value "
                          "weights and the saved VecNormalize stats, then "
                          "continues training with normal PPO learning.")
+    ap.add_argument("--start-from-gait", type=str, default=None,
+                    help="Path to a CMA gait JSON. Use that gait's 'start' "
+                         "phase pose as the per-episode reset stance instead "
+                         "of the hardcoded symmetric squat.")
     args = ap.parse_args()
 
     if args.replay:
@@ -256,7 +263,8 @@ def main():
               dynamic_posture_target=args.dynamic_posture_target,
               weight_transfer_bonus=args.weight_transfer_bonus,
               extension_bonus=args.extension_bonus,
-              init_from=args.init_from)
+              init_from=args.init_from,
+              start_pose_json=args.start_from_gait)
 
 
 if __name__ == "__main__":

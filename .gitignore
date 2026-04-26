@@ -13,6 +13,8 @@ sim/smoke_*
 # PPO training artifacts
 sim/*.zip
 sim/*_vecnormalize.pkl
+sim/models/**/*.zip
+sim/models/**/*_vecnormalize.pkl
 sim/ppo_tb/
 sim/*_tb/
 sim/step_reward_diagnostic.png

@@ -1,77 +1,74 @@
 #!/usr/bin/env python3
 """
-Balance test: symmetric stance + sequential leg lifts.
+Balance test from crawl_stance: sequential leg lifts.
 
-After the CoM redistribution (Pi + buck repositioning), the robot should
-be roughly centered. This script demonstrates that by:
-  1. Putting all 4 legs at the SAME hip + knee offset (symmetric stance)
-  2. Lifting each leg in turn (FL → FR → RL → RR), holding for inspection,
-     then planting it back
-  3. Returning to symmetric stance at the end
+Uses the actual crawl_stance pose (front legs deep crouch, rear legs
+shallow) — same starting pose the gait routines use. Then lifts each
+leg in place (no hip swing) so the only thing that changes is the
+weight distribution onto the remaining 3-leg support tripod.
 
-If the robot stays upright through all 4 lifts, the CoM is well-centered
-within the support tripod for each lift. If it tips during one specific
+If the robot stays upright through all 4 lifts, the CoM is well inside
+every support tripod — confirms balance. If it tips during a specific
 leg's lift, the CoM is biased toward the OPPOSITE corner from that leg
-(e.g., tipping during FL lift = CoM is biased to FL).
+(e.g., tipping during FL lift => CoM biased to FL).
 
 Usage:
-  python3 balance_test.py                 # default: 30° lifts, 1.5s hold
-  python3 balance_test.py --lift=45       # bigger lifts (more demanding)
-  python3 balance_test.py --hold=3.0      # 3s hold per leg (longer to inspect)
-  python3 balance_test.py --hip=20 --knee=20    # tweak symmetric stance offsets
+  python3 balance_test.py                 # default: 35° lift, 1.5s hold
+  python3 balance_test.py --lift=45       # bigger lift (more demanding)
+  python3 balance_test.py --hold=3.0      # 3s hold per leg
+  python3 balance_test.py --no-pause      # skip the Enter prompt
 """
 import sys
 import time
 
 
-def main():
-    lift_amount = 30
-    hold_time = 1.5
-    hip_offset = 20
-    knee_offset = 20
+# crawl_stance knee offsets per leg (from gait_controller.crawl_stance):
+STANCE_KNEE = {
+    "FL": -100,  "FR": -100,   # front legs deep crouch
+    "RL":  -50,  "RR":  -50,   # rear legs shallow
+}
 
+
+def main():
+    lift_amount = 35
+    hold_time = 1.5
+    pause = True
     for arg in sys.argv[1:]:
         if arg.startswith("--lift="):
             lift_amount = int(arg.split("=", 1)[1])
         elif arg.startswith("--hold="):
             hold_time = float(arg.split("=", 1)[1])
-        elif arg.startswith("--hip="):
-            hip_offset = int(arg.split("=", 1)[1])
-        elif arg.startswith("--knee="):
-            knee_offset = int(arg.split("=", 1)[1])
+        elif arg == "--no-pause":
+            pause = False
 
-    # stance.py auto-runs apply_stance() on import. Keep argv clean so
-    # we don't accidentally trip any flag-parsing it might add later.
+    # Strip argv before importing so gait_controller's __main__ block
+    # doesn't trigger.
     sys.argv = [sys.argv[0]]
 
-    import stance
+    from gait_controller import crawl_stance, leg_abs
 
-    # Override the standing offsets and re-apply for a clean symmetric pose.
-    # Using module attributes so apply_stance() picks them up.
-    stance.hip_offset = hip_offset
-    stance.knee_offset = knee_offset
-
-    print(f"\n=== Balance test ===")
-    print(f"  symmetric stance:  hip={hip_offset}°  knee={knee_offset}°")
-    print(f"  lift amount:       {lift_amount}°")
-    print(f"  hold per leg:      {hold_time}s")
+    print(f"\n=== Balance test from crawl_stance ===")
+    print(f"  lift amount:    +{lift_amount}° (knee straighter)")
+    print(f"  hold per leg:   {hold_time}s")
     print()
-    print("Settling into symmetric stance...")
-    stance.apply_stance(duration=800)
+    print("Settling into crawl_stance...")
+    crawl_stance()
     time.sleep(1.0)
 
-    input("Robot in symmetric stance. Press Enter to start leg-lift sequence...")
+    if pause:
+        input("Robot in crawl_stance. Press Enter to start leg-lift sequence...")
 
     for leg in ["FL", "FR", "RL", "RR"]:
-        print(f"\n  Lifting {leg}...")
-        stance.lift_leg(leg, lift_amount=lift_amount)
+        knee = STANCE_KNEE[leg]
+        print(f"\n  Lifting {leg} (stance knee={knee}°, lift to {knee + lift_amount}°)...")
+        leg_abs(leg, 35, knee + lift_amount)   # lift in place (knee straighter)
         time.sleep(hold_time)
         print(f"  Planting {leg}...")
-        stance.plant_leg(leg)
+        leg_abs(leg, 35, knee)                  # back to stance
         time.sleep(0.6)
 
-    print("\nReturning to symmetric stance.")
-    stance.apply_stance(duration=800)
+    print("\nReturning to crawl_stance.")
+    crawl_stance()
     print("Done.")
 
 

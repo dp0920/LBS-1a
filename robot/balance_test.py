@@ -15,13 +15,22 @@ no further front/rear bias compensation is needed. If it tips during
 a specific leg's lift, the CoM is biased toward the OPPOSITE corner.
 
 Usage:
-  python3 balance_test.py                  # symmetric crouch knee=-75
+  python3 balance_test.py                  # symmetric crouch knee=-75, NO trim
+  python3 balance_test.py --use-trim       # apply gait_controller's KNEE_TRIM
+                                            # (compensates for OLD rear-heavy CoM)
   python3 balance_test.py --knee=-80       # deeper symmetric crouch
   python3 balance_test.py --knee=-60       # shallower (more upright)
   python3 balance_test.py --hip=30         # tighter hip stance
   python3 balance_test.py --lift=45        # bigger lift (more demanding)
   python3 balance_test.py --hold=3.0       # 3s hold per leg
   python3 balance_test.py --no-pause       # skip the Enter prompt
+
+KNEE_TRIM context:
+  gait_controller.KNEE_TRIM = {"FL": -20, "FR": -20, "RL": 0, "RR": 0}
+  was tuned for the OLD rear-heavy CoM, biasing front knees deeper to
+  keep the body level. After the recent CoM redistribution, this trim
+  causes a forward tilt — so this script defaults to NOT applying it.
+  Pass --use-trim to fall back to the original behavior.
 """
 import sys
 import time
@@ -33,6 +42,7 @@ def main():
     lift_amount = 35
     hold_time = 1.5
     pause = True
+    use_trim = False  # default off; old trim compensates for old rear-heavy CoM
     for arg in sys.argv[1:]:
         if arg.startswith("--hip="):
             hip = int(arg.split("=", 1)[1])
@@ -44,12 +54,28 @@ def main():
             hold_time = float(arg.split("=", 1)[1])
         elif arg == "--no-pause":
             pause = False
+        elif arg == "--use-trim":
+            use_trim = True
+        elif arg == "--no-trim":
+            use_trim = False
 
     # Strip argv before importing so gait_controller's __main__ block
     # doesn't trigger.
     sys.argv = [sys.argv[0]]
 
+    import gait_controller as gc
     from gait_controller import leg_abs
+
+    # KNEE_TRIM is a module-level dict applied inside leg_abs(). To skip
+    # the trim non-destructively, save the original and zero it out for
+    # the duration of this test, then restore at the end.
+    original_trim = dict(gc.KNEE_TRIM)
+    if not use_trim:
+        for k in gc.KNEE_TRIM:
+            gc.KNEE_TRIM[k] = 0
+        trim_status = "DISABLED (zeroed for this test)"
+    else:
+        trim_status = f"applied: {original_trim}"
 
     def symmetric_stance():
         """All 4 legs at the same hip + knee — body sits level."""
@@ -59,6 +85,7 @@ def main():
 
     print(f"\n=== Balance test from SYMMETRIC stance ===")
     print(f"  stance:         hip={hip}°  knee={knee}° (all 4 legs)")
+    print(f"  KNEE_TRIM:      {trim_status}")
     print(f"  lift amount:    +{lift_amount}° (knee straighter)")
     print(f"  hold per leg:   {hold_time}s")
     print()
@@ -81,6 +108,12 @@ def main():
 
     print("\nReturning to symmetric stance.")
     symmetric_stance()
+
+    # Restore original trim so any subsequent call into gait_controller
+    # (e.g. running run_manual.py in the same Python session) sees the
+    # canonical values.
+    for k, v in original_trim.items():
+        gc.KNEE_TRIM[k] = v
     print("Done.")
 
 

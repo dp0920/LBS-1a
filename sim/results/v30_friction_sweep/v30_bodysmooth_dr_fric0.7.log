@@ -1,0 +1,36 @@
+ep  0: len=2000  rew=+72710.5  x=+63.94m  [ok]
+ep  1: len=2000  rew=+68981.1  x=+61.98m  [ok]
+ep  2: len=1798  rew=+67943.0  x=+58.80m  [FELL]
+ep  3: len=1163  rew=+22915.3  x=+23.21m  [FELL]
+ep  4: len=2000  rew=+70297.6  x=+62.63m  [ok]
+ep  5: len=2000  rew=+73180.7  x=+64.18m  [ok]
+ep  6: len=2000  rew=+71481.3  x=+63.15m  [ok]
+ep  7: len=2000  rew=+64170.6  x=+58.30m  [ok]
+ep  8: len=2000  rew=+64560.3  x=+58.69m  [ok]
+ep  9: len=2000  rew=+57892.8  x=+52.47m  [ok]
+ep 10: len=2000  rew=+72939.4  x=+64.16m  [ok]
+ep 11: len=2000  rew=+66127.5  x=+59.96m  [ok]
+ep 12: len=2000  rew=+71698.2  x=+63.40m  [ok]
+ep 13: len=1942  rew=+55602.5  x=+51.95m  [FELL]
+ep 14: len= 380  rew=+11702.3  x=+10.67m  [FELL]
+ep 15: len=2000  rew=+68416.9  x=+61.38m  [ok]
+ep 16: len=2000  rew=+64585.7  x=+58.76m  [ok]
+ep 17: len=2000  rew=+74572.7  x=+64.88m  [ok]
+ep 18: len=2000  rew=+66486.3  x=+60.25m  [ok]
+ep 19: len=2000  rew=+73925.1  x=+64.59m  [ok]
+ep 20: len=2000  rew=+70271.3  x=+62.18m  [ok]
+ep 21: len=2000  rew=+74472.6  x=+64.87m  [ok]
+ep 22: len=2000  rew=+70250.0  x=+62.42m  [ok]
+ep 23: len=2000  rew=+70590.1  x=+62.49m  [ok]
+ep 24: len=2000  rew=+67729.2  x=+60.83m  [ok]
+ep 25: len=2000  rew=+73159.8  x=+64.09m  [ok]
+ep 26: len=2000  rew=+69653.9  x=+62.09m  [ok]
+ep 27: len=2000  rew=+62610.9  x=+57.79m  [ok]
+ep 28: len=2000  rew=+67585.6  x=+60.80m  [ok]
+ep 29: len= 226  rew= +6204.5  x=+5.80m  [FELL]
+
+Across 30 episodes (stochastic):
+  len   min/mean/max: 226 / 1850 / 2000
+  rew   min/mean/max: +6204 / +63091 / +74573
+  dist  min/mean/max: +5.80 / +56.36 / +64.88 m
+  survived full episode: 25/30

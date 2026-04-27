@@ -1,0 +1,25 @@
+==== v30_bodysmooth_dr @ friction=1.0 ====
+  mean_dx=mean  mean_len=mean  survived=23/30
+==== v30_bodysmooth_dr @ friction=0.7 ====
+  mean_dx=mean  mean_len=mean  survived=25/30
+==== v30_bodysmooth_dr @ friction=0.5 ====
+  mean_dx=mean  mean_len=mean  survived=25/30
+==== v30_bodysmooth_dr @ friction=0.3 ====
+  mean_dx=mean  mean_len=mean  survived=22/30
+==== v30_v20_dr @ friction=1.0 ====
+  mean_dx=mean  mean_len=mean  survived=25/30
+==== v30_v20_dr @ friction=0.7 ====
+  mean_dx=mean  mean_len=mean  survived=22/30
+==== v30_v20_dr @ friction=0.5 ====
+  mean_dx=mean  mean_len=mean  survived=20/30
+==== v30_v20_dr @ friction=0.3 ====
+  mean_dx=mean  mean_len=mean  survived=17/30
+==== v30_v6trig_dr @ friction=1.0 ====
+  mean_dx=mean  mean_len=mean  survived=19/30
+==== v30_v6trig_dr @ friction=0.7 ====
+  mean_dx=mean  mean_len=mean  survived=23/30
+==== v30_v6trig_dr @ friction=0.5 ====
+  mean_dx=mean  mean_len=mean  survived=21/30
+==== v30_v6trig_dr @ friction=0.3 ====
+  mean_dx=mean  mean_len=mean  survived=21/30
+==== DONE ====

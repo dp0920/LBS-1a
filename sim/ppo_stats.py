@@ -34,11 +34,18 @@ def main():
                     help="Physics substeps per env step (v5 was trained at 4, "
                          "v6/v7 at 8). Must match training — mismatch breaks "
                          "the policy's timing.")
+    ap.add_argument("--friction", type=float, default=None,
+                    help="Fix the floor tangential friction coefficient for "
+                         "every episode (overrides any randomization). Use to "
+                         "evaluate a friction-DR policy at a specific operating "
+                         "point — e.g. 1.0 for sim-default, ~0.4 for real-world.")
     args = ap.parse_args()
 
+    fric_range = (args.friction, args.friction) if args.friction is not None else None
     env = OptimusPrimalEnv(max_steps=args.max_steps,
                            fall_tilt_deg=args.fall_tilt,
-                           ctrl_repeat=args.ctrl_repeat)
+                           ctrl_repeat=args.ctrl_repeat,
+                           friction_range=fric_range)
     vn_path = args.policy.replace(".zip", "_vecnormalize.pkl")
     dv = VecNormalize.load(vn_path, DummyVecEnv([lambda: env]))
     dv.training = False

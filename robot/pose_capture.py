@@ -47,6 +47,14 @@ Usage:
                                               # (skip the others). Combine
                                               # with --in to fix specific
                                               # poses without redoing all 4.
+  python3 pose_capture.py --name=lean_fwd --in=balance_poses.json
+                                              # capture ONE arbitrary named
+                                              # pose using full-body
+                                              # kinesthetic mode and add it
+                                              # to the existing JSON. Use
+                                              # for intermediate transition
+                                              # poses like 'lean_fwd' that
+                                              # shift CoM before a lift.
 """
 import json
 import sys
@@ -68,6 +76,7 @@ def main():
     knee = -75
     manual_stance = False
     pose_all_legs = False
+    custom_name = None        # if set, capture only this one named pose
     for arg in sys.argv[1:]:
         if arg.startswith("--out="):
             out_path = arg.split("=", 1)[1]
@@ -84,6 +93,8 @@ def main():
             manual_stance = True
         elif arg == "--pose-all-legs":
             pose_all_legs = True
+        elif arg.startswith("--name="):
+            custom_name = arg.split("=", 1)[1]
 
     sys.argv = [sys.argv[0]]   # avoid gait_controller's __main__ block
 
@@ -176,6 +187,36 @@ def main():
             print(f"  stance angles: {poses['stance']}")
 
     input("\nReady. Press Enter to start the capture loop...")
+
+    if custom_name is not None:
+        print(f"\n--- Capturing custom pose '{custom_name}' "
+              f"(full-body kinesthetic) ---")
+        print("  Disabling torque on ALL 8 servos. Body will go floppy —")
+        print(f"  pose the robot into the desired '{custom_name}' configuration,")
+        print("  support it, then press Enter.")
+        for L in ["FL", "FR", "RL", "RR"]:
+            disable_leg_torque(L)
+        input(f"  Pose into '{custom_name}', then press Enter to capture...")
+        angles = read_all_angles()
+        poses[custom_name] = angles
+        print(f"  Captured angles: {angles}")
+        print("  Re-engaging torque at captured pose...")
+        for L in ["FL", "FR", "RL", "RR"]:
+            enable_leg_torque(L)
+        time.sleep(0.3)
+        for sid, ang in angles.items():
+            LX16A(sid).move(ang, time=400)
+        time.sleep(0.6)
+
+        # Restore trim and skip the per-leg loop entirely.
+        for k, v in original_trim.items():
+            gc.KNEE_TRIM[k] = v
+
+        with open(out_path, "w") as f:
+            json.dump(poses, f, indent=2)
+        print(f"\nSaved {len(poses)} poses to {out_path}.")
+        print(f"Pose names: {list(poses.keys())}")
+        return
 
     for leg in legs_to_capture:
         print(f"\n--- Capturing lift_{leg} ---")

@@ -112,7 +112,8 @@ class OptimusPrimalEnv(gym.Env):
                  z_init_range=(0.13, 0.18), dynamic_z_tolerance=0.015,
                  weight_transfer_bonus=0.0, start_pose_json=None,
                  body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
-                 fall_penalty=20.0, survival_bonus=0.0):
+                 fall_penalty=20.0, survival_bonus=0.0,
+                 friction_range=None):
         super().__init__()
         self.model = build_model()
         self.data = mujoco.MjData(self.model)
@@ -214,6 +215,21 @@ class OptimusPrimalEnv(gym.Env):
         #   directly reward full-episode survival.
         self.fall_penalty = fall_penalty
         self.survival_bonus = survival_bonus
+
+        # v30 — friction randomization for sim-to-real robustness.
+        # When set to (lo, hi), each reset() samples the floor's
+        # tangential friction uniformly from [lo, hi]. Default 1.0 is
+        # MuJoCo's "grippy hard surface" — real-world TPU-on-floor is
+        # closer to 0.3-0.6 once dust + surface variation are factored in.
+        # Training across [0.3, 1.2] forces the policy to learn gaits
+        # that don't rely on perfect grip.
+        self.friction_range = friction_range
+        # Cache the floor geom id so we can update its friction on reset.
+        try:
+            self._floor_geom_id = mujoco.mj_name2id(
+                self.model, mujoco.mjtObj.mjOBJ_GEOM, "floor")
+        except Exception:
+            self._floor_geom_id = -1
 
         self.action_space = spaces.Box(low=ACTION_LOW, high=ACTION_HIGH,
                                        dtype=np.float32)
@@ -319,6 +335,12 @@ class OptimusPrimalEnv(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         mujoco.mj_resetData(self.model, self.data)
+        # v30 — randomize floor friction for this episode if configured.
+        if self.friction_range is not None and self._floor_geom_id >= 0:
+            lo, hi = self.friction_range
+            mu = float(self.np_random.uniform(lo, hi))
+            # geom_friction is [tangential, torsional, rolling]
+            self.model.geom_friction[self._floor_geom_id, 0] = mu
         # Start pose: by default, mid-range hip/knee — policy learns stance
         # from here. If a CMA gait was passed via start_pose_json, use its
         # "start" phase pose instead (verified-stable asymmetric stance).

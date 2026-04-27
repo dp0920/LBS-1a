@@ -29,7 +29,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
              weight_transfer_bonus=0.0, extension_bonus=3.0,
              start_pose_json=None,
              body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
-             fall_penalty=20.0, survival_bonus=0.0):
+             fall_penalty=20.0, survival_bonus=0.0,
+             friction_range=None):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
@@ -47,6 +48,7 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
             foot_drift_penalty=foot_drift_penalty,
             fall_penalty=fall_penalty,
             survival_bonus=survival_bonus,
+            friction_range=friction_range,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -74,7 +76,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
           weight_transfer_bonus=0.0, extension_bonus=3.0,
           init_from=None, start_pose_json=None,
           body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
-          fall_penalty=20.0, survival_bonus=0.0):
+          fall_penalty=20.0, survival_bonus=0.0,
+          friction_range=None):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale,
@@ -90,7 +93,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
                                    body_smoothness_penalty=body_smoothness_penalty,
                                    foot_drift_penalty=foot_drift_penalty,
                                    fall_penalty=fall_penalty,
-                                   survival_bonus=survival_bonus)
+                                   survival_bonus=survival_bonus,
+                                   friction_range=friction_range)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
     if init_from is not None:
@@ -269,7 +273,16 @@ def main():
                     help="One-shot bonus if episode reaches max_steps "
                          "without falling (v27). Try 500+ for survival-"
                          "priority training.")
+    ap.add_argument("--friction-range", type=str, default=None,
+                    help="v30 sim-to-real: per-episode floor friction "
+                         "domain randomization. Format 'lo,hi' (e.g. "
+                         "'0.3,1.2'). Default None = no randomization "
+                         "(uses sim_core's static 1.0).")
     args = ap.parse_args()
+    friction_range = None
+    if args.friction_range is not None:
+        parts = args.friction_range.split(",")
+        friction_range = (float(parts[0]), float(parts[1]))
 
     if args.replay:
         replay(args.replay,
@@ -295,7 +308,8 @@ def main():
               body_smoothness_penalty=args.body_smoothness_penalty,
               foot_drift_penalty=args.foot_drift_penalty,
               fall_penalty=args.fall_penalty,
-              survival_bonus=args.survival_bonus)
+              survival_bonus=args.survival_bonus,
+              friction_range=friction_range)
 
 
 if __name__ == "__main__":

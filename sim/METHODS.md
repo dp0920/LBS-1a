@@ -587,7 +587,33 @@ These three sit in v20's elite tier (combined 42–60). About **1 in 5 runs** hi
 
 3. **v6trig is consistently weaker.** ~30% behind on absolute distance at every friction. The trig-feature observation set didn't help the policy generalize beyond what the simpler observation gives.
 
-**Updated deployment recommendation:** `v30_bodysmooth_dr` supersedes v20 for hardware. At μ=0.3 it scores 54 m vs v20_dr's 49 m, with 22 vs 17 survivors out of 30. v20 still wins at sim-default but real surfaces aren't sim-default — the friction-flat policy is the right pick.
+**Sim-only deployment recommendation (caveat in §4.15):** `v30_bodysmooth_dr` supersedes v20 *in simulation*. At μ=0.3 it scores 54 m vs v20_dr's 49 m, with 22 vs 17 survivors out of 30. v20 still wins at sim-default but real surfaces aren't sim-default. **However — see §4.15 for why none of these PPO policies are actually deployable to LX-16A hardware as-is.**
+
+### 4.15 The actuator gap — why PPO doesn't deploy (and CMA still does)
+
+**Setting up to deploy `v30_bodysmooth_dr` revealed a more fundamental sim-to-real problem than friction.** Diagnostic in `ppo_actuator_gap.py`. Three measurements:
+
+1. **Bang-bang action saturation.** 87.9% of action samples sit exactly at ACTION_LOW or ACTION_HIGH. The policy outputs near-binary commands — not smooth joint trajectories.
+2. **Joint qpos response.** Under MuJoCo's PD-controlled position actuator (`kp=2.5, kv=0.05` from `sim_core.py`), the joint angles are smoother than the actions but still oscillate hard: P95 |Δqpos|/step = 17°, peak 22° per 16ms (≈1375°/s). The PD is heavily underdamped — the joint *rings* in response to the bang-bang input.
+3. **Open-loop replay of the qpos trace.** Took the joint-angle trajectory the body actually followed, fed it as the env's target sequence in a fresh deterministic rollout. Distance collapsed from **65.77 m → 0.57 m**. The body doesn't walk when handed its own trajectory as targets.
+
+**Interpretation.** Walking lives in the *bang-bang action stream interacting with the PD dynamics*, not in the resulting joint trajectory. The policy exploited MuJoCo's underdamped PD as a low-pass filter, learning a control regime where saturated commands at the right phase produce useful body motion.
+
+**Why this kills deployment.** The LX-16A doesn't have an exposed PD with kp=2.5/kv=0.05. It accepts `move(angle, time=ms)` and runs its own internal trajectory generator (closer to constant-velocity slew). Neither of the candidate target streams ports cleanly:
+
+- *Stream the bang-bang actions as servo targets at 16 ms cadence:* the LX-16A trajectory generator interpolates linearly to each target — totally different transient response from MuJoCo's underdamped PD. The policy's "trick" doesn't reproduce.
+- *Stream the resulting qpos trace as servo targets:* by (3), this doesn't even walk in sim. The trajectory is meaningless without the bang-bang input that produced it.
+
+**This is why CMA-ES gaits deploy and PPO gaits don't.** CMA's `phase_time = 0.6s` is slow enough that PD dynamics settle within each phase — the gait operates on equilibrium poses, which are actuator-agnostic. PPO at 62.5 Hz operates inside the PD's transient response, which is sim-specific.
+
+**What this means for the project.**
+
+- The friction-DR sweep numbers (§4.14) are real *in sim*. v30_bodysmooth_dr genuinely is the friction-flat champion as a methodological result. But the policy's hardware transfer story is "no" — not "yes if friction matches."
+- For hardware deployment: **CMA's `best_gait.json` remains the deployable gait.** No PPO variant is currently shippable.
+- For PPO to become deployable, the actuator model needs to match the LX-16A or the policy needs an action smoothness constraint (action-rate penalty, or hard rate limits in the action space, or train at a slower control rate where PD transients aren't exploitable). All untested.
+- The slide-deck framing changes: PPO is the algorithmic-progress narrative; CMA is the deployment narrative. They're not in competition for the hardware slot.
+
+**Diagnostic kept at `sim/ppo_actuator_gap.py`** so any future PPO variant can be checked the same way. If a re-trained policy outputs <30% saturated actions and the qpos-replay test gives ≥50% of closed-loop distance, that's the deployability bar.
 
 ---
 

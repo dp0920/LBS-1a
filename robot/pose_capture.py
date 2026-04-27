@@ -26,6 +26,14 @@ Usage:
                                                # Use when commanded
                                                # symmetric pose is tilted
                                                # (per-servo calib drift).
+  python3 pose_capture.py --pose-all-legs     # during each lift capture,
+                                               # disable torque on ALL 4 legs
+                                               # (not just the target). Lets
+                                               # you actively shift support
+                                               # legs to compensate for CoM
+                                               # bias. Required when one
+                                               # diagonal can't support a
+                                               # static 3-leg tripod.
 """
 import json
 import sys
@@ -44,6 +52,7 @@ def main():
     hip = 35
     knee = -75
     manual_stance = False
+    pose_all_legs = False
     for arg in sys.argv[1:]:
         if arg.startswith("--out="):
             out_path = arg.split("=", 1)[1]
@@ -53,6 +62,8 @@ def main():
             knee = int(arg.split("=", 1)[1])
         elif arg == "--manual-stance":
             manual_stance = True
+        elif arg == "--pose-all-legs":
+            pose_all_legs = True
 
     sys.argv = [sys.argv[0]]   # avoid gait_controller's __main__ block
 
@@ -128,29 +139,44 @@ def main():
 
     for leg in ["FL", "FR", "RL", "RR"]:
         print(f"\n--- Capturing lift_{leg} ---")
-        print(f"  Disabling torque on {leg} (hip {LEG_SERVOS[leg][0]}, knee {LEG_SERVOS[leg][1]})...")
-        disable_leg_torque(leg)
-        print(f"  Pose the {leg} leg manually now (lift it into a stable position).")
-        print(f"  The other 3 legs are still holding their stance.")
-        input(f"  When you're happy with the {leg} pose, press Enter...")
+        if pose_all_legs:
+            print(f"  Disabling torque on ALL 4 legs (--pose-all-legs).")
+            print(f"  You can now reposition every leg — shift the support")
+            print(f"  legs to compensate for CoM bias, then lift {leg}.")
+            for L in ["FL", "FR", "RL", "RR"]:
+                disable_leg_torque(L)
+        else:
+            print(f"  Disabling torque on {leg} (hip {LEG_SERVOS[leg][0]}, "
+                  f"knee {LEG_SERVOS[leg][1]})...")
+            disable_leg_torque(leg)
+            print(f"  Pose the {leg} leg manually now (lift it into a stable "
+                  f"position).")
+            print(f"  The other 3 legs are still holding their stance.")
+        input(f"  When the robot is balanced with {leg} lifted, press Enter...")
 
         angles = read_all_angles()
         poses[f"lift_{leg}"] = angles
-        print(f"  Captured {leg} angles: {angles}")
+        print(f"  Captured angles: {angles}")
 
-        print(f"  Re-engaging {leg} torque + returning to stance...")
-        enable_leg_torque(leg)
-        time.sleep(0.3)
-        # Return JUST this leg to stance before doing the next one,
-        # so the rest of the body doesn't shift. If we have a captured
-        # stance from --manual-stance, return to those exact angles
-        # rather than the (tilted) commanded symmetric stance.
-        if manual_stance and "stance" in poses:
-            h, k = LEG_SERVOS[leg]
-            LX16A(h).move(poses["stance"][h], time=600)
-            LX16A(k).move(poses["stance"][k], time=600)
+        print(f"  Re-engaging torque + returning to stance...")
+        if pose_all_legs:
+            # Re-enable all 4 legs at their captured-lift angles, then
+            # move each back to the captured stance.
+            for L in ["FL", "FR", "RL", "RR"]:
+                enable_leg_torque(L)
+            time.sleep(0.3)
+            # Move every servo back to the stance configuration.
+            for sid, ang in poses["stance"].items():
+                LX16A(sid).move(ang, time=600)
         else:
-            leg_abs(leg, hip, knee)
+            enable_leg_torque(leg)
+            time.sleep(0.3)
+            if manual_stance and "stance" in poses:
+                h, k = LEG_SERVOS[leg]
+                LX16A(h).move(poses["stance"][h], time=600)
+                LX16A(k).move(poses["stance"][k], time=600)
+            else:
+                leg_abs(leg, hip, knee)
         time.sleep(1.0)
 
     # Restore trim

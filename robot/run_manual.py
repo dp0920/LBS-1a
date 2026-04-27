@@ -9,9 +9,11 @@ sequence. Useful as a sanity-check that the robot is mechanically and
 electrically working before trying the CMA / RL gaits.
 
 Usage:
-  python3 run_manual.py              # default: 3 strides
+  python3 run_manual.py              # default: 3 strides at native speed
   python3 run_manual.py --n=5        # 5 strides
   python3 run_manual.py --no-pause   # skip the "place tape, press Enter" prompt
+  python3 run_manual.py --scale=2    # 2× slower (longer servo moves + pauses)
+  python3 run_manual.py --scale=4    # 4× slower (very deliberate, max stability)
 
 The full_stride routine, defined in gait_controller.py, performs the
 explicit weight-transfer pattern that real quadrupeds use:
@@ -29,20 +31,39 @@ import time
 def main():
     cycles = 3
     pause = True
+    scale = 1.0
     for arg in sys.argv[1:]:
         if arg.startswith("--n="):
             cycles = int(arg.split("=", 1)[1])
         elif arg == "--no-pause":
             pause = False
+        elif arg.startswith("--scale="):
+            scale = float(arg.split("=", 1)[1])
 
     # Strip our argv before importing gait_controller so its __main__
     # block doesn't run (it auto-runs on import unfortunately).
     sys.argv = [sys.argv[0]]
 
-    from gait_controller import crawl_stance, full_stride
+    import gait_controller as gc
+
+    # Apply --scale: slow down both servo moves and inter-phase pauses.
+    # MOVE_DURATION is the per-servo move time in ms (default ~500).
+    # time.sleep is monkey-patched here so every sleep inside full_stride
+    # (and crawl_stance) gets multiplied — keeps the routine's structure
+    # intact, just stretched in time.
+    if scale != 1.0:
+        gc.MOVE_DURATION = int(gc.MOVE_DURATION * scale)
+        _orig_sleep = time.sleep
+
+        def _scaled_sleep(seconds):
+            _orig_sleep(seconds * scale)
+
+        gc.time.sleep = _scaled_sleep
+        print(f"Running at {scale}× speed scale "
+              f"(MOVE_DURATION={gc.MOVE_DURATION} ms)")
 
     print(f"Settling into crawl_stance...")
-    crawl_stance()
+    gc.crawl_stance()
     time.sleep(1.0)
 
     if pause:
@@ -50,11 +71,11 @@ def main():
 
     for i in range(cycles):
         print(f"\n=== Stride {i + 1}/{cycles} ===")
-        full_stride()
+        gc.full_stride()
         time.sleep(0.3)
 
     print("\nDone. Returning to crawl_stance.")
-    crawl_stance()
+    gc.crawl_stance()
 
 
 if __name__ == "__main__":

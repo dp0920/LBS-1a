@@ -559,6 +559,36 @@ These three sit in v20's elite tier (combined 42–60). About **1 in 5 runs** hi
 
 **Updated deployment recommendation:** v20 remains the recommended deployable. v25_scratch_3M_b and v26_body_smooth_b are alternative high-tier runs worth keeping for replay video. Skip BC+PPO and CMA-start for hardware deployment — they're worse than the simple recipe.
 
+### 4.14 v30 — friction domain randomization for sim-to-real
+
+**Motivation.** Hardware testing surfaced a sliding gait: the CMA and v20 PPO policies all walked cleanly in sim but slid backward on the carpeted lab floor. Sim floor friction is `μ=1.0` (rubber on rubber, soft contact); real surfaces measured ~0.3–0.6. Policies trained at one operating point have no reason to generalize to the other.
+
+**Method.** Added `friction_range=(lo, hi)` kwarg to `OptimusPrimalEnv` (`gym_env.py:226`). At episode reset, sample `μ ~ U[lo, hi]` and write to `model.geom_friction[floor, 0]`. Trained three 3M-step variants over `μ ∈ [0.3, 1.0]`, each starting from a different reward recipe:
+
+| variant | reward base |
+|---|---|
+| `v30_v20_dr` | v20 (champion config from §4.13) |
+| `v30_bodysmooth_dr` | v26 body-smoothness penalty + DR |
+| `v30_v6trig_dr` | v6 trig-feature observations + DR |
+
+**Eval.** Added `--friction` to `ppo_stats.py` to fix μ for all eval episodes. Swept μ ∈ {1.0, 0.7, 0.5, 0.3} × 3 models × 30 episodes, fall-tilt 30°.
+
+| model | μ=1.0 mean_dx / surv | μ=0.7 | μ=0.5 | μ=0.3 | Δ(1.0→0.3) |
+|---|---|---|---|---|---|
+| **bodysmooth_dr** | 50.5 m, 23/30 | 56.4, 25/30 | 54.0, 25/30 | **53.9, 22/30** | **+7%** |
+| v20_dr | **61.2, 25/30** | 56.5, 22/30 | 51.5, 20/30 | 49.4, 17/30 | −19% |
+| v6trig_dr | 35.1, 19/30 | 37.1, 23/30 | 35.1, 21/30 | 39.6, 21/30 | +13% |
+
+**Findings.**
+
+1. **DR works, but only with the right reward base.** `bodysmooth_dr` is *flat* across the friction range — 50–56 m mean, 22–25 survivors at every μ. Exactly the operating-point invariance DR was supposed to produce. `v20_dr` regressed 19% from μ=1.0 to μ=0.3 with survival dropping 25→17; the DR objective didn't fully take hold, presumably because the v20 reward lets the policy specialize to the high-grip end of the distribution.
+
+2. **Body-smoothness penalty + DR is synergistic.** Standalone v26 in §4.13 was a low-confidence positive (N=2, cohort mean 31.9 with one outlier). Combined with friction DR it's the most stable single configuration we've trained: best low-friction performance AND best low-friction survival.
+
+3. **v6trig is consistently weaker.** ~30% behind on absolute distance at every friction. The trig-feature observation set didn't help the policy generalize beyond what the simpler observation gives.
+
+**Updated deployment recommendation:** `v30_bodysmooth_dr` supersedes v20 for hardware. At μ=0.3 it scores 54 m vs v20_dr's 49 m, with 22 vs 17 survivors out of 30. v20 still wins at sim-default but real surfaces aren't sim-default — the friction-flat policy is the right pick.
+
 ---
 
 ## 5. Optimization algorithms

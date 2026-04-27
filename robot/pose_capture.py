@@ -34,6 +34,19 @@ Usage:
                                                # bias. Required when one
                                                # diagonal can't support a
                                                # static 3-leg tripod.
+  python3 pose_capture.py --in=balance_poses.json
+                                              # load a previous capture,
+                                              # use its 'stance' pose as
+                                              # starting point. Skips the
+                                              # symmetric-stance command +
+                                              # any --manual-stance step.
+                                              # Existing lift_* poses are
+                                              # carried over; you only
+                                              # re-capture missing ones.
+  python3 pose_capture.py --legs=RL,RR        # only capture these legs
+                                              # (skip the others). Combine
+                                              # with --in to fix specific
+                                              # poses without redoing all 4.
 """
 import json
 import sys
@@ -49,6 +62,8 @@ LEG_SERVOS = {
 
 def main():
     out_path = "balance_poses.json"
+    in_path = None
+    legs_to_capture = ["FL", "FR", "RL", "RR"]
     hip = 35
     knee = -75
     manual_stance = False
@@ -56,6 +71,11 @@ def main():
     for arg in sys.argv[1:]:
         if arg.startswith("--out="):
             out_path = arg.split("=", 1)[1]
+        elif arg.startswith("--in="):
+            in_path = arg.split("=", 1)[1]
+        elif arg.startswith("--legs="):
+            legs_to_capture = [s.strip().upper()
+                                for s in arg.split("=", 1)[1].split(",")]
         elif arg.startswith("--hip="):
             hip = int(arg.split("=", 1)[1])
         elif arg.startswith("--knee="):
@@ -100,44 +120,64 @@ def main():
         LX16A(h).enable_torque()
         LX16A(k).enable_torque()
 
+    # Load previous capture if --in provided. Existing stance + lift_*
+    # poses are carried into the new output JSON (so partial sessions
+    # can be resumed / corrected).
+    poses = {}
+    loaded_stance = None
+    if in_path is not None:
+        with open(in_path) as f:
+            loaded = json.load(f)
+        # JSON keys come back as strings; normalize servo IDs to ints
+        # in nested pose dicts so downstream code can index by int.
+        for pose_name, angles in loaded.items():
+            poses[pose_name] = {int(sid): ang for sid, ang in angles.items()}
+        loaded_stance = poses.get("stance")
+        print(f"Loaded {len(poses)} pose(s) from {in_path}: "
+              f"{list(poses.keys())}")
+
     print(f"\n=== Pose capture ===")
     print(f"  symmetric stance:  hip={hip}°  knee={knee}°")
     print(f"  manual stance:     {manual_stance}")
+    print(f"  loaded from:       {in_path}")
+    print(f"  legs to capture:   {legs_to_capture}")
     print(f"  output file:       {out_path}")
     print()
-    print("Settling into symmetric stance...")
-    symmetric_stance()
-    time.sleep(1.2)
 
-    if manual_stance:
-        print("\n--- Capturing stance pose manually ---")
-        print("  Disabling torque on ALL 8 servos. Body will go floppy —")
-        print("  support it, level it physically, then press Enter.")
-        for leg in ["FL", "FR", "RL", "RR"]:
-            disable_leg_torque(leg)
-        input("  Level the body, then press Enter to capture stance...")
-        stance_angles = read_all_angles()
-        print(f"  Captured stance angles: {stance_angles}")
-        # Re-enable torque AT THE CAPTURED ANGLES so the robot holds.
-        # pylx16a doesn't have a "hold here" call, so we send move() to
-        # the just-read positions before re-enabling torque, then enable.
-        # Simpler: enable_torque, then move() to the captured angles.
-        for leg in ["FL", "FR", "RL", "RR"]:
-            enable_leg_torque(leg)
-        time.sleep(0.2)
-        # Move servos to the captured angles via direct LX16A.move.
-        # This avoids leg_abs's neutral+offset arithmetic.
-        for sid, angle in stance_angles.items():
-            LX16A(sid).move(angle, time=400)
-        time.sleep(0.6)
-        poses = {"stance": stance_angles}
+    if loaded_stance is not None:
+        print("Moving robot to loaded stance pose...")
+        for sid, angle in loaded_stance.items():
+            LX16A(sid).move(angle, time=800)
+        time.sleep(1.2)
+        print(f"  loaded stance angles: {loaded_stance}")
     else:
-        poses = {"stance": read_all_angles()}
-        print(f"  stance angles: {poses['stance']}")
+        print("Settling into symmetric stance...")
+        symmetric_stance()
+        time.sleep(1.2)
+
+        if manual_stance:
+            print("\n--- Capturing stance pose manually ---")
+            print("  Disabling torque on ALL 8 servos. Body will go floppy —")
+            print("  support it, level it physically, then press Enter.")
+            for leg in ["FL", "FR", "RL", "RR"]:
+                disable_leg_torque(leg)
+            input("  Level the body, then press Enter to capture stance...")
+            stance_angles = read_all_angles()
+            print(f"  Captured stance angles: {stance_angles}")
+            for leg in ["FL", "FR", "RL", "RR"]:
+                enable_leg_torque(leg)
+            time.sleep(0.2)
+            for sid, angle in stance_angles.items():
+                LX16A(sid).move(angle, time=400)
+            time.sleep(0.6)
+            poses["stance"] = stance_angles
+        else:
+            poses["stance"] = read_all_angles()
+            print(f"  stance angles: {poses['stance']}")
 
     input("\nReady. Press Enter to start the capture loop...")
 
-    for leg in ["FL", "FR", "RL", "RR"]:
+    for leg in legs_to_capture:
         print(f"\n--- Capturing lift_{leg} ---")
         if pose_all_legs:
             print(f"  Disabling torque on ALL 4 legs (--pose-all-legs).")

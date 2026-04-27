@@ -20,9 +20,16 @@ LEGS = {
 }
 
 
-def build_model():
+def build_model(kp=2.5, kv=0.05):
     """Load the URDF and attach floor/lights/actuators. Returns a compiled
-    MjModel. Uses the MjSpec declarative API (requires mujoco>=3.2)."""
+    MjModel. Uses the MjSpec declarative API (requires mujoco>=3.2).
+
+    kp/kv are the position-actuator PD gains.  The defaults (kp=2.5,
+    kv=0.05) match the original training setup but produce an underdamped
+    response that PPO learns to exploit as a low-pass filter — making
+    policies non-deployable to LX-16A hardware.  Higher values (e.g.
+    kp=20, kv=1.0) force near-instant joint tracking so the action stream
+    IS the joint trajectory and open-loop replay works."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     urdf_path = os.path.join(script_dir, "optimus_primal.urdf")
     spec = mujoco.MjSpec.from_file(urdf_path)
@@ -48,7 +55,7 @@ def build_model():
         act = spec.add_actuator(name=f"act_{jname}")
         act.target = jname
         act.trntype = mujoco.mjtTrn.mjTRN_JOINT
-        act.set_to_position(kp=2.5, kv=0.05)
+        act.set_to_position(kp=kp, kv=kv)
     return spec.compile()
 
 

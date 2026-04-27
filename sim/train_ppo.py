@@ -30,7 +30,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
              start_pose_json=None,
              body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
              fall_penalty=20.0, survival_bonus=0.0,
-             friction_range=None):
+             friction_range=None,
+             kp=2.5, kv=0.05, ctrl_repeat=8):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
@@ -49,6 +50,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
             fall_penalty=fall_penalty,
             survival_bonus=survival_bonus,
             friction_range=friction_range,
+            kp=kp, kv=kv,
+            ctrl_repeat=ctrl_repeat,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -77,7 +80,8 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
           init_from=None, start_pose_json=None,
           body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
           fall_penalty=20.0, survival_bonus=0.0,
-          friction_range=None):
+          friction_range=None,
+          kp=2.5, kv=0.05, ctrl_repeat=8):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale,
@@ -94,7 +98,9 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
                                    foot_drift_penalty=foot_drift_penalty,
                                    fall_penalty=fall_penalty,
                                    survival_bonus=survival_bonus,
-                                   friction_range=friction_range)
+                                   friction_range=friction_range,
+                                   kp=kp, kv=kv,
+                                   ctrl_repeat=ctrl_repeat)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
     if init_from is not None:
@@ -278,6 +284,20 @@ def main():
                          "domain randomization. Format 'lo,hi' (e.g. "
                          "'0.3,1.2'). Default None = no randomization "
                          "(uses sim_core's static 1.0).")
+    ap.add_argument("--kp", type=float, default=2.5,
+                    help="Position-actuator proportional gain (sim_core "
+                         "build_model). Default 2.5 (original, underdamped). "
+                         "Higher values (e.g. 20) force near-instant joint "
+                         "tracking so the policy cannot exploit the PD "
+                         "filter — required for open-loop hardware deploy.")
+    ap.add_argument("--kv", type=float, default=0.05,
+                    help="Position-actuator derivative gain. Pairs with "
+                         "--kp; scale proportionally (e.g. kp=20 → kv=1.0).")
+    ap.add_argument("--ctrl-repeat", type=int, default=8,
+                    help="Physics substeps per env step (frame-skip). "
+                         "Default 8 → 16 ms / 62.5 Hz. Lower values slow "
+                         "the control rate (e.g. 32 → 40ms / 25 Hz), giving "
+                         "the actuator more time to settle per command.")
     args = ap.parse_args()
     friction_range = None
     if args.friction_range is not None:
@@ -309,7 +329,9 @@ def main():
               foot_drift_penalty=args.foot_drift_penalty,
               fall_penalty=args.fall_penalty,
               survival_bonus=args.survival_bonus,
-              friction_range=friction_range)
+              friction_range=friction_range,
+              kp=args.kp, kv=args.kv,
+              ctrl_repeat=args.ctrl_repeat)
 
 
 if __name__ == "__main__":

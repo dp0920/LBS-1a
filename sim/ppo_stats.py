@@ -39,13 +39,18 @@ def main():
                          "every episode (overrides any randomization). Use to "
                          "evaluate a friction-DR policy at a specific operating "
                          "point — e.g. 1.0 for sim-default, ~0.4 for real-world.")
+    ap.add_argument("--kp", type=float, default=2.5,
+                    help="Actuator kp — must match training value.")
+    ap.add_argument("--kv", type=float, default=0.05,
+                    help="Actuator kv — must match training value.")
     args = ap.parse_args()
 
     fric_range = (args.friction, args.friction) if args.friction is not None else None
     env = OptimusPrimalEnv(max_steps=args.max_steps,
                            fall_tilt_deg=args.fall_tilt,
                            ctrl_repeat=args.ctrl_repeat,
-                           friction_range=fric_range)
+                           friction_range=fric_range,
+                           kp=args.kp, kv=args.kv)
     vn_path = args.policy.replace(".zip", "_vecnormalize.pkl")
     dv = VecNormalize.load(vn_path, DummyVecEnv([lambda: env]))
     dv.training = False

@@ -113,9 +113,10 @@ class OptimusPrimalEnv(gym.Env):
                  weight_transfer_bonus=0.0, start_pose_json=None,
                  body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
                  fall_penalty=20.0, survival_bonus=0.0,
-                 friction_range=None):
+                 friction_range=None,
+                 kp=2.5, kv=0.05):
         super().__init__()
-        self.model = build_model()
+        self.model = build_model(kp=kp, kv=kv)
         self.data = mujoco.MjData(self.model)
         self.qadr = get_qadr(self.model)
         self.ctrl_idx = get_ctrl_idx(self.model)

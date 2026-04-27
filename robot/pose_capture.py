@@ -20,6 +20,12 @@ Usage:
   python3 pose_capture.py                     # default 'balance_poses.json'
   python3 pose_capture.py --out my_poses.json
   python3 pose_capture.py --hip=35 --knee=-75 # tweak symmetric stance
+  python3 pose_capture.py --manual-stance     # disable ALL torque first,
+                                               # let you level body manually,
+                                               # then capture stance pose.
+                                               # Use when commanded
+                                               # symmetric pose is tilted
+                                               # (per-servo calib drift).
 """
 import json
 import sys
@@ -37,6 +43,7 @@ def main():
     out_path = "balance_poses.json"
     hip = 35
     knee = -75
+    manual_stance = False
     for arg in sys.argv[1:]:
         if arg.startswith("--out="):
             out_path = arg.split("=", 1)[1]
@@ -44,6 +51,8 @@ def main():
             hip = int(arg.split("=", 1)[1])
         elif arg.startswith("--knee="):
             knee = int(arg.split("=", 1)[1])
+        elif arg == "--manual-stance":
+            manual_stance = True
 
     sys.argv = [sys.argv[0]]   # avoid gait_controller's __main__ block
 
@@ -82,14 +91,38 @@ def main():
 
     print(f"\n=== Pose capture ===")
     print(f"  symmetric stance:  hip={hip}°  knee={knee}°")
+    print(f"  manual stance:     {manual_stance}")
     print(f"  output file:       {out_path}")
     print()
     print("Settling into symmetric stance...")
     symmetric_stance()
     time.sleep(1.2)
 
-    poses = {"stance": read_all_angles()}
-    print(f"  stance angles: {poses['stance']}")
+    if manual_stance:
+        print("\n--- Capturing stance pose manually ---")
+        print("  Disabling torque on ALL 8 servos. Body will go floppy —")
+        print("  support it, level it physically, then press Enter.")
+        for leg in ["FL", "FR", "RL", "RR"]:
+            disable_leg_torque(leg)
+        input("  Level the body, then press Enter to capture stance...")
+        stance_angles = read_all_angles()
+        print(f"  Captured stance angles: {stance_angles}")
+        # Re-enable torque AT THE CAPTURED ANGLES so the robot holds.
+        # pylx16a doesn't have a "hold here" call, so we send move() to
+        # the just-read positions before re-enabling torque, then enable.
+        # Simpler: enable_torque, then move() to the captured angles.
+        for leg in ["FL", "FR", "RL", "RR"]:
+            enable_leg_torque(leg)
+        time.sleep(0.2)
+        # Move servos to the captured angles via direct LX16A.move.
+        # This avoids leg_abs's neutral+offset arithmetic.
+        for sid, angle in stance_angles.items():
+            LX16A(sid).move(angle, time=400)
+        time.sleep(0.6)
+        poses = {"stance": stance_angles}
+    else:
+        poses = {"stance": read_all_angles()}
+        print(f"  stance angles: {poses['stance']}")
 
     input("\nReady. Press Enter to start the capture loop...")
 
@@ -109,8 +142,15 @@ def main():
         enable_leg_torque(leg)
         time.sleep(0.3)
         # Return JUST this leg to stance before doing the next one,
-        # so the rest of the body doesn't shift.
-        leg_abs(leg, hip, knee)
+        # so the rest of the body doesn't shift. If we have a captured
+        # stance from --manual-stance, return to those exact angles
+        # rather than the (tilted) commanded symmetric stance.
+        if manual_stance and "stance" in poses:
+            h, k = LEG_SERVOS[leg]
+            LX16A(h).move(poses["stance"][h], time=600)
+            LX16A(k).move(poses["stance"][k], time=600)
+        else:
+            leg_abs(leg, hip, knee)
         time.sleep(1.0)
 
     # Restore trim

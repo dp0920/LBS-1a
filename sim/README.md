@@ -12,14 +12,72 @@
 # Demo the hand-tuned gait in the viewer
 mjpython mujoco_gait.py --demo
 
-# Replay a trained gait
+# Replay a trained CMA gait (mammalian)
 mjpython mujoco_gait.py --replay best_gait.json
+
+# Replay an X-config (ANYmal) CMA gait
+mjpython mujoco_gait.py --replay cma_xconfig.json --xconfig
 
 # Train locally with CMA-ES (default)
 python3 mujoco_gait.py --tune --generations 150
 
 # Train with different algorithm or seed
 python3 mujoco_gait.py --tune --algo de --init random --generations 200
+```
+
+### Replaying Trajectories
+
+**CMA gaits** (JSON of joint angles):
+```bash
+mjpython mujoco_gait.py --replay <path-to-gait.json>          # mammalian
+mjpython mujoco_gait.py --replay <path-to-gait.json> --xconfig # ANYmal X
+mjpython mujoco_gait.py --replay <path> --cycles 10            # more cycles
+```
+
+**PPO policies** (zip + vecnormalize.pkl):
+```bash
+# Always pass the same env flags the policy was trained with —
+# friction range, xconfig, slew-rate, kp/kv. They live in train_ppo.py
+# config or the run's tb-name suggests them.
+mjpython train_ppo.py --replay models/ablations/ppo_v35_slew_a.zip \
+    --xconfig --slew-rate 125 --friction-range 0.2,0.5 \
+    --deterministic                                        # mean action
+```
+
+**Static pose check** for the X-config URDF (no gait, just confirm the
+robot stands in the configured stance):
+```bash
+mjpython view_xconfig.py
+mjpython view_xconfig.py --z=0.10            # closer to floor
+mjpython view_xconfig.py --hip-mult=1.3      # wider stance
+mjpython view_xconfig.py --mammal            # plain URDF for comparison
+```
+
+### X-Config + PPO Training
+
+The ANYmal X-stance URDF (`optimus_primal_xconfig.urdf`) has the rear hip and rear knee axes flipped. Training:
+```bash
+# CMA xconfig
+python3 mujoco_gait.py --tune --xconfig --generations 500
+
+# PPO with the velocity-slew actuator (deployable target)
+python3 train_ppo.py --timesteps 3000000 --n-envs 3 \
+    --xconfig --slew-rate 125 \
+    --friction-range 0.2,0.5 --fall-tilt 30 \
+    --out models/ppo_v35_slew_a.zip --tb-name v35_slew_a_1
+```
+The `--slew-rate 125` flag rate-limits `data.ctrl` to 125°/s (matching measured LX-16A response under load) so the PPO action stream emerges as a deployable trajectory rather than a bang-bang exploit of MuJoCo's underdamped PD. See `METHODS.md §4.15-4.16` for the full story.
+
+### Diagnostics
+
+```bash
+# Check whether a PPO policy is deployable (saturation rate, qpos-replay)
+python3 ppo_actuator_gap.py --policy models/ablations/ppo_v35_slew_a.zip \
+    --friction 0.3
+
+# Per-friction sweep on a friction-DR policy
+python3 ppo_stats.py --policy models/ablations/ppo_v30_bodysmooth_dr.zip \
+    --friction 0.3 --episodes 30
 ```
 
 ### Training Options

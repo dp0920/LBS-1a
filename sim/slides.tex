@@ -34,7 +34,7 @@
 \begin{frame}{Digital Twin --- URDF to MuJoCo}
 \begin{itemize}
     \item Built from the same \texttt{optimus\_primal.urdf} the real robot uses --- same link geometry, joint limits, effort caps
-    \item 8 actuated joints (4 hips + 4 knees) driven by \textbf{position servos} ($k_p{=}2.5$, $k_v{=}0.05$) matching the LX-16A's torque characteristics
+    \item 8 actuated joints (4 hips + 4 knees) driven by \textbf{position servos} ($k_p{=}2.5$, $k_v{=}0.05$, initial guess; bench-measured later --- see slide 13)
     \item Free joint on \texttt{base\_link} --- physics decides what happens; no kinematic cheating
     \item Floor: flat plane with friction $\mu{=}1.0$ (rubber/TPU-sock approximation)
     \item \textbf{Caveat:} CAD wasn't modeled at the origin, so STL meshes render detached. Collision geometry is correct; visual hidden via \texttt{discardvisual}. Cosmetic only --- physics unaffected.

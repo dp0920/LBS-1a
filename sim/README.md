@@ -14,6 +14,26 @@ X-config reaches ~84 % of the mammalian gen-2500 winner in 1/5 the compute. Both
 
 v30/v33 hit ~60–70 k ep_rew_mean *because* they exploited MuJoCo's underdamped PD as a low-pass filter — none of the high-reward runs deploy to hardware. See `METHODS.md §4.15` for the actuator-gap finding and §4.16 for the velocity-slew fix that's expected to close the gap.
 
+### Detailed plots — what each gait actually does
+
+**Phase × leg heatmap** (joint angles per phase). Visualizes the 13-phase × 8-joint matrix the optimizer is searching over — which phases command which joints to which angles. Yellow band = high (extension); dark = low (crouch).
+
+![Gait heatmap](gait_heatmap_best_gait.png)
+
+**Per-leg trajectory** of hip and knee angles over the gait cycle. Each leg's swing/plant pattern is a discrete signature.
+
+![Leg trajectories](gait_legs_best_gait.png)
+
+**Multi-gait comparison** of distance, orientation, and joint-angle profiles across the gen-50 → gen-2500 CMA run progression — shows how the optimizer's solution sharpens with more compute.
+
+![Gait comparison across gens](gait_comparison.png)
+
+**Per-step reward diagnostic** — breaks the cumulative reward at each step into its component contributions (forward distance, alive bonus, posture penalties, etc.) so you can see what the optimizer is actually being paid for at each phase.
+
+![Step reward diagnostic](step_reward_diagnostic.png)
+
+A full set of per-gait rollout PNGs (`rollout_<name>_distance.png`, `_orientation.png`, `_joints.png`, `_trajectory.png`) lives in this folder for every named gait — useful when comparing two specific runs head-to-head.
+
 ## Local Development
 
 ### Prerequisites

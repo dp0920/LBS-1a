@@ -53,9 +53,14 @@ for leg in LEGS.values():
 hip_offset = 35
 knee_offset = -80
 
+# X-config (ANYmal-style): rear knees bend OPPOSITE direction from front.
+# Default False = mammalian / Spot-style (all knees bend same way).
+# Set True to invert rear knees so the body sits in an X.
+xconfig = False
+
 # Per-leg knee trim — keep in sync with gait_controller.py
 # Positive = more bent (lower); negative = straighter (higher)
-KNEE_TRIM = {"FL": -20, "FR": -20, "RL": 0, "RR": 0}
+KNEE_TRIM = {"FL": -33, "FR": +2, "RL": +10, "RR": +12}
 
 def get_neutral(motor_id):
     return neutral[str(motor_id)]
@@ -65,15 +70,30 @@ def move_servo(motor_id, angle, duration=500):
     servos[motor_id].move(angle, time=duration)
 
 def apply_stance(duration=500):
-    """Apply current hip/knee offsets to all 4 legs (with per-leg knee trim)."""
+    """Apply current hip/knee offsets to all 4 legs (with per-leg knee trim).
+
+    If xconfig=True:
+      - rear legs use -knee_offset so they bend opposite from the front
+      - all hips rotate FORWARD instead of back (legs sweep under the body
+        toward an X-stance)
+    """
     for name, leg in LEGS.items():
         d = leg["dir"]
-        knee_off_trimmed = knee_offset - KNEE_TRIM[name]
-        hip_target = get_neutral(leg["hip"]) + (hip_offset * d * -1)
+        # ANYmal X: rear hip AND rear knee both flipped, fronts mammalian.
+        if xconfig and name in ("RL", "RR"):
+            hip_sign = +1
+            knee_for_leg = -knee_offset
+        else:
+            hip_sign = -1
+            knee_for_leg = knee_offset
+        knee_off_trimmed = knee_for_leg - KNEE_TRIM[name]
+        hip_target = get_neutral(leg["hip"]) + (hip_offset * d * hip_sign)
         knee_target = get_neutral(leg["knee"]) + (knee_off_trimmed * d)
         move_servo(leg["hip"], hip_target, duration)
         move_servo(leg["knee"], knee_target, duration)
-    print(f"  Stance applied: hip={hip_offset}°, knee={knee_offset}° (+ per-leg trim)")
+    cfg = "X-config (rear hip+knee flipped)" if xconfig else "mammalian"
+    print(f"  Stance applied: hip={hip_offset}°, knee={knee_offset}° "
+          f"[{cfg}] (+ per-leg trim)")
 
 def lift_leg(leg_name, lift_amount=30):
     """Lift one leg by bending the knee, keep other 3 planted."""
@@ -413,7 +433,20 @@ def save():
     print(f"\n  Current stance config:")
     print(f"    STANDING_HIP_OFFSET = {hip_offset}")
     print(f"    STANDING_KNEE_OFFSET = {knee_offset}")
+    print(f"    xconfig             = {xconfig}")
     print(f"\n  Paste these into gait_controller.py")
+
+def xon():
+    """Enable ANYmal X-config (rear knees flipped) and re-apply stance."""
+    global xconfig
+    xconfig = True
+    apply_stance()
+
+def xoff():
+    """Disable X-config (mammalian / Spot-style) and re-apply stance."""
+    global xconfig
+    xconfig = False
+    apply_stance()
 
 # ============================================================
 # START

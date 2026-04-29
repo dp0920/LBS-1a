@@ -20,7 +20,7 @@ LEGS = {
 }
 
 
-def build_model(kp=2.5, kv=0.05):
+def build_model(kp=2.5, kv=0.05, urdf="optimus_primal.urdf"):
     """Load the URDF and attach floor/lights/actuators. Returns a compiled
     MjModel. Uses the MjSpec declarative API (requires mujoco>=3.2).
 
@@ -29,9 +29,13 @@ def build_model(kp=2.5, kv=0.05):
     response that PPO learns to exploit as a low-pass filter — making
     policies non-deployable to LX-16A hardware.  Higher values (e.g.
     kp=20, kv=1.0) force near-instant joint tracking so the action stream
-    IS the joint trajectory and open-loop replay works."""
+    IS the joint trajectory and open-loop replay works.
+
+    `urdf` selects which URDF to load. Use 'optimus_primal_xconfig.urdf'
+    for the ANYmal X-config variant (rear knee axes flipped, rear knee
+    joint range becomes [0, +120°] instead of [-120°, 0])."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    urdf_path = os.path.join(script_dir, "optimus_primal.urdf")
+    urdf_path = os.path.join(script_dir, urdf)
     spec = mujoco.MjSpec.from_file(urdf_path)
     spec.meshdir = os.path.join(script_dir, "meshes")
     spec.add_texture(name="skybox", type=mujoco.mjtTexture.mjTEXTURE_SKYBOX,

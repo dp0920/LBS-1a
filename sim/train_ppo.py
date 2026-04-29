@@ -31,7 +31,9 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
              body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
              fall_penalty=20.0, survival_bonus=0.0,
              friction_range=None,
-             kp=2.5, kv=0.05, ctrl_repeat=8):
+             kp=2.5, kv=0.05, ctrl_repeat=8,
+             urdf="optimus_primal.urdf",
+             slew_rate_dps=None):
     def _init():
         env = OptimusPrimalEnv(
             fall_tilt_deg=fall_tilt_deg,
@@ -52,6 +54,8 @@ def make_env(seed=0, fall_tilt_deg=20.0, tilt_scale=1.0,
             friction_range=friction_range,
             kp=kp, kv=kv,
             ctrl_repeat=ctrl_repeat,
+            urdf=urdf,
+            slew_rate_dps=slew_rate_dps,
         )
         env = Monitor(env)
         env.reset(seed=seed)
@@ -81,7 +85,9 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
           body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
           fall_penalty=20.0, survival_bonus=0.0,
           friction_range=None,
-          kp=2.5, kv=0.05, ctrl_repeat=8):
+          kp=2.5, kv=0.05, ctrl_repeat=8,
+          urdf="optimus_primal.urdf",
+          slew_rate_dps=None):
     envs = SubprocVecEnv([make_env(seed=i,
                                    fall_tilt_deg=fall_tilt_deg,
                                    tilt_scale=tilt_scale,
@@ -100,7 +106,9 @@ def train(timesteps, n_envs, out_path, log_dir, fall_tilt_deg, tilt_scale,
                                    survival_bonus=survival_bonus,
                                    friction_range=friction_range,
                                    kp=kp, kv=kv,
-                                   ctrl_repeat=ctrl_repeat)
+                                   ctrl_repeat=ctrl_repeat,
+                                   urdf=urdf,
+                                   slew_rate_dps=slew_rate_dps)
                           for i in range(n_envs)])
     # Normalize obs + reward so learning signal isn't dominated by scale.
     if init_from is not None:
@@ -298,6 +306,17 @@ def main():
                          "Default 8 → 16 ms / 62.5 Hz. Lower values slow "
                          "the control rate (e.g. 32 → 40ms / 25 Hz), giving "
                          "the actuator more time to settle per command.")
+    ap.add_argument("--xconfig", action="store_true",
+                    help="Use the ANYmal X-config URDF "
+                         "(optimus_primal_xconfig.urdf). Rear hip and rear "
+                         "knee axes flipped — match deployed --xconfig flag.")
+    ap.add_argument("--slew-rate", type=float, default=None,
+                    help="Velocity-slew actuator: limit how fast data.ctrl "
+                         "can change in deg/sec. Mimics the LX-16A's "
+                         "constant-velocity trajectory generator and "
+                         "prevents bang-bang exploitation. ~125 deg/s "
+                         "matches measured LX-16A speed under load. "
+                         "Default None = no slew limit (legacy behavior).")
     args = ap.parse_args()
     friction_range = None
     if args.friction_range is not None:
@@ -331,7 +350,10 @@ def main():
               survival_bonus=args.survival_bonus,
               friction_range=friction_range,
               kp=args.kp, kv=args.kv,
-              ctrl_repeat=args.ctrl_repeat)
+              ctrl_repeat=args.ctrl_repeat,
+              urdf="optimus_primal_xconfig.urdf" if args.xconfig
+                   else "optimus_primal.urdf",
+              slew_rate_dps=args.slew_rate)
 
 
 if __name__ == "__main__":

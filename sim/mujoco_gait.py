@@ -147,13 +147,33 @@ for name in PHASE_ORDER:
         PARAM_LABELS += [f"{name}_{leg}_hip", f"{name}_{leg}_knee"]
 PARAM_LABELS.append("phase_time")
 
-# Bounds
+# Bounds (mammalian default)
 BOUNDS_LO_ANGLES = np.tile([5, -100, 5, -100, 5, -100, 5, -100],
                            len(PHASE_ORDER))
 BOUNDS_HI_ANGLES = np.tile([55, -25, 55, -25, 55, -25, 55, -25],
                            len(PHASE_ORDER))
 BOUNDS_LO = np.append(BOUNDS_LO_ANGLES, [0.15])
 BOUNDS_HI = np.append(BOUNDS_HI_ANGLES, [1.2])
+
+# X-config bounds: ANYmal X via URDF axis flip on rear hip + rear knee.
+# All four legs use mammalian numerical conventions; the flipped URDF axes
+# convert "mammalian-direction" values to physical X-config motion. Same
+# convention as hardware --xconfig (which negates rear hip+knee values).
+BOUNDS_LO_XCONFIG = np.copy(BOUNDS_LO)
+BOUNDS_HI_XCONFIG = np.copy(BOUNDS_HI)
+
+
+def x0_for_xconfig(x0):
+    """Replace every phase with the user's calibrated symmetric X
+    stance, so CMA starts from "stand still in ANYmal X" and discovers
+    the gait swing pattern from there. The numerical values are in
+    mammalian convention (URDF axis flip handles the kinematic
+    reversal on the rear legs)."""
+    XSTANCE_FL = (42, -59)   # symmetric front legs
+    XSTANCE_RL = (39, -72)   # symmetric rear legs
+    pose = (XSTANCE_FL, XSTANCE_FL, XSTANCE_RL, XSTANCE_RL)
+    phases = {name: pose for name in PHASE_ORDER}
+    return np.append(phases_to_vector(phases), [0.6])
 
 
 def decode_params(x):
@@ -330,7 +350,8 @@ _worker_tilt_scale = 1.0
 _worker_interp = "linear"
 
 
-def _worker_init(fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
+def _worker_init(fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear",
+                 xconfig=False):
     """Each worker builds its own MuJoCo model (can't pickle them).
     Also ignore SIGINT so ctrl-C goes only to the parent — otherwise every
     worker dies at once and pool.map hangs inside C code."""
@@ -338,11 +359,25 @@ def _worker_init(fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     global _worker_model, _worker_data
     global _worker_fall_tilt_deg, _worker_tilt_scale, _worker_interp
-    _worker_model = build_model()
+    urdf = "optimus_primal_xconfig.urdf" if xconfig else "optimus_primal.urdf"
+    _worker_model = build_model(urdf=urdf)
     _worker_data = mujoco.MjData(_worker_model)
     _worker_fall_tilt_deg = fall_tilt_deg
     _worker_tilt_scale = tilt_scale
     _worker_interp = interp
+
+
+def _de_objective(x, n_cycles=5):
+    """Module-level DE objective so multiprocessing can pickle it.
+    Returns -reward (DE minimizes). Worker globals must be initialized
+    via _worker_init."""
+    poses, phase_time = decode_params(x)
+    r, _ = rollout(_worker_model, poses, phase_time,
+                   n_cycles=n_cycles, data=_worker_data,
+                   fall_tilt_deg=_worker_fall_tilt_deg,
+                   tilt_scale=_worker_tilt_scale,
+                   interp=_worker_interp)
+    return -r
 
 
 def _worker_eval(args):
@@ -380,7 +415,7 @@ def run_viewer(model, poses, phase_time, n_cycles=5, interp="linear"):
 def tune(model, out=None, generations=150, popsize=48,
          n_cycles=5, resume=False, workers=None, init="gait",
          fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear",
-         sigma_init=5.0):
+         sigma_init=5.0, xconfig=False):
     try:
         import cma
     except ImportError:
@@ -397,17 +432,25 @@ def tune(model, out=None, generations=150, popsize=48,
         out = f"best_gait{suffix}.json"
     log_path = _log_path_for(out, suffix)
 
+    bounds_lo = BOUNDS_LO_XCONFIG if xconfig else BOUNDS_LO
+    bounds_hi = BOUNDS_HI_XCONFIG if xconfig else BOUNDS_HI
+
     # Resume from saved best if available; otherwise seed from --init mode.
     x0 = make_x0(init)
+    if xconfig:
+        x0 = x0_for_xconfig(x0)
+    # Always clip seed to bounds — PHASE_DEFAULTS has -110 values that are
+    # outside the [-100,-25] knee bound and CMA refuses an out-of-bound seed.
+    x0 = np.clip(x0, bounds_lo, bounds_hi)
     best_r = -1e9
     if resume and os.path.exists(out):
         with open(out) as f:
             d = json.load(f)
-        x0 = np.clip(np.array(d["params"]), BOUNDS_LO, BOUNDS_HI)
+        x0 = np.clip(np.array(d["params"]), bounds_lo, bounds_hi)
         best_r = d.get("reward", -1e9)
         print(f"Resuming from {out} (reward={best_r:+.4f}, clamped to bounds)")
     else:
-        print(f"Initial seed: {init}")
+        print(f"Initial seed: {init}{' [xconfig]' if xconfig else ''}")
 
     best_x = x0.copy()
     gen = 0
@@ -422,14 +465,19 @@ def tune(model, out=None, generations=150, popsize=48,
     sigma = float(sigma_init)
     es = cma.CMAEvolutionStrategy(x0, sigma, {
         "popsize": popsize,
-        "bounds": [list(BOUNDS_LO), list(BOUNDS_HI)],
+        "bounds": [list(bounds_lo), list(bounds_hi)],
         "maxiter": generations,
         "verbose": -9,
         "tolstagnation": 0,
+        # BoundPenalty (default) crashes with `_inverse_i` ValueError on
+        # auto-restart when sigma grows. BoundTransform is more stable
+        # under sigma spikes — uses arcsine scaling instead of linear
+        # clipping at the bounds.
+        "BoundaryHandler": "BoundTransform",
     })
 
     pool = mp.Pool(workers, initializer=_worker_init,
-                   initargs=(fall_tilt_deg, tilt_scale, interp))
+                   initargs=(fall_tilt_deg, tilt_scale, interp, xconfig))
     print(f"  workers: {workers}  fall_tilt={fall_tilt_deg}°  "
           f"tilt_scale={tilt_scale}  interp={interp}")
 
@@ -644,7 +692,8 @@ def tune_random(model, out=None, generations=150, popsize=48,
 
 def tune_de(model, out=None, generations=150, popsize=48,
             n_cycles=5, workers=None, init="gait",
-            fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear"):
+            fall_tilt_deg=20.0, tilt_scale=1.0, interp="linear",
+            xconfig=False):
     """Differential Evolution via scipy — population-based, mutation by
     combining existing solutions. No covariance learning."""
     from scipy.optimize import differential_evolution
@@ -664,9 +713,9 @@ def tune_de(model, out=None, generations=150, popsize=48,
           f"maxiter={generations}, {n_cycles} cycles/eval)")
 
     pool = mp.Pool(workers, initializer=_worker_init,
-                   initargs=(fall_tilt_deg, tilt_scale, interp))
+                   initargs=(fall_tilt_deg, tilt_scale, interp, xconfig))
     print(f"  workers: {workers}  fall_tilt={fall_tilt_deg}°  "
-          f"tilt_scale={tilt_scale}  interp={interp}")
+          f"tilt_scale={tilt_scale}  interp={interp}  xconfig={xconfig}")
 
     cfg = {"algo": "de", "init": init, "fall_tilt_deg": fall_tilt_deg,
            "tilt_scale": tilt_scale, "interp": interp,
@@ -695,18 +744,10 @@ def tune_de(model, out=None, generations=150, popsize=48,
         _save_and_log(best_x[0], best_r[0], gen_counter[0], 0, out,
                       log_path, config=cfg)
 
-    def objective(x):
-        """Evaluate a single candidate (called by DE vectorized=False)."""
-        poses, phase_time = decode_params(x)
-        r, _ = rollout(_worker_model, poses, phase_time,
-                       n_cycles=n_cycles, data=_worker_data,
-                       fall_tilt_deg=_worker_fall_tilt_deg,
-                       tilt_scale=_worker_tilt_scale,
-                       interp=_worker_interp)
-        if r > best_r[0]:
-            best_r[0] = r
-            best_x[0] = x.copy()
-        return -r
+    # Use functools.partial of module-level _de_objective so it's picklable
+    # across worker processes (scipy DE requires this for workers!=1).
+    from functools import partial
+    objective = partial(_de_objective, n_cycles=n_cycles)
 
     try:
         # Seed the initial population: put x0 in and let DE fill the rest.
@@ -728,8 +769,9 @@ def tune_de(model, out=None, generations=150, popsize=48,
             tol=0,
             atol=0,
             seed=42,
-            workers=-1,  # use scipy's own parallelism
-            updating="deferred",  # required for workers=-1
+            workers=pool.map,    # reuse our initialized pool so workers
+                                 # have _worker_model etc. populated
+            updating="deferred",  # required for parallel workers
         )
         # Final best from scipy
         r, info = rollout(model, *decode_params(result.x), n_cycles=n_cycles,
@@ -799,6 +841,11 @@ def main():
                     help="Smoke-test mode: write output to "
                          "smoke_<timestamp>_<auto>.json / .jsonl so test runs "
                          "don't clobber committed results. Overrides --out.")
+    ap.add_argument("--xconfig", action="store_true",
+                    help="Train against the X-config (ANYmal-style) URDF: "
+                         "rear knee axes flipped, rear knee bounds [+25,+100]. "
+                         "Output JSON has rear knee values in the +ve range, "
+                         "matching the hardware --xconfig deploy convention.")
     args = ap.parse_args()
 
     # Smoke-test mode: prepend a timestamp to the output path so short test
@@ -814,7 +861,8 @@ def main():
         args.out = f"smoke_{ts}_best_gait{suffix}.json"
         print(f"[smoke] writing to {args.out}")
 
-    model = build_model()
+    model = build_model(urdf="optimus_primal_xconfig.urdf" if args.xconfig
+                        else "optimus_primal.urdf")
 
     if args.replay:
         with open(args.replay) as f:
@@ -834,11 +882,11 @@ def main():
                       interp=args.interp)
         if args.algo == "cma":
             tune(model, resume=args.resume, sigma_init=args.sigma_init,
-                 **common)
+                 xconfig=args.xconfig, **common)
         elif args.algo == "random":
             tune_random(model, **common)
         elif args.algo == "de":
-            tune_de(model, **common)
+            tune_de(model, xconfig=args.xconfig, **common)
     elif args.demo:
         poses, phase_time = decode_params(X0)
         run_viewer(model, poses, phase_time, n_cycles=args.cycles,

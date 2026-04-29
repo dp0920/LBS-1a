@@ -1,0 +1,10 @@
+  steps: 246   final_x: +1.82 m   fell: True
+
+  action stream  mean|Δ|/step=0.1784 rad  P95=0.8727  max=1.3090
+  qpos   stream  mean|Δ|/step=0.0809 rad  P95=0.2355  max=0.3824
+  action samples at LOW or HIGH: 82.9%
+
+=== open-loop qpos-trace replay ===
+  final_x: +0.32 m   steps: 246   fell: False
+
+ratio: open-loop / closed-loop = 17.7%

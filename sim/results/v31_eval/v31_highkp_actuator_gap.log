@@ -1,0 +1,11 @@
+=== closed-loop rollout (models/ablations/ppo_v31_highkp.zip) ===
+  steps: 2000   final_x: +0.12 m   fell: False
+
+  action stream  mean|Δ|/step=0.0094 rad  P95=0.0669  max=0.6321
+  qpos   stream  mean|Δ|/step=0.0036 rad  P95=0.0163  max=0.2450
+  action samples at LOW or HIGH: 50.1%
+
+=== open-loop qpos-trace replay ===
+  final_x: +0.16 m   steps: 408   fell: True
+
+ratio: open-loop / closed-loop = 129.9%

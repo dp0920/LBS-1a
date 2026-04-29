@@ -114,9 +114,19 @@ class OptimusPrimalEnv(gym.Env):
                  body_smoothness_penalty=0.0, foot_drift_penalty=0.0,
                  fall_penalty=20.0, survival_bonus=0.0,
                  friction_range=None,
-                 kp=2.5, kv=0.05):
+                 kp=2.5, kv=0.05,
+                 urdf="optimus_primal.urdf",
+                 slew_rate_dps=None):
         super().__init__()
-        self.model = build_model(kp=kp, kv=kv)
+        self.model = build_model(kp=kp, kv=kv, urdf=urdf)
+        # Velocity-slew actuator emulation: when slew_rate_dps is set,
+        # data.ctrl ramps toward the policy's action at a fixed deg/sec
+        # rate instead of snapping to it. Mimics the LX-16A's internal
+        # constant-velocity trajectory generator and prevents PPO from
+        # exploiting the underdamped PD as a low-pass filter (§4.15).
+        # 125 deg/s ≈ measured LX-16A speed under leg-load.
+        self.slew_rate_rad_per_sec = (np.radians(slew_rate_dps)
+                                       if slew_rate_dps else None)
         self.data = mujoco.MjData(self.model)
         self.qadr = get_qadr(self.model)
         self.ctrl_idx = get_ctrl_idx(self.model)
@@ -396,12 +406,30 @@ class OptimusPrimalEnv(gym.Env):
 
     def step(self, action):
         action = np.clip(action, ACTION_LOW, ACTION_HIGH)
-        for i, name in enumerate(JOINTS):
-            self.data.ctrl[self.ctrl_idx[name]] = float(action[i])
+        target_ctrl = np.asarray(action, dtype=np.float64)
 
         dx_total = 0.0
         fell = False
         for _ in range(self.ctrl_repeat):
+            # Velocity-slew actuator emulation. If slew_rate_rad_per_sec is
+            # set, ramp data.ctrl toward target at that rate per substep
+            # instead of snapping. This makes the action stream behave like
+            # a sequence of trajectory targets handed to the LX-16A —
+            # which interpolates linearly to each one — rather than
+            # instantaneous PD setpoints. Removes the bang-bang exploit.
+            if self.slew_rate_rad_per_sec is not None:
+                max_step = self.slew_rate_rad_per_sec * self.dt
+                for i, name in enumerate(JOINTS):
+                    current = self.data.ctrl[self.ctrl_idx[name]]
+                    delta = target_ctrl[i] - current
+                    if delta > max_step:
+                        delta = max_step
+                    elif delta < -max_step:
+                        delta = -max_step
+                    self.data.ctrl[self.ctrl_idx[name]] = current + delta
+            else:
+                for i, name in enumerate(JOINTS):
+                    self.data.ctrl[self.ctrl_idx[name]] = float(target_ctrl[i])
             mujoco.mj_step(self.model, self.data)
             self.acc.sample_step(self.data, self.base_body_id)
             x_now = float(self.data.qpos[0])

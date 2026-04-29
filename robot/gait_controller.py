@@ -86,13 +86,28 @@ def set_leg(leg_name, hip_offset, knee_offset, duration=MOVE_DURATION):
     Positive hip_offset = swing forward.
     Positive knee_offset = lift/extend.
     Direction multiplier handles left/right mirroring.
+
+    If XCONFIG is True, the standing pose AND the per-step offsets are
+    flipped on the rear legs so they sit in the ANYmal X position
+    (rear hips swept forward, rear knees bent the opposite way).
     """
     leg = LEGS[leg_name]
     d = leg["dir"]
-    
-    hip_target = get_neutral(leg["hip"]) + (STANDING_HIP_OFFSET * d * -1) + (hip_offset * d * -1)
-    knee_target = get_neutral(leg["knee"]) + (STANDING_KNEE_OFFSET * d) + (knee_offset * d)
-    
+
+    stand_hip = STANDING_HIP_OFFSET
+    stand_knee = STANDING_KNEE_OFFSET
+    h_off = hip_offset
+    k_off = knee_offset
+    if XCONFIG and leg_name in ("RL", "RR"):
+        # ANYmal X: rear hip + knee both flipped, front mammalian.
+        stand_hip = -stand_hip
+        stand_knee = -stand_knee
+        h_off = -h_off
+        k_off = -k_off
+
+    hip_target  = get_neutral(leg["hip"])  + (stand_hip  * d * -1) + (h_off * d * -1)
+    knee_target = get_neutral(leg["knee"]) + (stand_knee * d)      + (k_off * d)
+
     move_servo(leg["hip"], hip_target, duration)
     move_servo(leg["knee"], knee_target, duration)
 
@@ -167,12 +182,29 @@ LEGS_CRAWL = {
 # Robot leans left → straighten left knees (negative trim) and/or bend right (positive).
 # Targets: FL=-70, FR=-65, RL=-65, RR=-65 (all roughly even)
 # vs crawl_stance baseline (front=-100, rear=-50). trim = baseline - target.
-KNEE_TRIM = {"FL": -20, "FR": -20, "RL": 0, "RR": 0}
+KNEE_TRIM = {"FL": -33, "FR": +2, "RL": +10, "RR": +12}
+
+# X-config (ANYmal X stance). When True, BOTH the rear hip and the rear
+# knee are flipped (rear hip sweeps forward, rear knee bends opposite of
+# front), while the front legs stay mammalian. Sign pattern derived from
+# the user's manual kinesthetic capture:
+#   FL: hip+47, knee-35    FR: hip+58, knee-71
+#   RL: hip-47, knee+63    RR: hip-46, knee+53
+XCONFIG = False
 
 def leg_abs(name, hip_off, knee_off, duration=MOVE_DURATION):
-    """Set one leg to absolute hip/knee offsets (stance.py convention)."""
+    """Set one leg to absolute hip/knee offsets (stance.py convention).
+
+    If XCONFIG is True, rear legs' hip_off and knee_off are negated so
+    the rear hips swing forward instead of back and the rear knees bend
+    opposite from the front — putting the rear legs into X-config while
+    keeping the gait's swing/plant logic unchanged.
+    """
     leg = LEGS_CRAWL[name]
     d = leg["dir"]
+    if XCONFIG and name in ("RL", "RR"):
+        hip_off = -hip_off
+        knee_off = -knee_off
     knee_off_trimmed = knee_off - KNEE_TRIM[name]   # more negative = more bent
     hip_target  = get_neutral(leg["hip"])  + (hip_off  * d * -1)
     knee_target = get_neutral(leg["knee"]) + (knee_off_trimmed * d)
@@ -196,6 +228,51 @@ def crawl_stance():
     leg_abs("RL", 35,  -50)
     leg_abs("RR", 35,  -50)
     time.sleep(0.8)
+
+def full_stride_x(n_cycles=2, dt=0.4):
+    """Simple diagonal trot for X-config (use with --xconfig).
+
+    Pattern (each cycle, two beats):
+      beat 1: lift+swing FL+RR forward, FR+RL plant
+      beat 2: lift+swing FR+RL forward, FL+RR plant
+
+    Hip/knee values are written in mammalian convention; --xconfig flips
+    rear-leg values inside leg_abs so the actual hardware motion is
+    correct for the X-pose.
+
+    Tune dt for stability — too fast and the body falls during swing.
+    """
+    # Settle into a balanced X-stance
+    for leg in ["FL", "FR", "RL", "RR"]:
+        leg_abs(leg, 35, -80)
+    time.sleep(0.8)
+
+    for _ in range(n_cycles):
+        # ---- Beat 1: FL+RR diagonal lifts and swings forward ----
+        leg_abs("FL", 35, -100)   # lift (knee more bent)
+        leg_abs("RR", 35, -100)
+        leg_abs("FR", 50, -80)    # FR plants forward-shifted
+        leg_abs("RL", 50, -80)    # RL plants forward-shifted
+        time.sleep(dt)
+        leg_abs("FL", 50, -100)   # swing FL hip forward (still lifted)
+        leg_abs("RR", 50, -100)
+        time.sleep(dt)
+        leg_abs("FL", 50, -80)    # plant FL forward
+        leg_abs("RR", 50, -80)
+        time.sleep(dt)
+
+        # ---- Beat 2: FR+RL diagonal lifts and swings forward ----
+        leg_abs("FR", 35, -100)
+        leg_abs("RL", 35, -100)
+        leg_abs("FL", 20, -80)    # FL/RR push back to center (stance)
+        leg_abs("RR", 20, -80)
+        time.sleep(dt)
+        leg_abs("FR", 50, -100)
+        leg_abs("RL", 50, -100)
+        time.sleep(dt)
+        leg_abs("FR", 50, -80)
+        leg_abs("RL", 50, -80)
+        time.sleep(dt)
 
 def full_stride():
     """One full crawl stride: RL+FR step, then RR+FL step."""
@@ -367,11 +444,20 @@ def gait_loop():
 # KEYBOARD INPUT (evdev)
 # ============================================================
 def find_keyboard():
-    """Find the Rii Mini i8 or first available keyboard."""
+    """Find the Rii Mini i8 or first available keyboard.
+
+    Skips HDMI / audio / GPIO pseudo-devices that expose EV_KEY for
+    things like CEC hotplug or volume buttons but never produce W/S.
+    """
+    SKIP_SUBSTRINGS = ("hdmi", "vc4", "headphone", "internal", "gpio",
+                       "vbus", "power", "lid", "cec")
     try:
         import evdev
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         for dev in devices:
+            name = dev.name.lower()
+            if any(skip in name for skip in SKIP_SUBSTRINGS):
+                continue
             caps = dev.capabilities(verbose=True)
             if ('EV_KEY', 1) in caps:
                 print(f"Found keyboard: {dev.name} ({dev.path})")
@@ -379,7 +465,7 @@ def find_keyboard():
     except ImportError:
         print("evdev not installed! Run: pip install evdev")
         return None
-    
+
     print("No keyboard found!")
     return None
 
@@ -449,6 +535,10 @@ def terminal_input_loop():
 # ============================================================
 if __name__ == "__main__":
     print("=== Optimus Primal Gait Controller ===")
+
+    if "--xconfig" in sys.argv:
+        XCONFIG = True
+        print("  XCONFIG enabled — rear legs flipped to ANYmal X-stance")
 
     if "--measure" in sys.argv:
         # Crawl gait benchmark mode: 10 iterations, manual distance entry

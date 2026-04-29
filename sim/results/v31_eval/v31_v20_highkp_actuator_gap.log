@@ -1,0 +1,12 @@
+=== closed-loop rollout (models/ablations/ppo_v31_v20_highkp.zip) ===
+  steps: 29   final_x: -0.12 m   fell: True
+
+  action stream  mean|Δ|/step=0.0757 rad  P95=0.4874  max=0.7839
+  qpos   stream  mean|Δ|/step=0.0323 rad  P95=0.1102  max=0.2219
+  action samples at LOW or HIGH: 65.1%
+
+=== open-loop qpos-trace replay ===
+  final_x: -0.07 m   steps: 28   fell: True
+
+ratio: open-loop / closed-loop = 61.8%
+VERDICT: walking lives in the bang-bang action stream, not the joint trajectory. Not deployable open-loop.

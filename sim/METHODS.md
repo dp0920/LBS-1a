@@ -615,6 +615,56 @@ These three sit in v20's elite tier (combined 42–60). About **1 in 5 runs** hi
 
 **Diagnostic kept at `sim/ppo_actuator_gap.py`** so any future PPO variant can be checked the same way. If a re-trained policy outputs <30% saturated actions and the qpos-replay test gives ≥50% of closed-loop distance, that's the deployability bar.
 
+### 4.16 ANYmal X-config + bench-calibrated actuator + velocity-slew fix
+
+The PPO results above used the mammalian leg layout. We hypothesized an ANYmal-style **X-config** (front knees pointing forward, rear hips swept forward, all four feet converging under the chassis) might be intrinsically more stable and easier to optimize.
+
+**Hardware setup.** Added an `xconfig` mode to `gait_controller.py` and `stance.py`: when enabled, both the rear hip and rear knee are sign-flipped, putting the robot in the X stance. Captured the user's manually-posed level X via `pose_capture.py`, decoded servo angles back to per-leg `(hip_off, knee_off)`:
+
+| leg | hip_off | knee_off |
+|---|---|---|
+| FL | +44.3° | −46.4° |
+| FR | +40.7° | −71.5° |
+| RL | −41.0° | +75.8° |
+| RR | −36.9° | +67.4° |
+
+**Sim setup.** Built `optimus_primal_xconfig.urdf` mirroring the hardware: rear hip and rear knee joint axes flipped (`0 1 0` → `0 -1 0`). Threaded `--xconfig` through `mujoco_gait.py` and `train_ppo.py`. A symmetric averaged X stance `((+42, −59), (+42, −59), (+39, −72), (+39, −72))` became the X-config seed (`x0_for_xconfig`). Visual sanity-check via `view_xconfig.py` confirmed the URDF stands in the correct X pose with all four feet planted.
+
+**X-config CMA result.** With the X seed and `BoundaryHandler="BoundTransform"` (replacing the default `BoundPenalty` which crashed with an `_inverse_i` ValueError on auto-restart sigma spikes), CMA xconfig climbed cleanly to **best ≈ +680** by gen 261 — about 80 % of the mammalian gen-2500 winner (+821) at one-tenth the compute. **The X geometry is at least as optimizable as mammalian; the early-termination crashes had been a CMA boundary-handler bug, not a fundamental geometry problem.**
+
+**X-config PPO results (v33, v34).** Re-ran the v20 reward and a moderate-step variant (`stride_bonus=2, extension_bonus=1, velocity_bonus=2, body_smoothness_penalty=20-30`) under X-config + low-friction DR (μ ∈ [0.2, 0.5]). All trained without crashing and reached ep_rew_mean of 60–70 k, but `ppo_actuator_gap.py` showed the same **70–82 % action saturation** and falls within 100–250 steps in deterministic eval. **The X-config doesn't fix the actuator gap — that's an actuator-model problem, not a geometry problem.**
+
+**Bench-calibrated kp/kv.** To investigate the actuator gap directly, added a step-response calibration tool:
+
+- `robot/motor_step_response.py` runs a ±10° step on each of the 8 LX-16A servos in their X-pose load, sampling `get_physical_angle()` at ~50 Hz for 300 ms in each direction.
+- `sim/fit_pd_from_step_response.py` sweeps MuJoCo `(kp, kv)` to find the best 2nd-order match to the recorded data.
+
+Result on the actual hardware:
+
+| servo | joint | kp | kv |
+|---|---|---|---|
+| 1, 2 | hip_rl, hip_rr | 1.14 | 1.92 |
+| 3, 4 | hip_fl, hip_fr | 0.47 | 1.23 |
+| 5–8 | all knees | 0.73 | 0.51–0.87 |
+| **median** | — | **0.73** | **0.87** |
+
+**Per-step RMSE was ~5–7° on a 10° step** — high. The reason is structural: the LX-16A is a *trajectory generator* (constant-velocity linear slew + brake), not a PD controller. No `(kp, kv)` combination perfectly matches a constant-velocity ramp using exponential PD approach. Two implications:
+
+1. The original `kp=2.5` default was *too stiff* relative to the real LX-16A — sim was a faster actuator than reality. The actuator gap is therefore even *wider* than §4.15 measured, not narrower.
+2. **The right fix isn't tuning `(kp, kv)` — it's changing the actuator model itself.** A position-actuator with a velocity-clamp matches the LX-16A's behavior exactly (linear slew between targets at fixed deg/sec, like the LX-16A's internal trajectory generator).
+
+**Velocity-slew actuator fix.** Added `slew_rate_dps` parameter to `OptimusPrimalEnv.step()` (gym_env.py). When set, the per-substep update to `data.ctrl` is clamped to `slew_rate_dps × dt` deg of change toward the policy's action — emulating the LX-16A's constant-velocity trajectory generator at the actuator level. Verified via smoke test: a bang-bang action stream produces ≤ 0.6 °/env-step of joint motion at `slew_rate_dps=125` (vs 0.7 m/s LX-16A spec under load), down from the unconstrained PD response of ±17°/step. The policy can no longer exploit the underdamped PD as a low-pass filter, because the action stream itself is rate-limited before it ever reaches the PD.
+
+CLI flag added to `train_ppo.py`: `--slew-rate 125`. CMA gaits unaffected — they don't use gym_env. The legacy PD behavior is preserved when `slew_rate_dps=None` (the default).
+
+**What this enables for future work.** PPO trained with `--slew-rate 125 --kp 20 --kv 2.0` should produce action streams that ARE the deployable trajectory: each action becomes a position target the LX-16A interpolates to over the 16 ms ctrl interval. The actuator-gap diagnostic (`ppo_actuator_gap.py`) becomes the deployability gate — if saturation drops below 30 % AND qpos-replay ratio exceeds 50 %, the policy ports directly to hardware via `LX16A.move(angle, time=16)` calls.
+
+**Summary of the deployment story.**
+
+- **CMA gaits remain the only currently-deployable artifact.** Mammalian (`best_gait.json`, +821 reward) and X-config (`cma_xconfig.json`, +680 reward) both deploy via slow-phase replay because their phase times exceed actuator transient duration.
+- **PPO without the slew-actuator fix is sim-only.** All PPO families (v8–v34, including friction-DR and X-config variants) hit the bang-bang trap.
+- **PPO with the slew-actuator fix is the next experiment.** Untested at submission time. The architecture is in place; what remains is to train with `--slew-rate 125 --kp 20 --kv 2.0`, verify the actuator-gap diagnostic passes, then deploy a PPO trace to hardware.
+
 ---
 
 ## 5. Optimization algorithms

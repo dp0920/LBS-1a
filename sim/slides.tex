@@ -400,12 +400,15 @@ Added \texttt{slew\_rate\_dps} parameter to \texttt{OptimusPrimalEnv.step()}: pe
 \textbf{Verified:} a bang-bang action stream now produces only $\sim 0.6^\circ$/env-step of joint motion at $125^\circ$/s slew rate (vs the unconstrained PD's $\pm 17^\circ$/step).
 
 \vspace{0.5em}
-\textbf{What this enables (untested at submission time):}
+\textbf{Tested (v35, 3M steps $\times$ 3 seeds, X-config + low-friction DR):}
 \begin{itemize}
-    \item PPO action stream becomes the deployable trajectory --- each action is a position target the LX-16A interpolates to over the 16\,ms ctrl interval
-    \item Bang-bang is impossible: the sim physically rate-limits the action stream before it ever reaches the PD
-    \item Deployability gate: if \texttt{ppo\_actuator\_gap.py} reports saturation $<30\%$ AND replay ratio $>50\%$, the trace ports to hardware via \texttt{LX16A.move(angle, time=16)} calls
+    \item Training looked great: \texttt{ep\_rew\_mean $\approx +10{,}500$}, \texttt{ep\_len\_mean $= 2000$} across all three seeds.
+    \item Deterministic eval at $\mu{=}0.4$: \textbf{0/10 episodes survived; mean distance $-0.36$\,m (\emph{backward})}. Saturation rate stayed at 79\%.
+    \item \textbf{The policy learned to stand, not walk.} The v20 reward gives $\sim 5$/step from alive + posture --- standing 2000 steps yields $\sim$+10\,k without moving. The slew limit removed the bang-bang shortcut to forward motion, leaving the standing-still attractor as the easier optimum.
 \end{itemize}
+
+\vspace{0.3em}
+\textbf{What's needed to land deployable PPO:} a stronger forward-velocity bonus (or curriculum that learns walking first, then adds the slew limit), so the optimizer doesn't fall into the standing-still local minimum. \emph{The slew actuator is the right structural fix; reward shaping is the next dial.}
 
 \vspace{0.3em}
 \textbf{CMA gaits unaffected} --- they don't go through gym\_env, and their slow phase times already cleared the actuator gap.
@@ -431,10 +434,11 @@ Added \texttt{slew\_rate\_dps} parameter to \texttt{OptimusPrimalEnv.step()}: pe
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{What's next, ready but unrun:}
+\textbf{What's next, with v35's lesson in hand:}
 \begin{itemize}
-    \item PPO with \texttt{--slew-rate 125 --kp 20} --- the hypothesis is that the velocity-slew actuator removes the bang-bang exploit and makes PPO traces deployable
-    \item Bench friction calibration (the same step-response idea, but for $\mu$)
+    \item Stronger forward-velocity bonus or curriculum (walk-first, then add slew limit) so PPO doesn't park in the standing-still attractor
+    \item Higher slew rate ($\sim 250\,$dps, closer to LX-16A no-load) --- gives the optimizer more head-room while still preventing bang-bang
+    \item Bench \emph{friction} calibration (same step-response idea applied to $\mu$)
 \end{itemize}
 
 \vspace{0.5em}

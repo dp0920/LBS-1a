@@ -1,0 +1,10 @@
+
+  action stream  mean|Δ|/step=0.1493 rad  P95=0.8727  max=1.3090
+  qpos   stream  mean|Δ|/step=0.0306 rad  P95=0.1194  max=0.3442
+  action samples at LOW or HIGH: 96.0%
+
+=== open-loop qpos-trace replay ===
+  final_x: -0.17 m   steps: 75   fell: True
+
+ratio: open-loop / closed-loop = 107.4%
+VERDICT: walking lives in the bang-bang action stream, not the joint trajectory. Not deployable open-loop.

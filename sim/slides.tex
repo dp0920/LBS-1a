@@ -274,6 +274,9 @@ RL will learn to actually walk --- adjusting every step based on what the robot 
 \vspace{0.5em}
 \textbf{High-water marks:} v20 (combined~$\sim$42), v25\_scratch\_3M\_b (44.7), v26\_body\_smooth\_b (44.9).\\
 \emph{Across 23 trials in 9 cohorts, within-cohort seed variance ($\pm$10--30) dominated between-cohort effects.}
+
+\vspace{0.3em}
+\centering\includegraphics[width=0.78\textwidth]{ppo_learning_curves.png}
 \end{frame}
 
 % ------------------------------------------------------------------
@@ -342,10 +345,13 @@ RL will learn to actually walk --- adjusting every step based on what the robot 
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{X-config CMA:} climbed cleanly to \textbf{best $\approx +680$} by gen 261 ($\sim$80\% of the mammalian gen-2500 winner at $\frac{1}{10}$ the compute). \emph{The X geometry is at least as optimizable as mammalian.}
+\textbf{X-config CMA:} climbed cleanly to \textbf{best $\approx +686$} by gen $\sim$300 ($\sim$84\% of the mammalian gen-2500 winner at $\frac{1}{5}$ the compute).
 
-\vspace{0.3em}
-\textbf{X-config PPO:} same actuator-gap. Geometry doesn't fix the bang-bang trap --- that's an actuator-model problem, not a geometry problem.
+\vspace{0.2em}
+\centering\includegraphics[width=0.85\textwidth]{convergence_xconfig.png}
+
+\vspace{0.2em}
+\raggedright\textbf{X-config PPO:} same actuator-gap. Geometry doesn't fix the bang-bang trap --- that's an actuator-model problem, not a geometry problem.
 \end{frame}
 
 % ------------------------------------------------------------------

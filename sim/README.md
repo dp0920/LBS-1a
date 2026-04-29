@@ -1,5 +1,19 @@
 # Optimus Primal — MuJoCo Gait Simulation
 
+## Results at a Glance
+
+**CMA convergence — mammalian vs ANYmal X-config:**
+
+![CMA convergence](convergence_xconfig.png)
+
+X-config reaches ~84 % of the mammalian gen-2500 winner in 1/5 the compute. Both deploy to hardware (slow phase times settle the PD).
+
+**PPO learning curves — selected runs across the v20 → v33 journey:**
+
+![PPO learning curves](ppo_learning_curves.png)
+
+v30/v33 hit ~60–70 k ep_rew_mean *because* they exploited MuJoCo's underdamped PD as a low-pass filter — none of the high-reward runs deploy to hardware. See `METHODS.md §4.15` for the actuator-gap finding and §4.16 for the velocity-slew fix that's expected to close the gap.
+
 ## Local Development
 
 ### Prerequisites

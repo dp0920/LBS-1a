@@ -358,19 +358,13 @@ RL will learn to actually walk --- adjusting every step based on what the robot 
 % Slide 13: Bench Calibration of kp/kv
 % ------------------------------------------------------------------
 \begin{frame}{Closing the Sim-to-Real Loop --- Bench Calibration}
-\textbf{Measure the actual LX-16A response, fit MuJoCo PD parameters to match.}
+\textbf{Step-response on each LX-16A; fit MuJoCo PD to match.}
 
 \vspace{0.3em}
-\texttt{robot/motor\_step\_response.py} on the Pi:
-\begin{enumerate}
-    \item Step each of 8 servos $\pm 10^\circ$ from current position
-    \item Sample \texttt{get\_physical\_angle()} at 50\,Hz for 300\,ms each direction
-    \item Save the time-series as JSON
-\end{enumerate}
-\texttt{sim/fit\_pd\_from\_step\_response.py} on the Mac: sweeps MuJoCo $(k_p, k_v)$, finds best fit per servo.
+\textbf{Pi:} \texttt{motor\_step\_response.py} steps each servo $\pm 10^\circ$, samples \texttt{get\_physical\_angle()} at 50\,Hz, saves JSON.\\
+\textbf{Mac:} \texttt{fit\_pd\_from\_step\_response.py} sweeps $(k_p, k_v)$ for the best 2nd-order fit per servo.
 
-\vspace{0.5em}
-\textbf{Result:}
+\vspace{0.4em}
 \small
 \begin{tabular}{lccc}
     \toprule
@@ -385,11 +379,11 @@ RL will learn to actually walk --- adjusting every step based on what the robot 
 \end{tabular}
 \normalsize
 
-\vspace{0.5em}
+\vspace{0.4em}
 \textbf{Two conclusions:}
-\begin{enumerate}
-    \item Original $k_p{=}2.5$ was \emph{too stiff} --- sim was a faster actuator than reality.
-    \item RMSE of $5$--$7^\circ$ on a $10^\circ$ step won't go away. \textbf{The LX-16A is a trajectory generator, not a PD.} No $(k_p, k_v)$ matches a constant-velocity ramp using exponential approach.
+\begin{enumerate}\setlength{\itemsep}{0pt}
+    \item Original $k_p{=}2.5$ was \emph{too stiff} --- sim is a faster actuator than reality.
+    \item RMSE of $5$--$7^\circ$ on a $10^\circ$ step won't go away --- \textbf{the LX-16A is a trajectory generator, not a PD}. No $(k_p, k_v)$ matches.
 \end{enumerate}
 \end{frame}
 
